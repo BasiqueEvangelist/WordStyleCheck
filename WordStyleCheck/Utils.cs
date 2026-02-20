@@ -6,6 +6,8 @@ namespace WordStyleCheck;
 
 public class Utils
 {
+    public static string CollectParagraphText(Paragraph p) => CollectParagraphText(p, int.MaxValue).Text;
+    
     public static (string Text, bool More) CollectParagraphText(Paragraph p, int needed)
     {
         StringBuilder neededText = new();
@@ -26,6 +28,20 @@ public class Utils
 
     private static int _annotationIdCounter = 1;
 
+    public static void StampTrackChange(TrackChangeType t)
+    {
+        t.Id = (_annotationIdCounter++).ToString();
+        t.Author = "WordStyleCheck";
+        t.Date = DateTimeValue.FromDateTime(DateTime.Now);
+    }
+    
+    public static void StampTrackChange(RunTrackChangeType t)
+    {
+        t.Id = (_annotationIdCounter++).ToString();
+        t.Author = "WordStyleCheck";
+        t.Date = DateTimeValue.FromDateTime(DateTime.Now);
+    }
+    
     public static void SnapshotParagraphProperties(ParagraphProperties properties)
     {
         if (properties.ParagraphPropertiesChange?.Author == "WordStyleCheck") return;

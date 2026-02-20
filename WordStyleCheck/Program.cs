@@ -38,6 +38,7 @@ root.SetAction(res =>
     {
         List<ILint> lints =
         [
+            new NeedlessParagraphLint(),
             new ParagraphFirstLineIndentLint(),
             new ParagraphSpacingLint(),
             new BodyTextFontLint()

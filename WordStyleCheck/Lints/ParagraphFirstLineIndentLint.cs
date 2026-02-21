@@ -20,6 +20,8 @@ public class ParagraphFirstLineIndentLint : ILint
 
             ParagraphPropertiesTool tool = new(ctx.Document, p);
             
+            if (tool.IsTableOfContents) continue;
+            
             if (tool.FirstLineIndent != 709)
             {
                 ctx.AddMessage(new LintMessage($"Paragraph didn't have set first line indent (expected 709, was {tool.FirstLineIndent})", ctx.AutofixEnabled, Context.FromParagraph(p)));

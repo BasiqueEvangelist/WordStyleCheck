@@ -93,6 +93,9 @@ public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph
 
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
 
+    public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
+        .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
+
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)

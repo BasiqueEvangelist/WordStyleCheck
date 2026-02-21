@@ -36,6 +36,11 @@ root.SetAction(res =>
     
     using (var doc = WordprocessingDocument.Open(temp, true))
     {
+        using (new LoudStopwatch("FieldStackTracker.Run"))
+        {
+            FieldStackTracker.Run(doc.MainDocumentPart!.Document!);
+        }
+        
         List<ILint> lints =
         [
             new NeedlessParagraphLint(),
@@ -47,7 +52,10 @@ root.SetAction(res =>
 
         foreach (var lint in lints)
         {
-            lint.Run(ctx);
+            using (new LoudStopwatch(lint.GetType().Name))
+            {
+                lint.Run(ctx);
+            }
         }
 
         RunLintMerger.Run(ctx.Messages);

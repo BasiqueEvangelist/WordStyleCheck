@@ -20,11 +20,12 @@ public class NeedlessParagraphLint : ILint
                 continue;
             }
 
-            if (new ParagraphPropertiesTool(ctx.Document, paragraphs[i]).OutlineLevel != null ||
-                new ParagraphPropertiesTool(ctx.Document, paragraphs[i - 1]).OutlineLevel != null)
-            {
-                continue;
-            }
+            ParagraphPropertiesTool prevTool = new(ctx.Document, paragraphs[i - 1]);
+            ParagraphPropertiesTool curTool = new(ctx.Document, paragraphs[i]);
+
+            if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
+            if (prevTool.IsTableOfContents || curTool.IsTableOfContents) continue;
+            if (prevTool.Style?.StyleId != curTool.Style?.StyleId) continue;
 
             var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]);
             

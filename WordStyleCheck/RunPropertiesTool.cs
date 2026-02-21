@@ -1,11 +1,28 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck;
 
-public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
+public record RunPropertiesTool
 {
+    private static readonly ConditionalWeakTable<Run, RunPropertiesTool> Cache = new();
+
+    public static RunPropertiesTool Get(WordprocessingDocument document, Run run)
+    {
+        return Cache.GetValue(run, r => new RunPropertiesTool(document, r));
+    }
+ 
+    private RunPropertiesTool(WordprocessingDocument Document, Run Run)
+    {
+        this.Document = Document;
+        this.Run = Run;
+    }
+    
+    public WordprocessingDocument Document { get; }
+    public Run Run { get; }
+
     public string? AsciiFont => FollowPropertyChain(
         x => x.RunFonts?.Ascii?.Value,
         x => x.RunFonts?.Ascii?.Value,
@@ -64,7 +81,7 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
 
             if (ContainingParagraph != null)
             {
-                ParagraphPropertiesTool pTool = new(Document, ContainingParagraph);
+                ParagraphPropertiesTool pTool = ParagraphPropertiesTool.Get(Document, ContainingParagraph);
 
                 // TODO: figure out in which order these two should go... or whether we should process linked styles at all...
                 
@@ -93,5 +110,11 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
         }
 
         return default;
+    }
+
+    public void Deconstruct(out WordprocessingDocument Document, out Run Run)
+    {
+        Document = this.Document;
+        Run = this.Run;
     }
 }

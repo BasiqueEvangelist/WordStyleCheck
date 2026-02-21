@@ -17,7 +17,7 @@ public class BodyTextFontLint : ILint
                 continue;
             }
 
-            ParagraphPropertiesTool pTool = new(ctx.Document, p);
+            ParagraphPropertiesTool pTool = ParagraphPropertiesTool.Get(ctx.Document, p);
             
             if (pTool.OutlineLevel != null)
             {
@@ -27,7 +27,7 @@ public class BodyTextFontLint : ILint
 
             foreach (var r in p.Descendants<Run>())
             {
-                RunPropertiesTool tool = new(ctx.Document, r);
+                RunPropertiesTool tool = RunPropertiesTool.Get(ctx.Document, r);
 
                 if (tool.AsciiFont != "Times New Roman")
                 {

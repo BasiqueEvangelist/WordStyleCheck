@@ -1,10 +1,27 @@
+using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck;
 
-public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph Paragraph)
+public record ParagraphPropertiesTool
 {
+    private static readonly ConditionalWeakTable<Paragraph, ParagraphPropertiesTool> Cache = new();
+
+    public static ParagraphPropertiesTool Get(WordprocessingDocument document, Paragraph paragraph)
+    {
+        return Cache.GetValue(paragraph, p => new ParagraphPropertiesTool(document, p));
+    }
+ 
+    private ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph Paragraph)
+    {
+        this.Document = Document;
+        this.Paragraph = Paragraph;
+    }
+    
+    public WordprocessingDocument Document { get; init; }
+    public Paragraph Paragraph { get; init; }
+    
     public int? FirstLineIndent =>
         Utils.ParseTwipsMeasure(FollowPropertyChain(
             x => x.Indentation?.FirstLine,
@@ -148,5 +165,11 @@ public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph
         }
 
         return default;
+    }
+
+    public void Deconstruct(out WordprocessingDocument Document, out Paragraph Paragraph)
+    {
+        Document = this.Document;
+        Paragraph = this.Paragraph;
     }
 }

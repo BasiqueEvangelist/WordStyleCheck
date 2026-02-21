@@ -18,7 +18,7 @@ public class ParagraphFirstLineIndentLint : ILint
                 continue;
             }
 
-            ParagraphPropertiesTool tool = new(ctx.Document, p);
+            ParagraphPropertiesTool tool = ParagraphPropertiesTool.Get(ctx.Document, p);
             
             if (tool.IsTableOfContents) continue;
             

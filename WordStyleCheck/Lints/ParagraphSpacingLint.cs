@@ -17,7 +17,7 @@ public class ParagraphSpacingLint : ILint
                 continue;
             }
 
-            ParagraphPropertiesTool tool = new(ctx.Document, p);
+            ParagraphPropertiesTool tool = ParagraphPropertiesTool.Get(ctx.Document, p);
             
             if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cell content.
             if (tool.OutlineLevel != null) continue; // TODO: enforce this for headers

@@ -18,12 +18,13 @@ public static class ParagraphLintMerger
 
             if (messages[i - 1].Message != messages[i].Message) continue;
             if (messages[i - 1].AutoFixed != messages[i].AutoFixed) continue;
+            if (messages[i - 1].Values != messages[i].Values) continue;
             
             if (prev.Paragraphs[^1].NextSibling() != next.Paragraphs[0]) continue;
 
             ParagraphDiagnosticContext newContext = new ParagraphDiagnosticContext([..prev.Paragraphs, ..next.Paragraphs]);
 
-            messages[i - 1] = new LintMessage(messages[i].Message, messages[i].AutoFixed, newContext);
+            messages[i - 1] = new LintMessage(messages[i].Message, messages[i].Values, messages[i].AutoFixed, newContext);
             messages.RemoveAt(i);
             i -= 1;
         }

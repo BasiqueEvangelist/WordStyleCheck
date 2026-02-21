@@ -76,7 +76,18 @@ root.SetAction(res =>
 
     foreach (var message in messages)
     {
-        Console.WriteLine(message.Message + (message.AutoFixed ? " (autofixed)" : "") + ":");
+        Console.Write(message.Message);
+        
+        if (message.Values != null)
+        {
+            Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
+        }
+        
+        if (message.AutoFixed)
+            Console.Write(" (autofixed)");
+        
+        Console.WriteLine(":");
+        
         message.Context.WriteToConsole();
     }
 

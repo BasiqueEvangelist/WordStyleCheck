@@ -25,7 +25,12 @@ public class ParagraphSpacingLint : ILint
             
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360)
             {
-                ctx.AddMessage(new LintMessage($"Paragraph doesn't have set before and line spacing (expected 120 and 360, was {tool.BeforeSpacing} and {tool.LineSpacing})", ctx.AutofixEnabled, new ParagraphDiagnosticContext(p)));
+                ctx.AddMessage(new LintMessage(
+                    "Paragraph doesn't have set before and line spacing",
+                    new("120 and 360", $"{tool.BeforeSpacing} and {tool.LineSpacing}"),
+                    ctx.AutofixEnabled,
+                    new ParagraphDiagnosticContext(p))
+                );
 
                 if (ctx.AutofixEnabled)
                 {

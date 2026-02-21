@@ -38,7 +38,7 @@ public class NeedlessParagraphLint : ILint
             if (char.IsUpper(paraText[0]))
                 continue;
             
-            ctx.AddMessage(new LintMessage("Needless paragraph break", ctx.AutofixEnabled, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i])));
+            ctx.AddMessage(new LintMessage("Needless paragraph break", null, ctx.AutofixEnabled, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i])));
 
             if (ctx.AutofixEnabled)
             {

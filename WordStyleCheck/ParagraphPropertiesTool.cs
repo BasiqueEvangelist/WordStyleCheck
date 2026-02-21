@@ -56,6 +56,41 @@ public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph
         }
     }
 
+    public string? RunStyleId
+    {
+        get
+        {
+            if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
+            
+            string? FollowStyleChain(string? styleId)
+            {
+                if (styleId == null) return null;
+                
+                var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
+                    .SingleOrDefault(x => x.StyleId?.Value == styleId);
+
+                if (style == null) return null;
+
+                if (style.LinkedStyle?.Val != null)
+                {
+                    return style.LinkedStyle.Val.Value;
+                }
+
+                if (style.BasedOn?.Val?.Value != null)
+                {
+                    return FollowStyleChain(style.BasedOn?.Val?.Value);
+                }
+
+                return null;
+            }
+
+            if (Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value is { } styleId)
+                return FollowStyleChain(styleId);
+            else
+                return null;
+        }
+    }
+
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)
@@ -85,7 +120,7 @@ public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph
 
                 if (style.BasedOn?.Val?.Value != null)
                 {
-                    FollowStyleChain(style.BasedOn?.Val?.Value);
+                    return FollowStyleChain(style.BasedOn?.Val?.Value);
                 }
 
                 return default;

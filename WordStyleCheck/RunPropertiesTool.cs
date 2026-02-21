@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -11,8 +12,27 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
         x => x.RunFonts?.Ascii?.Value
     );
     
+    public Paragraph? ContainingParagraph {
+        get
+        {
+            var parent = Run.Parent;
+
+            while (parent is not Paragraph and not null)
+            {
+                parent = parent.Parent;
+            }
+
+            return (Paragraph?)parent;
+        }
+    }
+    
     private T? FollowPropertyChain<T>(Func<RunProperties, T?> getter, Func<StyleRunProperties, T?> styleGetter, Func<RunPropertiesBaseStyle, T?> baseStyleGetter)
     {
+        if (Run.Descendants<Text>().Aggregate("", (a, b) => a + b.Text).Contains("Продолжение таблицы"))
+        {
+            // Debugger.Break();
+        }
+        
         if (Run.RunProperties != null)
         {
             var result = getter(Run.RunProperties);
@@ -22,7 +42,7 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
         
         if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles != null)
         {
-            T? FollowStyleChain(string? styleId)
+            T? FollowRunStyleChain(string? styleId)
             {
                 if (styleId == null) return default;
                 
@@ -40,18 +60,39 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
 
                 if (style.BasedOn?.Val?.Value != null)
                 {
-                    FollowStyleChain(style.BasedOn?.Val?.Value);
+                    return FollowRunStyleChain(style.BasedOn?.Val?.Value);
                 }
 
                 return default;
             }
-            
-            var styleId = Run.RunProperties?.RunStyle?.Val?.Value;
 
             {
-                var result = FollowStyleChain(styleId);
+                var styleId = Run.RunProperties?.RunStyle?.Val?.Value;
+
+                var result = FollowRunStyleChain(styleId);
                 if (result != null)
                     return result;
+            }
+
+            if (ContainingParagraph != null)
+            {
+                ParagraphPropertiesTool pTool = new(Document, ContainingParagraph);
+
+                // TODO: figure out in which order these two should go... or whether we should process linked styles at all...
+                
+                if (pTool.RunStyleId != null)
+                {
+                    var result = FollowRunStyleChain(pTool.RunStyleId);
+                    if (result != null)
+                        return result;
+                }
+                
+                if (pTool.Style?.StyleId?.Value is { } pStyleId)
+                {
+                    var result = FollowRunStyleChain(pStyleId);
+                    if (result != null)
+                        return result;
+                }
             }
 
             if (Document.MainDocumentPart.StyleDefinitionsPart.Styles.DocDefaults?.RunPropertiesDefault?.RunPropertiesBaseStyle != null)

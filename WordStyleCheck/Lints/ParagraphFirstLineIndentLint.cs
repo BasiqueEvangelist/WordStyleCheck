@@ -22,7 +22,7 @@ public class ParagraphFirstLineIndentLint : ILint
             
             if (tool.FirstLineIndent != 709)
             {
-                ctx.AddMessage(new LintMessage("Paragraph didn't have set first line indent", ctx.AutofixEnabled, Context.FromParagraph(p)));
+                ctx.AddMessage(new LintMessage($"Paragraph didn't have set first line indent (expected 709, was {tool.FirstLineIndent})", ctx.AutofixEnabled, Context.FromParagraph(p)));
 
                 if (ctx.AutofixEnabled)
                 {

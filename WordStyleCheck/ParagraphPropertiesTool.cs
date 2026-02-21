@@ -12,13 +12,65 @@ public record ParagraphPropertiesTool
     {
         return Cache.GetValue(paragraph, p => new ParagraphPropertiesTool(document, p));
     }
- 
+
     private ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph Paragraph)
     {
         this.Document = Document;
         this.Paragraph = Paragraph;
+
+        _style = new Lazy<Style?>(() =>
+        {
+            if (this.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
+
+            if (this.Paragraph.ParagraphProperties?.ParagraphStyleId != null)
+            {
+                var style = this.Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
+                    .SingleOrDefault(x => x.StyleId?.Value == this.Paragraph.ParagraphProperties?.ParagraphStyleId.Val);
+
+                return style;
+            }
+
+            {
+                var style = this.Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
+                    .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
+
+                return style;
+            }
+        });
+
+        _runStyleId = new Lazy<string?>(() =>
+        {
+            if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
+
+            string? FollowStyleChain(string? styleId)
+            {
+                if (styleId == null) return null;
+
+                var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
+                    .SingleOrDefault(x => x.StyleId?.Value == styleId);
+
+                if (style == null) return null;
+
+                if (style.LinkedStyle?.Val != null)
+                {
+                    return style.LinkedStyle.Val.Value;
+                }
+
+                if (style.BasedOn?.Val?.Value != null)
+                {
+                    return FollowStyleChain(style.BasedOn?.Val?.Value);
+                }
+
+                return null;
+            }
+
+            if (Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value is { } styleId)
+                return FollowStyleChain(styleId);
+            else
+                return null;
+        });
     }
-    
+
     public WordprocessingDocument Document { get; init; }
     public Paragraph Paragraph { get; init; }
     
@@ -50,63 +102,12 @@ public record ParagraphPropertiesTool
             x => x.SpacingBetweenLines?.Line
         )?.Value);
 
-    public Style? Style
-    {
-        get
-        {
-            if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
-            
-            if (Paragraph.ParagraphProperties?.ParagraphStyleId != null)
-            {
-                var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
-                    .SingleOrDefault(x => x.StyleId?.Value == Paragraph.ParagraphProperties?.ParagraphStyleId.Val);
+    private readonly Lazy<Style?> _style;
 
-                return style;
-            }
+    public Style? Style => _style.Value;
 
-            {
-                var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
-                    .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
-
-                return style;
-            }
-        }
-    }
-
-    public string? RunStyleId
-    {
-        get
-        {
-            if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
-            
-            string? FollowStyleChain(string? styleId)
-            {
-                if (styleId == null) return null;
-                
-                var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
-                    .SingleOrDefault(x => x.StyleId?.Value == styleId);
-
-                if (style == null) return null;
-
-                if (style.LinkedStyle?.Val != null)
-                {
-                    return style.LinkedStyle.Val.Value;
-                }
-
-                if (style.BasedOn?.Val?.Value != null)
-                {
-                    return FollowStyleChain(style.BasedOn?.Val?.Value);
-                }
-
-                return null;
-            }
-
-            if (Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value is { } styleId)
-                return FollowStyleChain(styleId);
-            else
-                return null;
-        }
-    }
+    private readonly Lazy<string?> _runStyleId;
+    public string? RunStyleId => _runStyleId.Value;
 
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
 

@@ -85,9 +85,9 @@ public record RunPropertiesTool
 
                 // TODO: figure out in which order these two should go... or whether we should process linked styles at all...
                 
-                if (pTool.RunStyleId != null)
+                if (pTool.RunStyleId is {} rStyleId)
                 {
-                    var result = FollowRunStyleChain(pTool.RunStyleId);
+                    var result = FollowRunStyleChain(rStyleId);
                     if (result != null)
                         return result;
                 }

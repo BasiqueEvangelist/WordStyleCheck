@@ -17,8 +17,8 @@ public record ParagraphPropertiesTool
     {
         this.Document = Document;
         this.Paragraph = Paragraph;
-
-        _style = new Lazy<Style?>(() =>
+       
+        Style = new Func<Style?>(() =>
         {
             if (this.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
 
@@ -36,9 +36,9 @@ public record ParagraphPropertiesTool
 
                 return style;
             }
-        });
+        })();
 
-        _runStyleId = new Lazy<string?>(() =>
+        RunStyleId = new Func<string?>(() =>
         {
             if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles == null) return null;
 
@@ -68,7 +68,14 @@ public record ParagraphPropertiesTool
                 return FollowStyleChain(styleId);
             else
                 return null;
-        });
+        })();
+        
+        OutlineLevel = FollowPropertyChain(
+            x => x.OutlineLevel?.Val?.Value,
+            x => x.OutlineLevel?.Val?.Value,
+            x => x.OutlineLevel?.Val?.Value
+        );
+       
     }
 
     public WordprocessingDocument Document { get; init; }
@@ -81,13 +88,8 @@ public record ParagraphPropertiesTool
             x => x.Indentation?.FirstLine
         )?.Value);
 
-    public int? OutlineLevel =>
-        FollowPropertyChain(
-            x => x.OutlineLevel?.Val?.Value,
-            x => x.OutlineLevel?.Val?.Value,
-            x => x.OutlineLevel?.Val?.Value
-        );
-    
+    public int? OutlineLevel { get; }
+
     public int? BeforeSpacing =>
         Utils.ParseTwipsMeasure(FollowPropertyChain(
             x => x.SpacingBetweenLines?.Before,
@@ -102,12 +104,9 @@ public record ParagraphPropertiesTool
             x => x.SpacingBetweenLines?.Line
         )?.Value);
 
-    private readonly Lazy<Style?> _style;
+    public Style? Style { get; }
 
-    public Style? Style => _style.Value;
-
-    private readonly Lazy<string?> _runStyleId;
-    public string? RunStyleId => _runStyleId.Value;
+    public string? RunStyleId { get; }
 
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
 

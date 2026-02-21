@@ -26,6 +26,18 @@ public class Utils
         return (neededText.ToString().Substring(0, Math.Min(needed, neededText.Length)), more);
     }
 
+    public static string CollectText(Run r)
+    {
+        StringBuilder text = new();
+
+        foreach (var t in r.Descendants<Text>())
+        {
+            text.Append(t.Text);
+        }
+
+        return text.ToString();
+    }
+
     private static int _annotationIdCounter = 1;
 
     public static void StampTrackChange(TrackChangeType t)

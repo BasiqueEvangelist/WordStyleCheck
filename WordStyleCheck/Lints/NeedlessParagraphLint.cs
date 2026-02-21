@@ -14,7 +14,7 @@ public class NeedlessParagraphLint : ILint
 
         var paragraphs = body.ChildElements.OfType<Paragraph>().ToList();
         
-        for (int i = 1; i < paragraphs.Count; i++)
+        for (int i = paragraphs.Count - 1; i >= 1; i--)
         {
             if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i], 10).Text))
             {
@@ -38,60 +38,68 @@ public class NeedlessParagraphLint : ILint
             if (char.IsUpper(paraText[0]))
                 continue;
             
-            ctx.AddMessage(new LintMessage("Needless paragraph break", null, ctx.AutofixEnabled, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i])));
-
-            if (ctx.AutofixEnabled)
+            var p = paragraphs[i];
+            var prev = paragraphs[i - 1];
+            
+            ctx.AddMessage(new LintMessage("Needless paragraph break", new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
             {
-                var prev = paragraphs[i - 1];
-                
-                if (!ctx.GenerateRevisions)
+                AutoFix = () =>
                 {
-                    Console.WriteLine("TODO: add non-generate-revisions support for NeedlessParagraphLint");
-                }
-                
-                if (prev.ParagraphProperties == null)
-                    prev.ParagraphProperties = new ParagraphProperties();
-                
-                if (prev.ParagraphProperties.ParagraphMarkRunProperties == null)
-                    prev.ParagraphProperties.ParagraphMarkRunProperties = new ParagraphMarkRunProperties();
-                
-                if (prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted == null)
-                    prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted = new Deleted();
-                
-                Utils.StampTrackChange(prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted);
-
-                Paragraph p = paragraphs[i];
-                
-                if (!char.IsWhiteSpace(prevParagraphText[^1]) && !char.IsWhiteSpace(paraText[0]))
-                {
-                    Run r = new Run();
-                    r.Append(new Text(" ")
+                    if (!char.IsWhiteSpace(prevParagraphText[^1]) && !char.IsWhiteSpace(paraText[0]))
                     {
-                        Space = SpaceProcessingModeValues.Preserve
-                    });
+                        Run r = new Run();
+                        r.Append(new Text(" ")
+                        {
+                            Space = SpaceProcessingModeValues.Preserve
+                        });
+
+                        if (ctx.GenerateRevisions)
+                        {
+                            InsertedRun ir = new InsertedRun();
+                            Utils.StampTrackChange(ir);
+                            ir.Append(r);
+
+                            if (p.ParagraphProperties != null)
+                                p.InsertAfter(ir, p.ParagraphProperties);
+                            else
+                                p.PrependChild(ir);
+                        }
+                        else
+                        {
+                            if (p.ParagraphProperties != null)
+                                p.InsertAfter(r, p.ParagraphProperties);
+                            else
+                                p.PrependChild(r);
+                        }
+                    }
+                    
 
                     if (ctx.GenerateRevisions)
                     {
-                        InsertedRun ir = new InsertedRun();
-                        Utils.StampTrackChange(ir);
-                        ir.Append(r);
+                        if (prev.ParagraphProperties == null)
+                            prev.ParagraphProperties = new ParagraphProperties();
 
-                        if (p.ParagraphProperties != null)
-                            p.InsertAfter(ir, p.ParagraphProperties);
-                        else
-                            p.PrependChild(ir);
+                        if (prev.ParagraphProperties.ParagraphMarkRunProperties == null)
+                            prev.ParagraphProperties.ParagraphMarkRunProperties = new ParagraphMarkRunProperties();
+
+                        if (prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted == null)
+                            prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted = new Deleted();
+
+                        Utils.StampTrackChange(prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted);
                     }
                     else
                     {
-                        if (p.ParagraphProperties != null)
-                            p.InsertAfter(r, p.ParagraphProperties);
-                        else
-                            p.PrependChild(r);
+                        p.ParagraphProperties = null;
+
+                        foreach (var child in p.ChildElements)
+                        {
+                            prev.Append(child.CloneNode(true));
+                        }
+                        
+                        p.Remove();
                     }
                 }
-                
-                ctx.MarkDocumentChanged();
-            }
+            });
         }
     }
 }

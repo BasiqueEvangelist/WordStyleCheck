@@ -28,23 +28,25 @@ public class BodyTextFontLint : ILint
 
             foreach (var r in p.Descendants<Run>())
             {
+                if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
+                
                 RunPropertiesTool tool = RunPropertiesTool.Get(ctx.Document, r);
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintMessage("Run doesn't have needed font", new("Times New Roman", tool.AsciiFont), ctx.AutofixEnabled, new RunDiagnosticContext(r)));
-
-                    if (ctx.AutofixEnabled)
+                    ctx.AddMessage(new LintMessage("Run doesn't have needed font", new RunDiagnosticContext(r))
                     {
-                        ctx.MarkDocumentChanged();
+                        Values = new("Times New Roman", tool.AsciiFont),
+                        AutoFix = () =>
+                        {
+                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
+                            if (r.RunProperties.RunFonts == null) r.RunProperties.RunFonts = new RunFonts();
 
-                        if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                        if (r.RunProperties.RunFonts == null) r.RunProperties.RunFonts = new RunFonts();
-
-                        r.RunProperties.RunFonts.Ascii = "Times New Roman";
-                        r.RunProperties.RunFonts.HighAnsi = "Times New Roman";
-                        r.RunProperties.RunFonts.ComplexScript = "Times New Roman";
-                    }
+                            r.RunProperties.RunFonts.Ascii = "Times New Roman";
+                            r.RunProperties.RunFonts.HighAnsi = "Times New Roman";
+                            r.RunProperties.RunFonts.ComplexScript = "Times New Roman";
+                        }
+                    });
                 }
             }
         }

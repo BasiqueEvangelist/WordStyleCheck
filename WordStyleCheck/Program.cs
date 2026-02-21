@@ -44,7 +44,8 @@ root.SetAction(res =>
 
     List<LintMessage> messages;
     bool changed = false;
-    
+    int totalAutofixed = 0;
+
     using (var doc = WordprocessingDocument.Open(temp, true))
     {
         _ = doc.MainDocumentPart!.Document!;
@@ -61,7 +62,7 @@ root.SetAction(res =>
             new ParagraphSpacingLint(),
             new BodyTextFontLint()
         ];
-        LintContext ctx = new LintContext(doc, true, res.GetValue(perfTimings));
+        LintContext ctx = new LintContext(doc, res.GetValue(generateRevisions));
 
         foreach (var lint in lints)
         {
@@ -76,35 +77,35 @@ root.SetAction(res =>
         
         using (new LoudStopwatch("ParagraphLintMerger.Run")) 
             ParagraphLintMerger.Run(ctx.Messages);
-        
-        if (ctx.DocumentChanged)
-            doc.Save();
 
-        changed = ctx.DocumentChanged;
+
+        foreach (var message in ctx.Messages)
+        {
+            Console.Write(message.Message);
+        
+            if (message.Values != null)
+            {
+                Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
+            }
+
+            if (message.AutoFix != null)
+            {
+                Console.Write(" (autofixed)");
+                totalAutofixed += 1;
+            }
+
+            Console.WriteLine(":");
+        
+            message.Context.WriteToConsole();
+        }
+        
+        if (ctx.RunAllAutoFixes())
+        {
+            changed = true;
+            doc.Save();
+        }
 
         messages = ctx.Messages;
-    }
-
-    int totalAutofixed = 0;
-
-    foreach (var message in messages)
-    {
-        Console.Write(message.Message);
-        
-        if (message.Values != null)
-        {
-            Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
-        }
-
-        if (message.AutoFixed)
-        {
-            Console.Write(" (autofixed)");
-            totalAutofixed += 1;
-        }
-
-        Console.WriteLine(":");
-        
-        message.Context.WriteToConsole();
     }
 
     if (messages.Count > 0)

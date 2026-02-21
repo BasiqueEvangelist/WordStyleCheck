@@ -33,23 +33,22 @@ public class ParagraphFirstLineIndentLint : ILint
             {
                 ctx.AddMessage(new LintMessage(
                     "Paragraph didn't have set first line indent",
-                    new("709", tool.FirstLineIndent != null ? tool.FirstLineIndent.ToString() : null),
-                    ctx.AutofixEnabled,
                     new ParagraphDiagnosticContext(p))
+                    {
+                        Values = new("709", tool.FirstLineIndent != null ? tool.FirstLineIndent.ToString() : null),
+                        AutoFix = () =>
+                        {
+                            if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
+                
+                            if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                            if (p.ParagraphProperties.Indentation == null)
+                                p.ParagraphProperties.Indentation = new Indentation();
+
+                            p.ParagraphProperties.Indentation.FirstLine = "709";
+                        }
+                    }
                 );
-
-                if (ctx.AutofixEnabled)
-                {
-                    if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
-                    
-                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
-
-                    if (p.ParagraphProperties.Indentation == null)
-                        p.ParagraphProperties.Indentation = new Indentation();
-
-                    p.ParagraphProperties.Indentation.FirstLine = "709";
-                    ctx.MarkDocumentChanged();
-;                }
             }
         }
     }

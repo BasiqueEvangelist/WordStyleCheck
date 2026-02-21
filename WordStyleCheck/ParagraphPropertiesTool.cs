@@ -75,7 +75,39 @@ public record ParagraphPropertiesTool
             x => x.OutlineLevel?.Val?.Value,
             x => x.OutlineLevel?.Val?.Value
         );
-       
+
+        bool CheckStyleForName(string? styleId, string name)
+        {
+            if (styleId == null) return false;
+
+            var style = Document.MainDocumentPart!.StyleDefinitionsPart!.Styles!.Descendants<Style>()
+                .SingleOrDefault(x => x.StyleId?.Value == styleId);
+
+            if (style == null) return false;
+
+            if ((style.StyleId?.InnerText?.Contains(name, StringComparison.InvariantCultureIgnoreCase) ?? false) || (style.StyleName?.InnerText.Contains(name, StringComparison.InvariantCultureIgnoreCase) ?? false))
+            {
+                return true;
+            }
+
+            if (style.BasedOn?.Val?.Value != null)
+            {
+                return CheckStyleForName(style.BasedOn?.Val?.Value, name);
+            }
+
+            return false;
+        }
+
+        if (Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value is { } styleId)
+        {
+            ProbablyCaption = CheckStyleForName(styleId, "Caption");
+            ProbablyHeading = OutlineLevel != null || CheckStyleForName(styleId, "Heading");
+        }
+        else
+        {
+            ProbablyCaption = false;
+            ProbablyHeading = OutlineLevel != null;
+        }
     }
 
     public WordprocessingDocument Document { get; init; }
@@ -112,6 +144,10 @@ public record ParagraphPropertiesTool
 
     public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
         .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
+    
+    public bool ProbablyCaption { get; }
+    
+    public bool ProbablyHeading { get; }
 
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {

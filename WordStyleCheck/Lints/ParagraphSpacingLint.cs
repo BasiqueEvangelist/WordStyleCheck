@@ -22,6 +22,7 @@ public class ParagraphSpacingLint : ILint
             
             if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cell content.
             if (tool.OutlineLevel != null) continue; // TODO: enforce this for headers
+            if (tool.ProbablyCaption) continue; // TODO: enforce this for captions
             
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360)
             {

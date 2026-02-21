@@ -23,6 +23,12 @@ public class ParagraphFirstLineIndentLint : ILint
             
             if (tool.IsTableOfContents) continue;
             
+            if (tool.ProbablyCaption) continue; // TODO: enforce this to be empty for captions (???)
+            
+            if (tool.ProbablyHeading) continue; // TODO: enforce this for headings
+            
+            if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cells.
+            
             if (tool.FirstLineIndent != 709)
             {
                 ctx.AddMessage(new LintMessage(

@@ -23,7 +23,7 @@ public class Utils
             }
         }
 
-        return (neededText.ToString(), more);
+        return (neededText.ToString().Substring(0, Math.Min(needed, neededText.Length)), more);
     }
 
     private static int _annotationIdCounter = 1;
@@ -75,5 +75,12 @@ public class Utils
         }
 
         return (T?)parent;
+    }
+
+    public static string Truncate(string text)
+    {
+        if (text.Length <= 20) return text;
+        
+        return text[..10] + "…" + text[^10..];
     }
 }

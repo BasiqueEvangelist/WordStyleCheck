@@ -60,7 +60,11 @@ root.SetAction(res =>
             }
         }
 
-        RunLintMerger.Run(ctx.Messages);
+        using (new LoudStopwatch("RunLintMerger.Run")) 
+            RunLintMerger.Run(ctx.Messages);
+        
+        using (new LoudStopwatch("ParagraphLintMerger.Run")) 
+            ParagraphLintMerger.Run(ctx.Messages);
         
         if (ctx.DocumentChanged)
             doc.Save();

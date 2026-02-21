@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
@@ -37,7 +38,7 @@ public class NeedlessParagraphLint : ILint
             if (char.IsUpper(paraText[0]))
                 continue;
             
-            ctx.AddMessage(new LintMessage("Needless paragraph break", ctx.AutofixEnabled, Context.FromParagraph(paragraphs[i])));
+            ctx.AddMessage(new LintMessage("Needless paragraph break", ctx.AutofixEnabled, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i])));
 
             if (ctx.AutofixEnabled)
             {

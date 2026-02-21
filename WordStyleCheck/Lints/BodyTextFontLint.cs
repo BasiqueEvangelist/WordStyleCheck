@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
@@ -31,7 +32,7 @@ public class BodyTextFontLint : ILint
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintMessage($"Run doesn't have needed font (expected 'Times New Roman', was '{tool.AsciiFont}')", ctx.AutofixEnabled, Context.FromRun(r)));
+                    ctx.AddMessage(new LintMessage($"Run doesn't have needed font (expected 'Times New Roman', was '{tool.AsciiFont}')", ctx.AutofixEnabled, new RunDiagnosticContext(r)));
 
                     if (ctx.AutofixEnabled)
                     {

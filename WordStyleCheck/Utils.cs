@@ -64,4 +64,16 @@ public class Utils
         // TODO!!!: also work with measurement units. 
         return int.Parse(text);
     }
+
+    public static T? AscendToAnscestor<T>(OpenXmlElement element) where T : OpenXmlCompositeElement
+    {
+        var parent = element.Parent;
+
+        while (parent is not T and not null)
+        {
+            parent = parent.Parent;
+        }
+
+        return (T?)parent;
+    }
 }

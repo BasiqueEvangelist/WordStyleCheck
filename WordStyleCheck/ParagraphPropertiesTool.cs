@@ -91,6 +91,8 @@ public record ParagraphPropertiesTool(WordprocessingDocument Document, Paragraph
         }
     }
 
+    public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
+
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)

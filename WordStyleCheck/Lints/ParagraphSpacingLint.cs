@@ -19,6 +19,9 @@ public class ParagraphSpacingLint : ILint
 
             ParagraphPropertiesTool tool = new(ctx.Document, p);
             
+            if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cell content.
+            if (tool.OutlineLevel != null) continue; // TODO: enforce this for headers
+            
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360)
             {
                 ctx.AddMessage(new LintMessage($"Paragraph doesn't have set before and line spacing (expected 120 and 360, was {tool.BeforeSpacing} and {tool.LineSpacing})", ctx.AutofixEnabled, Context.FromParagraph(p)));

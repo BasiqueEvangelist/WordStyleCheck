@@ -12,20 +12,8 @@ public record RunPropertiesTool(WordprocessingDocument Document, Run Run)
         x => x.RunFonts?.Ascii?.Value
     );
     
-    public Paragraph? ContainingParagraph {
-        get
-        {
-            var parent = Run.Parent;
+    public Paragraph? ContainingParagraph => Utils.AscendToAnscestor<Paragraph>(Run);
 
-            while (parent is not Paragraph and not null)
-            {
-                parent = parent.Parent;
-            }
-
-            return (Paragraph?)parent;
-        }
-    }
-    
     private T? FollowPropertyChain<T>(Func<RunProperties, T?> getter, Func<StyleRunProperties, T?> styleGetter, Func<RunPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Run.Descendants<Text>().Aggregate("", (a, b) => a + b.Text).Contains("Продолжение таблицы"))

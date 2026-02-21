@@ -9,10 +9,18 @@ RootCommand root = new("Linter for .docx files");
 Option<bool> generateRevisions = new("--revisions", "-r")
 {
     Description = "Write changes as revisions to the document",
-    DefaultValueFactory = x => false
+    DefaultValueFactory = _ => false
 };
 
 root.Options.Add(generateRevisions);
+
+Option<bool> perfTimings = new("--performance-timings", "-p")
+{
+    Description = "Dump performance timings to the console",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(perfTimings);
 
 Argument<FileInfo> inputFile = new("input")
 {
@@ -23,6 +31,9 @@ root.Arguments.Add(inputFile);
 
 root.SetAction(res =>
 {
+    if (res.GetValue(perfTimings))
+        LoudStopwatch.Enabled = true;
+    
     FileInfo input = res.GetValue(inputFile)!;
     
     // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
@@ -50,7 +61,7 @@ root.SetAction(res =>
             new ParagraphSpacingLint(),
             new BodyTextFontLint()
         ];
-        LintContext ctx = new LintContext(doc, true, res.GetValue(generateRevisions));
+        LintContext ctx = new LintContext(doc, true, res.GetValue(perfTimings));
 
         foreach (var lint in lints)
         {
@@ -74,6 +85,8 @@ root.SetAction(res =>
         messages = ctx.Messages;
     }
 
+    int totalAutofixed = 0;
+
     foreach (var message in messages)
     {
         Console.Write(message.Message);
@@ -82,13 +95,32 @@ root.SetAction(res =>
         {
             Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
         }
-        
+
         if (message.AutoFixed)
+        {
             Console.Write(" (autofixed)");
-        
+            totalAutofixed += 1;
+        }
+
         Console.WriteLine(":");
         
         message.Context.WriteToConsole();
+    }
+
+    if (messages.Count > 0)
+    {
+        Console.Write($"{messages.Count} style errors");
+
+        if (totalAutofixed > 0)
+        {
+            Console.Write($" ({totalAutofixed} autofixed)");
+        }
+
+        Console.WriteLine(" :(");
+    }
+    else
+    {
+        Console.WriteLine("No errors detected :)");
     }
 
     if (changed)
@@ -101,6 +133,8 @@ root.SetAction(res =>
     {
         File.Delete(temp);
     }
+
+    return messages.Count > 0 ? 1 : 0;
 });
 
 return root.Parse(args).Invoke();

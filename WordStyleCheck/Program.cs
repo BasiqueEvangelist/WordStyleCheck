@@ -36,6 +36,8 @@ root.SetAction(res =>
     
     using (var doc = WordprocessingDocument.Open(temp, true))
     {
+        _ = doc.MainDocumentPart!.Document!;
+        
         using (new LoudStopwatch("FieldStackTracker.Run"))
         {
             FieldStackTracker.Run(doc.MainDocumentPart!.Document!);

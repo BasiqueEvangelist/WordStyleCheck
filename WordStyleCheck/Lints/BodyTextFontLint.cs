@@ -22,7 +22,6 @@ public class BodyTextFontLint : ILint
             if (pTool.OutlineLevel != null)
             {
                 // Probably not body text.
-                Console.WriteLine(pTool.Style);
                 continue;
             }
 

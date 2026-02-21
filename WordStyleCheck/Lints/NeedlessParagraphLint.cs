@@ -28,7 +28,7 @@ public class NeedlessParagraphLint : ILint
             if (prevTool.IsTableOfContents || curTool.IsTableOfContents) continue;
             if (prevTool.Style?.StyleId != curTool.Style?.StyleId) continue;
 
-            var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]);
+            var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();
             
             if (prevParagraphText.Length == 0 || prevParagraphText[^1] == '.' ||prevParagraphText[^1] == '?' || prevParagraphText[^1] == '!')
                 continue;

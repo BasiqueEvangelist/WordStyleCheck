@@ -27,6 +27,8 @@ public class DocumentAnalysisContext
             DefaultParagraphStyle = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
                 .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
         }
+
+        AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)
@@ -91,5 +93,5 @@ public class DocumentAnalysisContext
         return false;
     }
 
-    public IEnumerable<Paragraph> AllParagraphs => Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>();
+    public IEnumerable<Paragraph> AllParagraphs { get; }
 }

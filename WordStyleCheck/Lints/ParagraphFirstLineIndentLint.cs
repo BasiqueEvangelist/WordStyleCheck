@@ -18,13 +18,8 @@ public class ParagraphFirstLineIndentLint : ILint
 
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
-            if (tool.IsTableOfContents) continue;
-            
-            if (tool.ProbablyCaption) continue; // TODO: enforce this to be empty for captions (???)
-            
-            if (tool.ProbablyHeading) continue; // TODO: enforce this for headings
-            
-            if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cells.
+            // TODO: enforce this for captions, heading, table content.
+            if (tool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText) continue; 
             
             if (tool.FirstLineIndent != 709)
             {

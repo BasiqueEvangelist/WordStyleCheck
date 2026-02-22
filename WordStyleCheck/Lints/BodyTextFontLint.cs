@@ -17,9 +17,8 @@ public class BodyTextFontLint : ILint
 
             ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
             
-            if (pTool.OutlineLevel != null)
+            if (pTool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText)
             {
-                // Probably not body text.
                 continue;
             }
 

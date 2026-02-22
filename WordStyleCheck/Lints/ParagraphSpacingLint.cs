@@ -17,9 +17,8 @@ public class ParagraphSpacingLint : ILint
 
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
-            if (tool.ContainingTableCell != null) continue; // TODO: enforce this for table cell content.
-            if (tool.OutlineLevel != null) continue; // TODO: enforce this for headers
-            if (tool.ProbablyCaption) continue; // TODO: enforce this for captions
+            // TODO: enforce this for table cell content, headers, captions.
+            if (tool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText) continue; 
             
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360)
             {

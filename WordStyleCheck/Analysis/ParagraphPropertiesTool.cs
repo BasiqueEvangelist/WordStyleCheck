@@ -74,6 +74,19 @@ public record ParagraphPropertiesTool
     
     public bool ProbablyHeading { get; }
 
+    public ParagraphClass Class
+    {
+        get
+        {
+            if (IsTableOfContents) return ParagraphClass.TableOfContents;
+            if (ContainingTableCell != null) return ParagraphClass.TableContent;
+            if (ProbablyCaption) return ParagraphClass.Caption;
+            if (ProbablyHeading) return ParagraphClass.Heading;
+
+            return ParagraphClass.BodyText;
+        }
+    }
+
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)
@@ -99,5 +112,14 @@ public record ParagraphPropertiesTool
         }
 
         return default;
+    }
+
+    public enum ParagraphClass
+    {
+        BodyText,
+        Heading, // TODO: Headings of different levels.
+        TableContent,
+        Caption,
+        TableOfContents,
     }
 }

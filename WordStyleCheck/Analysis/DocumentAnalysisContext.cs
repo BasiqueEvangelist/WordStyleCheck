@@ -28,7 +28,22 @@ public class DocumentAnalysisContext
                 .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
         }
 
+        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
+        
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
+
+        StructuralElement? currentElement = null;
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+
+            if (tool.StructuralElementHeader != null)
+            {
+                currentElement = tool.StructuralElementHeader;
+            }
+
+            tool.OfStructuralElement = currentElement;
+        }
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)

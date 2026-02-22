@@ -36,6 +36,11 @@ public record ParagraphPropertiesTool
         
         ProbablyCaption = _ctx.SniffStyleName(styleId, "Caption");
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(styleId, "Heading");
+
+        if (!IsTableOfContents)
+        {
+            StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
+        }
     }
     
     public int? FirstLineIndent =>
@@ -81,10 +86,15 @@ public record ParagraphPropertiesTool
     
     public bool ProbablyHeading { get; }
 
+    public StructuralElement? StructuralElementHeader { get; }
+    
+    public StructuralElement? OfStructuralElement { get; internal set; }
+    
     public ParagraphClass Class
     {
         get
         {
+            if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (ProbablyCaption) return ParagraphClass.Caption;
@@ -124,6 +134,7 @@ public record ParagraphPropertiesTool
     public enum ParagraphClass
     {
         BodyText,
+        StructuralElementHeader,
         Heading, // TODO: Headings of different levels.
         TableContent,
         Caption,

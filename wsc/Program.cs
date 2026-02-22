@@ -53,11 +53,6 @@ root.SetAction(res =>
 
         DocumentAnalysisContext analysisCtx = new(doc);
         
-        using (new LoudStopwatch("FieldStackTracker.Run"))
-        {
-            FieldStackTracker.Run(doc.MainDocumentPart!.Document!);
-        }
-        
         List<ILint> lints =
         [
 

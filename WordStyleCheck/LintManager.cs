@@ -10,10 +10,10 @@ public class LintManager
         new NeedlessParagraphLint(),
         new ParagraphFirstLineIndentLint(),
         new ParagraphSpacingLint(),
+        new CorrectStructuralElementHeaderLint(),
         new BodyTextFontLint(),
         new ForceBoldLint(true, x => x is { Class: ParagraphPropertiesTool.ParagraphClass.Heading, OutlineLevel: null or < 2 }, "Heading text must be bold"),
-        // TODO: make this lint not fire for text splitting different 
-        new ForceBoldLint(false, x => x.Class == ParagraphPropertiesTool.ParagraphClass.BodyText, "Body text must not be bold"),
+        new ForceBoldLint(false, x => x is {Class: ParagraphPropertiesTool.ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Bibliography}, "Body text must not be bold"),
     ];
 
     public void Run(LintContext ctx)

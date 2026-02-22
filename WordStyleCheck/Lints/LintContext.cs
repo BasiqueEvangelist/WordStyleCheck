@@ -1,10 +1,11 @@
 using DocumentFormat.OpenXml.Packaging;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Lints;
 
-public class LintContext(WordprocessingDocument document, bool generateRevisions)
+public class LintContext(DocumentAnalysisContext document, bool generateRevisions)
 {
-    public WordprocessingDocument Document { get; } = document;
+    public DocumentAnalysisContext Document { get; } = document;
     public bool GenerateRevisions { get; } = generateRevisions;
 
     public List<LintMessage> Messages { get; } = [];

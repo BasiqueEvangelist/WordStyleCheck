@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace WordStyleCheck;
+namespace WordStyleCheck.Analysis;
 
 public static class FieldStackTracker
 {

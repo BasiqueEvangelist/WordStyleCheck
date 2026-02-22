@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
@@ -8,7 +9,7 @@ public class NeedlessParagraphLint : ILint
 {
     public void Run(LintContext ctx)
     {
-        var body = ctx.Document.MainDocumentPart?.Document?.Body;
+        var body = ctx.Document.Document.MainDocumentPart?.Document?.Body;
 
         if (body == null) return;
 
@@ -21,8 +22,8 @@ public class NeedlessParagraphLint : ILint
                 continue;
             }
 
-            ParagraphPropertiesTool prevTool = ParagraphPropertiesTool.Get(ctx.Document, paragraphs[i - 1]);
-            ParagraphPropertiesTool curTool = ParagraphPropertiesTool.Get(ctx.Document, paragraphs[i]);
+            ParagraphPropertiesTool prevTool = ctx.Document.GetTool(paragraphs[i - 1]);
+            ParagraphPropertiesTool curTool = ctx.Document.GetTool(paragraphs[i]);
 
             if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
             if (prevTool.IsTableOfContents || curTool.IsTableOfContents) continue;

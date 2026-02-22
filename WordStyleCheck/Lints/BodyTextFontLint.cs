@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
@@ -7,18 +8,14 @@ public class BodyTextFontLint : ILint
 {
     public void Run(LintContext ctx)
     {
-        var body = ctx.Document.MainDocumentPart?.Document?.Body;
-
-        if (body == null) return;
-
-        foreach (var p in body.Descendants<Paragraph>())
+        foreach (var p in ctx.Document.AllParagraphs)
         {
             if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
             {
                 continue;
             }
 
-            ParagraphPropertiesTool pTool = ParagraphPropertiesTool.Get(ctx.Document, p);
+            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
             
             if (pTool.OutlineLevel != null)
             {
@@ -30,7 +27,7 @@ public class BodyTextFontLint : ILint
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
                 
-                RunPropertiesTool tool = RunPropertiesTool.Get(ctx.Document, r);
+                RunPropertiesTool tool = ctx.Document.GetTool(r);
 
                 if (tool.AsciiFont != "Times New Roman")
                 {

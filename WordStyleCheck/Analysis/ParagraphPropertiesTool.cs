@@ -1,0 +1,103 @@
+using System.Runtime.CompilerServices;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+
+namespace WordStyleCheck.Analysis;
+
+public record ParagraphPropertiesTool
+{
+    private readonly DocumentAnalysisContext _ctx;
+    public Paragraph Paragraph { get; init; }
+
+    internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph Paragraph)
+    {
+        _ctx = ctx;
+        this.Paragraph = Paragraph;
+       
+        string? styleId = Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
+        
+        Style = new Func<Style?>(() =>
+        {
+            if (styleId != null)
+            {
+                return ctx.GetStyle(styleId);
+            }
+
+            return ctx.DefaultParagraphStyle;
+        })();
+
+        RunStyleId = _ctx.FollowStyleChain(styleId, x => x.LinkedStyle?.Val?.Value);
+        
+        OutlineLevel = FollowPropertyChain(
+            x => x.OutlineLevel?.Val?.Value,
+            x => x.OutlineLevel?.Val?.Value,
+            x => x.OutlineLevel?.Val?.Value
+        );
+        
+        ProbablyCaption = _ctx.SniffStyleName(styleId, "Caption");
+        ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(styleId, "Heading");
+    }
+    
+    public int? FirstLineIndent =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.Indentation?.FirstLine,
+            x => x.Indentation?.FirstLine,
+            x => x.Indentation?.FirstLine
+        )?.Value);
+
+    public int? OutlineLevel { get; }
+
+    public int? BeforeSpacing =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.SpacingBetweenLines?.Before,
+            x => x.SpacingBetweenLines?.Before,
+            x => x.SpacingBetweenLines?.Before
+        )?.Value);
+    
+    public int? LineSpacing =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.SpacingBetweenLines?.Line,
+            x => x.SpacingBetweenLines?.Line,
+            x => x.SpacingBetweenLines?.Line
+        )?.Value);
+
+    public Style? Style { get; }
+
+    public string? RunStyleId { get; }
+
+    public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
+
+    public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
+        .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
+    
+    public bool ProbablyCaption { get; }
+    
+    public bool ProbablyHeading { get; }
+
+    private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
+    {
+        if (Paragraph.ParagraphProperties != null)
+        {
+            var result = getter(Paragraph.ParagraphProperties);
+            if (result != null)
+                return result;
+        }
+        
+        if (Style?.StyleId != null)
+        {
+            var result = _ctx.FollowStyleChain(Style.StyleId, x => x.StyleParagraphProperties != null ? styleGetter(x.StyleParagraphProperties) : default);
+            if (result != null)
+                return result;
+        }
+
+        if (_ctx.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle != null)
+        {
+            var result = baseStyleGetter(_ctx.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults
+                ?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle!);
+            if (result != null)
+                return result;
+        }
+
+        return default;
+    }
+}

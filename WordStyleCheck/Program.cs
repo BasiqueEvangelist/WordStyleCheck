@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
 
 RootCommand root = new("Linter for .docx files");
@@ -49,6 +50,8 @@ root.SetAction(res =>
     using (var doc = WordprocessingDocument.Open(temp, true))
     {
         _ = doc.MainDocumentPart!.Document!;
+
+        DocumentAnalysisContext analysisCtx = new(doc);
         
         using (new LoudStopwatch("FieldStackTracker.Run"))
         {
@@ -62,7 +65,7 @@ root.SetAction(res =>
             new ParagraphSpacingLint(),
             new BodyTextFontLint()
         ];
-        LintContext ctx = new LintContext(doc, res.GetValue(generateRevisions));
+        LintContext ctx = new LintContext(analysisCtx, res.GetValue(generateRevisions));
 
         foreach (var lint in lints)
         {

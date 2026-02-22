@@ -60,28 +60,12 @@ root.SetAction(res =>
         
         List<ILint> lints =
         [
-            new NeedlessParagraphLint(),
-            new ParagraphFirstLineIndentLint(),
-            new ParagraphSpacingLint(),
-            new BodyTextFontLint()
+
         ];
         LintContext ctx = new LintContext(analysisCtx, res.GetValue(generateRevisions));
 
-        foreach (var lint in lints)
-        {
-            using (new LoudStopwatch(lint.GetType().Name))
-            {
-                lint.Run(ctx);
-            }
-        }
-
-        using (new LoudStopwatch("RunLintMerger.Run")) 
-            RunLintMerger.Run(ctx.Messages);
-        
-        using (new LoudStopwatch("ParagraphLintMerger.Run")) 
-            ParagraphLintMerger.Run(ctx.Messages);
-
-
+        new LintManager().Run(ctx);
+            
         foreach (var message in ctx.Messages)
         {
             Console.Write(message.Message);

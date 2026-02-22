@@ -20,13 +20,13 @@ public class ParagraphSpacingLint : ILint
             // TODO: enforce this for table cell content, headers, captions.
             if (tool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText) continue; 
             
-            if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360)
+            if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360 || tool.AfterSpacing != 120)
             {
                 ctx.AddMessage(new LintMessage(
-                    "Paragraph doesn't have set before and line spacing",
+                    "Paragraph doesn't have set spacing",
                     new ParagraphDiagnosticContext(p))
                     {
-                        Values = new("120 and 360", $"{tool.BeforeSpacing} and {tool.LineSpacing}"),
+                        Values = new("120, 360 and 120", $"{tool.BeforeSpacing}, {tool.LineSpacing} and {tool.AfterSpacing}"),
                         AutoFix = () =>
                         {
                             if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
@@ -38,6 +38,7 @@ public class ParagraphSpacingLint : ILint
 
                             p.ParagraphProperties.SpacingBetweenLines.Before = "120";
                             p.ParagraphProperties.SpacingBetweenLines.Line = "360";
+                            p.ParagraphProperties.SpacingBetweenLines.After = "120";
                         }
                     }
                 );

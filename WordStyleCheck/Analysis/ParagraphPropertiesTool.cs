@@ -60,6 +60,13 @@ public record ParagraphPropertiesTool
             x => x.SpacingBetweenLines?.Line,
             x => x.SpacingBetweenLines?.Line
         )?.Value);
+    
+    public int? AfterSpacing =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.SpacingBetweenLines?.After,
+            x => x.SpacingBetweenLines?.After,
+            x => x.SpacingBetweenLines?.After
+        )?.Value);
 
     public Style? Style { get; }
 

@@ -21,9 +21,22 @@ public record RunPropertiesTool
         x => x.RunFonts?.Ascii?.Value,
         x => x.RunFonts?.Ascii?.Value
     );
+
+    public bool Bold => FollowPropertyChain(
+        x => ConvertOnOffType(x.Bold),
+        x => ConvertOnOffType(x.Bold),
+        x => ConvertOnOffType(x.Bold)
+    ) ?? false;
     
     public Paragraph? ContainingParagraph => Utils.AscendToAnscestor<Paragraph>(Run);
 
+    private bool? ConvertOnOffType(OnOffType? value)
+    {
+        if (value == null) return null;
+        
+        return value.Val?.Value != false; 
+    }
+    
     private T? FollowPropertyChain<T>(Func<RunProperties, T?> getter, Func<StyleRunProperties, T?> styleGetter, Func<RunPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Run.RunProperties != null)

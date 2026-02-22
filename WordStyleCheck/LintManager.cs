@@ -1,3 +1,4 @@
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
 
 namespace WordStyleCheck;
@@ -9,7 +10,10 @@ public class LintManager
         new NeedlessParagraphLint(),
         new ParagraphFirstLineIndentLint(),
         new ParagraphSpacingLint(),
-        new BodyTextFontLint()
+        new BodyTextFontLint(),
+        new ForceBoldLint(true, x => x is { Class: ParagraphPropertiesTool.ParagraphClass.Heading, OutlineLevel: null or < 2 }, "Heading text must be bold"),
+        // TODO: make this lint not fire for text splitting different 
+        new ForceBoldLint(false, x => x.Class == ParagraphPropertiesTool.ParagraphClass.BodyText, "Body text must not be bold"),
     ];
 
     public void Run(LintContext ctx)

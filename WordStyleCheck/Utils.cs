@@ -69,6 +69,21 @@ public class Utils
         };
     }
     
+    public static void SnapshotRunProperties(RunProperties properties)
+    {
+        if (properties.RunPropertiesChange?.Author == "WordStyleCheck") return;
+        
+        var old = (RunProperties) properties.CloneNode(true);
+
+        properties.RunPropertiesChange = new RunPropertiesChange()
+        {
+            Author = "WordStyleCheck",
+            Id = (_annotationIdCounter++).ToString(),
+            Date = DateTimeValue.FromDateTime(DateTime.Now),
+            PreviousRunProperties = new PreviousRunProperties(old.OuterXml)
+        };
+    }
+    
     public static int? ParseTwipsMeasure(string? text)
     {
         if (text == null) return null;

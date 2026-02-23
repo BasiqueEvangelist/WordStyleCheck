@@ -13,6 +13,8 @@ public class DocumentAnalysisContext
 
     private readonly Dictionary<string, Style> _styles = new();
 
+    private readonly List<SectionPropertiesTool> _sections = [];
+
     public Style? DefaultParagraphStyle { get; }
 
     public DocumentAnalysisContext(WordprocessingDocument document)
@@ -33,6 +35,8 @@ public class DocumentAnalysisContext
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
 
         StructuralElement? currentElement = null;
+        List<Paragraph> currentSection = [];
+        
         foreach (var p in AllParagraphs)
         {
             var tool = GetTool(p);
@@ -43,6 +47,32 @@ public class DocumentAnalysisContext
             }
 
             tool.OfStructuralElement = currentElement;
+            
+            currentSection.Add(p);
+
+            if (p.ParagraphProperties?.SectionProperties is { } sectPr)
+            {
+                SectionPropertiesTool section = new(this, sectPr)
+                {
+                    Paragraphs = currentSection
+                };
+                _sections.Add(section);
+                
+                currentSection = [];
+            }
+        }
+
+        if (Document.MainDocumentPart!.Document!.Body!.LastChild is SectionProperties lastSectPr)
+        {
+            SectionPropertiesTool section = new(this, lastSectPr)
+            {
+                Paragraphs = currentSection
+            };
+            _sections.Add(section);
+        }
+        else
+        {
+            throw new NotImplementedException("No last section in document?");
         }
     }
 
@@ -108,5 +138,6 @@ public class DocumentAnalysisContext
         return false;
     }
 
+    public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;
     public IEnumerable<Paragraph> AllParagraphs { get; }
 }

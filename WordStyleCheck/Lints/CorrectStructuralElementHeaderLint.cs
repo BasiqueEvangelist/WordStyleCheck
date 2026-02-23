@@ -22,19 +22,20 @@ public class CorrectStructuralElementHeaderLint : ILint
                 ctx.AddMessage(new LintMessage("Structural element must be named correctly", new ParagraphDiagnosticContext(p))
                 {
                     Values = new(proper, text),
-                    AutoFix = () =>
-                    {
-                        // TODO: add proper support for generate-revisions.
-
-                        foreach (var child in p.ChildElements)
-                        {
-                            if (child is ParagraphProperties) continue;
-                            
-                            child.Remove();
-                        }
-
-                        p.Append(new Run(new Text(proper)));
-                    }
+                    // TODO: re-add autofix once it actually works properly
+                    // AutoFix = () =>
+                    // {
+                    //     // TODO: add proper support for generate-revisions.
+                    //
+                    //     foreach (var child in p.ChildElements)
+                    //     {
+                    //         if (child is ParagraphProperties) continue;
+                    //         
+                    //         child.Remove();
+                    //     }
+                    //
+                    //     p.Append(new Run(new Text(proper)));
+                    // }
                 });
             }
         }

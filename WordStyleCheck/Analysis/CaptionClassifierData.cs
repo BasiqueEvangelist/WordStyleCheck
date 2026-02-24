@@ -94,12 +94,50 @@ public struct CaptionClassifierData
             Type = type,
             IsBelow = isBelow,
             IsContinuation = isContinuation,
-            Number = text.Substring(secondPartStart, secondPartEnd - secondPartStart).Trim(),
+            Number = text.Substring(secondPartStart, secondPartEnd - secondPartStart).Trim().TrimEnd('.'),
             
             TargetedElement = targeted,
             TypeSpan = new StringSpan(0, firstPartEnd),
             NumberSpan = new StringSpan(secondPartStart, secondPartEnd)
         };
+    }
+
+    public string GetCorrectText(string originalText)
+    {
+        int beginDesc = NumberSpan.EndExclusive;
+
+        for (; beginDesc < originalText.Length; beginDesc++)
+        {
+            if (char.IsLetter(originalText[beginDesc]) || char.IsDigit(originalText[beginDesc]))
+                break;
+        }
+
+        string desc = "";
+
+        if (beginDesc < originalText.Length)
+        {
+            desc = originalText.Substring(beginDesc);
+            desc = desc.Trim().TrimEnd('.');
+        }
+
+        if (IsContinuation)
+            desc = "";
+
+        string correct = (Type, IsContinuation) switch
+        {
+            (CaptionType.Figure, _) => "Рисунок ",
+            (CaptionType.Table, false) => "Таблица ",
+            (CaptionType.Table, true) => "Продолжение таблицы "
+        };
+
+        correct += Number;
+
+        if (desc != "")
+        {
+            correct += " – " + desc;
+        }
+
+        return correct;
     }
 }
 

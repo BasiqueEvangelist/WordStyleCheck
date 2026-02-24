@@ -26,6 +26,7 @@ public class PageSizeLint : ILint
                     Values = new("11906x16838", $"{size.Width}x{size.Height}"),
                     AutoFix = () =>
                     {
+                        // TODO: add generate-revisions support.
                         var pgSz = section.Properties.GetOrAddFirstChild<PageSize>();
                         
                         pgSz.Width = 11906;

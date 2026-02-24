@@ -23,4 +23,28 @@ public class SectionPropertiesTool
 
     public PageOrientationValues Orientation =>
         Properties.GetFirstChild<PageSize>()?.Orient?.Value ?? PageOrientationValues.Portrait;
+
+    public PageMargins? PageMargins => Properties.GetFirstChild<PageMargin>() is
+    {
+        Top.Value: var top, Bottom.Value: var bottom, Left.Value: var left, Right.Value: var right,
+        Header.Value: var header, Footer.Value: var footer, Gutter.Value: var gutter
+    }
+        ? new PageMargins(top, bottom, (int)left, (int)right, (int)header, (int)footer, (int)gutter)
+        : null;
+}
+
+public readonly record struct PageMargins(int Top, int Bottom, int Left, int Right, int Header, int Footer, int Gutter)
+{
+    public bool CloseTo(PageMargins other)
+    {
+        return Math.Abs(Top - other.Top) < 5 && Math.Abs(Bottom - other.Bottom) < 5 &&
+               Math.Abs(Left - other.Left) < 5 && Math.Abs(Right - other.Right) < 5 &&
+               Math.Abs(Header - other.Header) < 5 && Math.Abs(Footer - other.Footer) < 5 &&
+               Math.Abs(Gutter - other.Gutter) < 5;
+    }
+    
+    public PageMargins Rotate()
+    {
+        return new(Left, Right, Bottom, Top, Header, Footer, Gutter);
+    }
 }

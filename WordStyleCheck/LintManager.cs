@@ -8,6 +8,7 @@ public class LintManager
     private readonly List<ILint> _lints =
     [
         new PageSizeLint(),
+        new PageMarginsLint(),
         new NeedlessParagraphLint(),
         new ParagraphFirstLineIndentLint(),
         new ParagraphSpacingLint(),

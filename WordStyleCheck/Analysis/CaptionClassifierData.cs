@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Analysis;
@@ -9,6 +10,7 @@ public struct CaptionClassifierData
     public required bool IsContinuation { get; init; }
     public required string Number { get; init; }
     
+    public required OpenXmlElement TargetedElement { get; init; }
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
     
@@ -16,24 +18,30 @@ public struct CaptionClassifierData
     {
         CaptionType type;
         bool isBelow;
+        OpenXmlElement targeted;
+        
         if (p.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
         {
             type = CaptionType.Figure;
+            targeted = p.PreviousSibling()!;
             isBelow = true;
         }
         else if (p.NextSibling() is Table)
         {
             type = CaptionType.Table;
+            targeted = p.NextSibling()!;
             isBelow = false;
         }
         else if (p.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
         {
             type = CaptionType.Figure;
+            targeted = p.NextSibling()!;
             isBelow = false;
         } 
         else if (p.PreviousSibling() is Table)
         {
             type = CaptionType.Table;
+            targeted = p.PreviousSibling()!;
             isBelow = true;
         }
         else
@@ -88,6 +96,7 @@ public struct CaptionClassifierData
             IsContinuation = isContinuation,
             Number = text.Substring(secondPartStart, secondPartEnd - secondPartStart).Trim(),
             
+            TargetedElement = targeted,
             TypeSpan = new StringSpan(0, firstPartEnd),
             NumberSpan = new StringSpan(secondPartStart, secondPartEnd)
         };

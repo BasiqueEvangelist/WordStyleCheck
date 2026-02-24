@@ -34,12 +34,13 @@ public record ParagraphPropertiesTool
             x => x.OutlineLevel?.Val?.Value
         );
         
-        ProbablyCaption = _ctx.SniffStyleName(styleId, "Caption");
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(styleId, "Heading");
 
         if (!IsTableOfContents)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
+
+            CaptionData = CaptionClassifierData.Classify(Paragraph);
         }
     }
     
@@ -82,13 +83,13 @@ public record ParagraphPropertiesTool
     public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
         .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
     
-    public bool ProbablyCaption { get; }
-    
     public bool ProbablyHeading { get; }
 
     public StructuralElement? StructuralElementHeader { get; }
     
     public StructuralElement? OfStructuralElement { get; internal set; }
+    
+    public CaptionClassifierData? CaptionData { get; }
     
     public ParagraphClass Class
     {
@@ -97,7 +98,7 @@ public record ParagraphPropertiesTool
             if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
-            if (ProbablyCaption) return ParagraphClass.Caption;
+            if (CaptionData != null) return ParagraphClass.Caption;
             if (ProbablyHeading) return ParagraphClass.Heading;
 
             return ParagraphClass.BodyText;

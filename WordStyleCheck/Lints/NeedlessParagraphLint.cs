@@ -26,8 +26,8 @@ public class NeedlessParagraphLint : ILint
             ParagraphPropertiesTool curTool = ctx.Document.GetTool(paragraphs[i]);
 
             if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
-            if (prevTool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText
-             || curTool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText)
+            if (prevTool.Class != ParagraphClass.BodyText
+             || curTool.Class != ParagraphClass.BodyText)
                 continue;
 
             var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();

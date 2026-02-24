@@ -138,14 +138,14 @@ public record ParagraphPropertiesTool
 
         return default;
     }
+}
 
-    public enum ParagraphClass
-    {
-        BodyText,
-        StructuralElementHeader,
-        Heading, // TODO: Headings of different levels.
-        TableContent,
-        Caption,
-        TableOfContents,
-    }
+public enum ParagraphClass
+{
+    BodyText,
+    StructuralElementHeader,
+    Heading, // TODO: Headings of different levels.
+    TableContent,
+    Caption,
+    TableOfContents,
 }

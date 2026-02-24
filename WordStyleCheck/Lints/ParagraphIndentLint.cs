@@ -19,7 +19,7 @@ public class ParagraphIndentLint : ILint
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
             // TODO: enforce this for captions, heading, table content.
-            if (tool.Class != ParagraphPropertiesTool.ParagraphClass.BodyText) continue; 
+            if (tool.Class != ParagraphClass.BodyText) continue; 
             
             if (tool.FirstLineIndent != 709 || tool.LeftIndent is not null and not 0)
             {

@@ -138,6 +138,31 @@ public class DocumentAnalysisContext
         return false;
     }
 
+    private int commentId = 0;
+    
+    public void WriteComment(LintMessage msg)
+    {
+        string id = (commentId++).ToString();
+        
+        msg.Context.WriteCommentReference(id);
+
+        var commentsPart = Document.MainDocumentPart!.WordprocessingCommentsPart ??
+            Document.MainDocumentPart!.AddNewPart<WordprocessingCommentsPart>();
+
+        commentsPart.Comments ??= new Comments();
+
+        Comment c = new Comment(new Paragraph(new Run(new Text(msg.Message))))
+        {
+            Id = id,
+            Author = "WordStyleCheck",
+            Initials = "WSC",
+            Date = DateTime.Now
+        };
+
+        commentsPart.Comments.AppendChild(c);
+        commentsPart.Comments.Save();
+    }
+
     public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;
     public IEnumerable<Paragraph> AllParagraphs { get; }
 }

@@ -23,4 +23,37 @@ public record MergeParagraphsDiagnosticContext(Paragraph First, Paragraph Second
             
         Console.WriteLine();
     }
+    
+    public void WriteCommentReference(string commentId)
+    {
+        First.Append(new CommentRangeEnd()
+        {
+            Id = commentId
+        });
+        
+        if (Second.ParagraphProperties is { } props)
+        {
+            props.InsertAfterSelf(new Run(new CommentReference()
+            {
+                Id = commentId
+            }));
+            props.InsertAfterSelf(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+        else
+        {
+            Second.PrependChild(new Run(new CommentReference()
+            {
+                Id = commentId
+            }));
+            Second.PrependChild(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+        
+        
+    }
 }

@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
@@ -21,5 +22,32 @@ public record SectionDiagnosticContext(SectionPropertiesTool Section) : IDiagnos
             
             Console.WriteLine();
         }
+    }
+
+    public void WriteCommentReference(string commentId)
+    {
+        if (Section.Paragraphs[0].ParagraphProperties is { } props)
+        {
+            props.InsertAfterSelf(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+        else
+        {
+            Section.Paragraphs[0].PrependChild(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+
+        Section.Paragraphs[^1].Append(new CommentRangeEnd()
+        {
+            Id = commentId
+        });
+        Section.Paragraphs[^1].Append(new Run(new CommentReference()
+        {
+            Id = commentId
+        }));
     }
 }

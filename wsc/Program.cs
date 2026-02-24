@@ -23,6 +23,14 @@ Option<bool> perfTimings = new("--performance-timings", "-p")
 
 root.Options.Add(perfTimings);
 
+Option<bool> generateComments = new("--comments", "-c")
+{
+    Description = "Write comments instead of autofixing",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(generateComments);
+
 Argument<FileInfo> inputFile = new("input")
 {
     Description = "File to lint for style issues",
@@ -34,6 +42,8 @@ root.SetAction(res =>
 {
     if (res.GetValue(perfTimings))
         LoudStopwatch.Enabled = true;
+
+    bool comments = res.GetValue(generateComments);
     
     FileInfo input = res.GetValue(inputFile)!;
     
@@ -53,10 +63,6 @@ root.SetAction(res =>
 
         DocumentAnalysisContext analysisCtx = new(doc);
         
-        List<ILint> lints =
-        [
-
-        ];
         LintContext ctx = new LintContext(analysisCtx, res.GetValue(generateRevisions));
 
         new LintManager().Run(ctx);
@@ -70,7 +76,7 @@ root.SetAction(res =>
                 Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
             }
 
-            if (message.AutoFix != null)
+            if (message.AutoFix != null && !comments)
             {
                 Console.Write(" (autofixed)");
                 totalAutofixed += 1;
@@ -79,13 +85,24 @@ root.SetAction(res =>
             Console.WriteLine(":");
         
             message.Context.WriteToConsole();
+
+            if (comments)
+            {
+                analysisCtx.WriteComment(message);
+            }
         }
-        
-        if (ctx.RunAllAutoFixes())
+
+        if (comments && ctx.Messages.Count > 0)
         {
             changed = true;
-            doc.Save();
         }
+        else if (ctx.RunAllAutoFixes())
+        {
+            changed = true;
+        }
+        
+        if (changed)
+            doc.Save();
 
         messages = ctx.Messages;
     }
@@ -108,7 +125,8 @@ root.SetAction(res =>
 
     if (changed)
     {
-        string target = Path.GetFileNameWithoutExtension(input.Name) + "-FIXED.docx";
+        string suffix = comments ? "ANNOTATED" : "FIXED";
+        string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";
         File.Move(temp, target,true);
         Console.WriteLine("Changes have been saved to " + target);
     }

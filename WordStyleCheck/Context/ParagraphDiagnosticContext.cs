@@ -23,4 +23,31 @@ public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs) : IDiagnost
             Console.WriteLine();
         }
     }
+
+    public void WriteCommentReference(string commentId)
+    {
+        if (Paragraphs[0].ParagraphProperties is { } props)
+        {
+            props.InsertAfterSelf(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+        else
+        {
+            Paragraphs[0].PrependChild(new CommentRangeStart()
+            {
+                Id = commentId
+            });
+        }
+
+        Paragraphs[^1].Append(new CommentRangeEnd()
+        {
+            Id = commentId
+        });
+        Paragraphs[^1].Append(new Run(new CommentReference()
+        {
+            Id = commentId
+        }));
+    }
 }

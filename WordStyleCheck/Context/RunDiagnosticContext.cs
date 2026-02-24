@@ -33,4 +33,20 @@ public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
             
         Console.WriteLine();
     }
+
+    public void WriteCommentReference(string commentId)
+    {
+        Runs[0].InsertBeforeSelf(new CommentRangeStart()
+        {
+            Id = commentId
+        });
+        Runs[^1].InsertAfterSelf(new Run(new CommentReference()
+        {
+            Id = commentId
+        }));
+        Runs[^1].InsertAfterSelf(new CommentRangeEnd()
+        {
+            Id = commentId
+        });
+    }
 }

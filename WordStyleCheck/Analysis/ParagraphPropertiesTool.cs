@@ -50,6 +50,13 @@ public record ParagraphPropertiesTool
             x => x.Indentation?.FirstLine,
             x => x.Indentation?.FirstLine
         )?.Value);
+    
+    public int? LeftIndent =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.Indentation?.Left,
+            x => x.Indentation?.Left,
+            x => x.Indentation?.Left
+        )?.Value);
 
     public int? OutlineLevel { get; }
 

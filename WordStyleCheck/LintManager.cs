@@ -10,7 +10,7 @@ public class LintManager
         new PageSizeLint(),
         new PageMarginsLint(),
         new NeedlessParagraphLint(),
-        new ParagraphFirstLineIndentLint(),
+        new ParagraphIndentLint(),
         new ParagraphSpacingLint(),
         new CorrectStructuralElementHeaderLint(),
         new WrongCaptionPositionLint(CaptionType.Table, false, "Table captions must be above their respective tables"),

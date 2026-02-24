@@ -16,6 +16,7 @@ public class LintManager
         new WrongCaptionPositionLint(CaptionType.Table, false, "Table captions must be above their respective tables"),
         new WrongCaptionPositionLint(CaptionType.Figure, true, "Figure captions must be below their respective figures"),
         new BodyTextFontLint(),
+        new FontSizeLint(x => x is {Class: ParagraphPropertiesTool.ParagraphClass.Heading or ParagraphPropertiesTool.ParagraphClass.BodyText}, 24, "Text font size must be at least 12pt"),
         new ForceBoldLint(true, x => x is { Class: ParagraphPropertiesTool.ParagraphClass.Heading, OutlineLevel: null or < 2 }, "Heading text must be bold"),
         new ForceBoldLint(false, x => x is {Class: ParagraphPropertiesTool.ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Bibliography}, "Body text must not be bold"),
     ];

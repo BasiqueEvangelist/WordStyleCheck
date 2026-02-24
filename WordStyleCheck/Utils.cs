@@ -91,6 +91,14 @@ public class Utils
         // TODO!!!: also work with measurement units. 
         return int.Parse(text);
     }
+    
+    public static int? ParseHpsMeasure(string? text)
+    {
+        if (text == null) return null;
+        
+        // TODO!!!: also work with measurement units. 
+        return int.Parse(text);
+    }
 
     public static T? AscendToAnscestor<T>(OpenXmlElement element) where T : OpenXmlCompositeElement
     {

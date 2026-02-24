@@ -21,6 +21,12 @@ public record RunPropertiesTool
         x => x.RunFonts?.Ascii?.Value,
         x => x.RunFonts?.Ascii?.Value
     );
+    
+    public int? FontSize => Utils.ParseHpsMeasure(FollowPropertyChain(
+        x => x.FontSize?.Val?.Value,
+        x => x.FontSize?.Val?.Value,
+        x => x.FontSize?.Val?.Value
+    ));
 
     public bool Bold => FollowPropertyChain(
         x => ConvertOnOffType(x.Bold),

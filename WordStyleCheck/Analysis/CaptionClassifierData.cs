@@ -55,7 +55,7 @@ public struct CaptionClassifierData
         int firstPartEnd;
         for (firstPartEnd = 0; firstPartEnd < text.Length; firstPartEnd++)
         {
-            if (!(char.IsLetter(text[firstPartEnd]) || char.IsWhiteSpace(text[firstPartEnd]))) 
+            if (!(char.IsLetter(text[firstPartEnd]) || char.IsWhiteSpace(text[firstPartEnd]) || text[firstPartEnd] == '.')) 
                 break;
         }
 

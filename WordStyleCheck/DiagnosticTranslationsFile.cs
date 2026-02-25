@@ -58,6 +58,8 @@ namespace WordStyleCheck
                 {
                     if (el is Paragraph p)
                     {
+                        CleanAndMergeRuns(p);
+                        
                         string text = Utils.CollectParagraphText(p);
 
                         if (text.StartsWith("@"))
@@ -89,6 +91,53 @@ namespace WordStyleCheck
             }
 
             return new DiagnosticTranslationsFile(translations);
-        } 
+        }
+
+        private static void CleanAndMergeRuns(Paragraph p)
+        {
+            var runs = p.ChildElements.OfType<Run>().ToList();
+            
+            foreach (var run in runs)
+            {
+                if (run.RunProperties is { } rPr)
+                {
+                    rPr.Languages = null;
+
+                    if (rPr.ChildElements.Count == 0) run.RunProperties = null;
+                }
+
+                run.RsidRunAddition = null;
+                run.RsidRunDeletion = null;
+                run.RsidRunProperties = null;
+            }
+
+            for (int i = 1; i < runs.Count; i++)
+            {
+                if (runs[i - 1].RunProperties != null || runs[i].RunProperties != null) continue;
+
+                var runChildren = runs[i].ChildElements.ToList();
+                runs[i].RemoveAllChildren();
+                runs[i - 1].Append(runChildren);
+                runs[i].Remove();
+                runs.RemoveAt(i);
+                i -= 1;
+            }
+
+            foreach (var run in runs)
+            {
+                var texts = run.ChildElements.OfType<Text>().ToList();
+
+                for (int i = 1; i < texts.Count(); i++)
+                {
+                    if (texts[i - 1].NextSibling() != texts[i]) continue;
+
+                    texts[i - 1].Text += texts[i].Text;
+                    texts[i - 1].Space = SpaceProcessingModeValues.Preserve;
+                    texts[i].Remove();
+                    texts.RemoveAt(i);
+                    i -= 1;
+                }
+            }
+        }
     }
 }

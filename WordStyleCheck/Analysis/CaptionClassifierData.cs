@@ -139,6 +139,13 @@ public struct CaptionClassifierData
 
         return correct;
     }
+
+    public List<string> GetReferenceTexts()
+    {
+        if (Type == CaptionType.Table) return [];
+
+        return [$"(рис. {Number})", $"рисунок {Number}", $"рисунке {Number}", $"рисунком {Number}"];
+    }
 }
 
 public enum CaptionType

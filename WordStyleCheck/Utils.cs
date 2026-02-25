@@ -32,14 +32,17 @@ public class Utils
     {
         StringBuilder neededText = new();
         bool more = false;
-        foreach (var text in p.Descendants<Text>())
+        foreach (var r in p.ChildElements.OfType<Run>())
         {
-            neededText.Append(text.Text);
-
-            if (neededText.Length > needed)
+            foreach (var text in r.ChildElements.OfType<Text>())
             {
-                more = true;
-                break;
+                neededText.Append(text.Text);
+
+                if (neededText.Length > needed)
+                {
+                    more = true;
+                    break;
+                }
             }
         }
 
@@ -50,7 +53,7 @@ public class Utils
     {
         StringBuilder text = new();
 
-        foreach (var t in r.Descendants<Text>())
+        foreach (var t in r.ChildElements.OfType<Text>())
         {
             text.Append(t.Text);
         }

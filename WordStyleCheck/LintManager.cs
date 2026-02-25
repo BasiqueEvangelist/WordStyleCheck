@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
 
@@ -10,6 +11,7 @@ public class LintManager
         new PageSizeLint(),
         new PageMarginsLint(),
         new NeedlessParagraphLint(),
+        new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, JustificationValues.Center, "StructuralElementHeaderNotCentered"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 0}, 709, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
@@ -22,7 +24,8 @@ public class LintManager
         new FigureNotReferencedLint(),
         new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),
-        new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 }, "HeadingNotBold"),
+        new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 } or {Class: ParagraphClass.StructuralElementHeader}, "HeadingNotBold"),
+        new ForceBoldLint(false, x => x is { OutlineLevel: >= 2 }, "SubSubHeadingBold"),
         new ForceBoldLint(false, x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Bibliography}, "BodyTextBold"),
     ];
 

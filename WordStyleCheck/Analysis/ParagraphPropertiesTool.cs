@@ -104,6 +104,13 @@ public record ParagraphPropertiesTool
             x => x.SpacingBetweenLines?.After,
             x => x.SpacingBetweenLines?.After
         )?.Value);
+    
+    public JustificationValues? Justification =>
+        FollowPropertyChain(
+            x => x.Justification?.Val?.Value,
+            x => x.Justification?.Val?.Value,
+            x => x.Justification?.Val?.Value
+        );
 
     public Style? Style { get; }
 

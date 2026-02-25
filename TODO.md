@@ -8,6 +8,7 @@
   * page numbers
   * formulae????
   * unreferenced bibliography entries
+- do not apply rules to source code!
 - deal with how LibreOffice writes captions for figures/drawings 
 - make lint autofixers able to take in whether to generate revisions or not
 - write GUI application (Avalonia or WinForms) for easier usage and step-by-step application of diagnostic autofixes

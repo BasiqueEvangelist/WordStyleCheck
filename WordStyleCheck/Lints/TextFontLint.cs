@@ -4,20 +4,13 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class BodyTextFontLint : ILint
+public class TextFontLint : ILint
 {
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
             if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
-            {
-                continue;
-            }
-
-            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
-            
-            if (pTool.Class != ParagraphClass.BodyText)
             {
                 continue;
             }
@@ -30,7 +23,7 @@ public class BodyTextFontLint : ILint
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintMessage("BodyTextFontIncorrect", new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintMessage("TextFontIncorrect", new RunDiagnosticContext(r))
                     {
                         Parameters = new() {
                             ["Expected"] = "Times New Roman",

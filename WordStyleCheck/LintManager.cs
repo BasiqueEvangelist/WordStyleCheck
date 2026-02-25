@@ -17,7 +17,7 @@ public class LintManager
         new WrongCaptionPositionLint(CaptionType.Figure, true, "IncorrectFigureCaptionPosition"),
         new IncorrectCaptionTextLint(),
         new FigureNotReferencedLint(),
-        new BodyTextFontLint(),
+        new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),
         new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 }, "HeadingNotBold"),
         new ForceBoldLint(false, x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Bibliography}, "BodyTextBold"),

@@ -71,7 +71,7 @@ root.SetAction(res =>
             
         foreach (var message in ctx.Messages)
         {
-            Console.Write(message.Id);
+            Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
 
             if (message.AutoFix != null && !comments)
             {

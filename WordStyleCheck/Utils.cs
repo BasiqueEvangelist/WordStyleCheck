@@ -6,6 +6,26 @@ namespace WordStyleCheck;
 
 public class Utils
 {
+    public static string ToPlainText(List<OpenXmlElement> elements)
+    {
+        // TODO: StringBuilder.
+        string text = "";
+        bool first = false;
+
+        foreach (var el in elements)
+        {
+            if (!first) text += "\n";
+            first = false;
+
+            if (el is Paragraph p)
+            {
+                text += CollectParagraphText(p);
+            }
+        }
+
+        return text;
+    }
+    
     public static string CollectParagraphText(Paragraph p) => CollectParagraphText(p, int.MaxValue).Text;
     
     public static (string Text, bool More) CollectParagraphText(Paragraph p, int needed)

@@ -138,11 +138,11 @@ public class DocumentAnalysisContext
         return false;
     }
 
-    private int commentId = 0;
+    private int _commentId = 0;
     
     public void WriteComment(LintMessage msg, DiagnosticTranslationsFile translations)
     {
-        string id = (commentId++).ToString();
+        string id = (_commentId++).ToString();
         
         msg.Context.WriteCommentReference(id);
 
@@ -160,21 +160,8 @@ public class DocumentAnalysisContext
             Date = DateTime.Now
         };
 
-        if (translations.Translations.TryGetValue(msg.Id, out var translation))
-        {
-            if (msg.Parameters != null)
-            {
-                foreach (var entry in msg.Parameters.OrderByDescending(x => x.Key))
-                {
-                    translation = translation.Replace("$" + entry.Key, entry.Value);
-                }
-            }
-
-            c.InnerXml = translation;
-        } else
-        {
-            c.Append(new Paragraph(new Run(new Text(msg.Id))));
-        }
+        var translation = translations.Translate(msg.Id, msg.Parameters ?? new());
+        c.Append(translation);
 
         commentsPart.Comments.AppendChild(c);
         commentsPart.Comments.Save();

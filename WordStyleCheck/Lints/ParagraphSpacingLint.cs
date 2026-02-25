@@ -19,7 +19,10 @@ public class ParagraphSpacingLint : ILint
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
             // TODO: enforce this for table cell content, headers, captions.
-            if (tool.Class != ParagraphClass.BodyText) continue; 
+            if (tool.Class != ParagraphClass.BodyText) continue;
+            
+            // Appendices can have weird formatting.
+            if (tool.OfStructuralElement == StructuralElement.Appendix) continue;
             
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360 || tool.AfterSpacing != 120)
             {

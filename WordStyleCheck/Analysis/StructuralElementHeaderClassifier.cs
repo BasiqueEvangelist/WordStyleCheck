@@ -25,8 +25,7 @@ public static class StructuralElementHeaderClassifier
         [StructuralElement.GlossaryAbbreviations] = ["ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ"],
         [StructuralElement.Introduction] = ["ВВЕДЕНИЕ"], 
         [StructuralElement.Conclusion] = ["ЗАКЛЮЧЕНИЕ"],
-        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ"],
-        [StructuralElement.Appendix] = ["ПРИЛОЖЕНИЕ"]
+        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ"]
     };
 
     public static string GetProperName(StructuralElement element)
@@ -40,6 +39,9 @@ public static class StructuralElementHeaderClassifier
 
         if (text.Length > 100) return null;
 
+        if (ClassifyAppendixHeader(text))
+            return StructuralElement.Appendix;
+
         foreach (var entry in Names)
         {
             foreach (var nameOption in entry.Value)
@@ -52,5 +54,21 @@ public static class StructuralElementHeaderClassifier
         }
 
         return null;
+    }
+
+    public static bool ClassifyAppendixHeader(string text)
+    {
+        int firstPartEnd;
+        for (firstPartEnd = 0; firstPartEnd < text.Length; firstPartEnd++)
+        {
+            if (!char.IsLetter(text[firstPartEnd])) 
+                break;
+        }
+        
+        if (firstPartEnd >= text.Length) return false;
+
+        string firstPart = text[..firstPartEnd].ToLowerInvariant();
+        
+        return Algorithms.LevenshteinNeighbors(firstPart.ToLower(), "приложение", 3);
     }
 }

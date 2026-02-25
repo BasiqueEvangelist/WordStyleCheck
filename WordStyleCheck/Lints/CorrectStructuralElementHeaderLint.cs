@@ -13,6 +13,7 @@ public class CorrectStructuralElementHeaderLint : ILint
             var tool = ctx.Document.GetTool(p);
 
             if (tool.StructuralElementHeader == null) continue;
+            if (tool.StructuralElementHeader == StructuralElement.Appendix) continue;
 
             var text = Utils.CollectParagraphText(p).Trim();
             var proper = StructuralElementHeaderClassifier.GetProperName(tool.StructuralElementHeader.Value);

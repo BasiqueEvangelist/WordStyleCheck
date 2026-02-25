@@ -51,7 +51,6 @@ public record ParagraphPropertiesTool
         if (!IsTableOfContents)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
-
             CaptionData = CaptionClassifierData.Classify(Paragraph);
         }
     }

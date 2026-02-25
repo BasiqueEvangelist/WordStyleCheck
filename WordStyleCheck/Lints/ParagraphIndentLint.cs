@@ -22,6 +22,9 @@ public class ParagraphIndentLint : ILint
             // TODO: enforce this for captions, heading, table content.
             if (tool.Class != ParagraphClass.BodyText) continue; 
             
+            // Appendices can have weird formatting.
+            if (tool.OfStructuralElement == StructuralElement.Appendix) continue;
+            
             if (tool.FirstLineIndent != 709 || tool.LeftIndent is not null and not 0)
             {
                 ctx.AddMessage(new LintMessage(

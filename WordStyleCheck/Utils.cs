@@ -118,4 +118,6 @@ public class Utils
         
         return text[..10] + "…" + text[^10..];
     }
+
+    public static double TwipsToCm(double twips) => Math.Round(twips / 566.9291, 2);
 }

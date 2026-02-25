@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Context;
 
@@ -19,14 +20,19 @@ public class PageSizeLint : ILint
             if (section.Orientation == PageOrientationValues.Landscape)
                 size = new Size(size.Height, size.Width);
 
-            if (size != new Size(11906, 16838))
+            Size target = new(11906, 16838);
+
+            if (size != target)
             {
                 ctx.AddMessage(new LintMessage("IncorrectPageSize", new SectionDiagnosticContext(section))
                 {
                     Parameters = new()
                     {
-                        ["Expected"] = "11906x16838",
-                        ["Actual"] = $"{size.Width}x{size.Height}"
+                        ["ExpectedWidthCm"] = Utils.TwipsToCm(target.Width).ToString(CultureInfo.CurrentCulture),
+                        ["ExpectedHeightCm"] = Utils.TwipsToCm(target.Height).ToString(CultureInfo.CurrentCulture),
+                        
+                        ["ActualWidthCm"] = Utils.TwipsToCm(size.Width).ToString(CultureInfo.CurrentCulture),
+                        ["ActualHeightCm"] = Utils.TwipsToCm(size.Height).ToString(CultureInfo.CurrentCulture),
                     },
                     AutoFix = () =>
                     {

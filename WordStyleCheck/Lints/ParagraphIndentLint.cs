@@ -1,3 +1,4 @@
+using System.Globalization;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
@@ -29,8 +30,10 @@ public class ParagraphIndentLint : ILint
                     {
                         Parameters = new()
                         {
-                            ["Expected"] = "709 0",
-                            ["Actual"] = $"{tool.FirstLineIndent} {tool.LeftIndent}"
+                            ["ExpectedFirstLine"] = Utils.TwipsToCm(709).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedLeft"] = "0",
+                            ["ActualFirstLine"] = Utils.TwipsToCm(tool.FirstLineIndent ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ActualLeft"] = Utils.TwipsToCm(tool.LeftIndent ?? 0).ToString(CultureInfo.CurrentCulture),
                         },
                         AutoFix = () =>
                         {

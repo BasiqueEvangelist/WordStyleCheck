@@ -1,3 +1,4 @@
+using System.Globalization;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
@@ -28,8 +29,13 @@ public class ParagraphSpacingLint : ILint
                     {
                         Parameters = new()
                         {
-                            ["Expected"] = "120, 360 and 120",
-                            ["Actual"] = $"{tool.BeforeSpacing}, {tool.LineSpacing} and {tool.AfterSpacing}"
+                            ["ExpectedBeforeCm"] = Utils.TwipsToCm(120).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedLineCm"] = Utils.TwipsToCm(360).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedAfterCm"] = Utils.TwipsToCm(120).ToString(CultureInfo.CurrentCulture),
+                            
+                            ["ActualBeforeCm"] = Utils.TwipsToCm(tool.BeforeSpacing ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ActualLineCm"] = Utils.TwipsToCm(tool.LineSpacing ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ActualAfterCm"] = Utils.TwipsToCm(tool.AfterSpacing ?? 0).ToString(CultureInfo.CurrentCulture),
                         },
                         AutoFix = () =>
                         {

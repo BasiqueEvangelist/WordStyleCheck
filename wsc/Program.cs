@@ -23,13 +23,13 @@ Option<bool> perfTimings = new("--performance-timings", "-p")
 
 root.Options.Add(perfTimings);
 
-Option<bool> generateComments = new("--comments", "-c")
+Option<bool> autofixOpt = new("--fix", "-f")
 {
-    Description = "Write comments instead of autofixing",
+    Description = "Automatically fix issues instead of writing comments",
     DefaultValueFactory = _ => false
 };
 
-root.Options.Add(generateComments);
+root.Options.Add(autofixOpt);
 
 Argument<FileInfo> inputFile = new("input")
 {
@@ -43,7 +43,7 @@ root.SetAction(res =>
     if (res.GetValue(perfTimings))
         LoudStopwatch.Enabled = true;
 
-    bool comments = res.GetValue(generateComments);
+    bool autofix = res.GetValue(autofixOpt);
     
     FileInfo input = res.GetValue(inputFile)!;
     
@@ -73,7 +73,7 @@ root.SetAction(res =>
         {
             Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
 
-            if (message.AutoFix != null && !comments)
+            if (message.AutoFix != null && autofix)
             {
                 Console.Write(" (autofixed)");
                 totalAutofixed += 1;
@@ -83,13 +83,13 @@ root.SetAction(res =>
         
             message.Context.WriteToConsole();
 
-            if (comments)
+            if (!autofix)
             {
                 analysisCtx.WriteComment(message, translations);
             }
         }
 
-        if (comments && ctx.Messages.Count > 0)
+        if (!autofix && ctx.Messages.Count > 0)
         {
             changed = true;
         }
@@ -122,7 +122,7 @@ root.SetAction(res =>
 
     if (changed)
     {
-        string suffix = comments ? "ANNOTATED" : "FIXED";
+        string suffix = autofix ? "FIXED" : "ANNOTATED";
         string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";
         File.Move(temp, target,true);
         Console.WriteLine("Changes have been saved to " + target);

@@ -18,7 +18,16 @@ namespace WordStyleCheck
         {
             if (!_translations.TryGetValue(key, out var source))
             {
-                return [new Paragraph(new Run(new Text(key)))];
+                string dumped = key;
+
+                if (parameters.Count > 0)
+                {
+                    dumped += " {";
+                    dumped += string.Join(", ", parameters.Select(x => $"{x.Key} = '{x.Value}'"));
+                    dumped += "}";
+                }
+                
+                return [new Paragraph(new Run(new Text(dumped)))];
             }
 
             var clonedList = source.Select(x => x.CloneNode(true)).ToList();

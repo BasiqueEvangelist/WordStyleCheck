@@ -19,9 +19,13 @@ public class CorrectStructuralElementHeaderLint : ILint
 
             if (text != proper)
             {
-                ctx.AddMessage(new LintMessage("Structural element must be named correctly", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintMessage("StructuralElementHeaderContentsIncorrect", new ParagraphDiagnosticContext(p))
                 {
-                    Values = new(proper, text),
+                    Parameters = new()
+                    {
+                        ["Expected"] = proper,
+                        ["Actual"] = text
+                    },
                     // TODO: re-add autofix once it actually works properly
                     // AutoFix = () =>
                     // {

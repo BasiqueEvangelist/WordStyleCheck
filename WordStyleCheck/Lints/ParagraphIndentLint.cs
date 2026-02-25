@@ -24,10 +24,14 @@ public class ParagraphIndentLint : ILint
             if (tool.FirstLineIndent != 709 || tool.LeftIndent is not null and not 0)
             {
                 ctx.AddMessage(new LintMessage(
-                    "Paragraph didn't have set indent",
+                    "IncorrectParagraphIndent",
                     new ParagraphDiagnosticContext(p))
                     {
-                        Values = new($"709 0" , $"{tool.FirstLineIndent} {tool.LeftIndent}"),
+                        Parameters = new()
+                        {
+                            ["Expected"] = "709 0",
+                            ["Actual"] = $"{tool.FirstLineIndent} {tool.LeftIndent}"
+                        },
                         AutoFix = () =>
                         {
                             if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();

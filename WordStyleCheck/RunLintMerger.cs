@@ -16,8 +16,9 @@ public static class RunLintMerger
                 continue;
             }
 
-            if (messages[i - 1].Message != messages[i].Message) continue;
-            if (messages[i - 1].Values != messages[i].Values) continue;
+            if (messages[i - 1].Id != messages[i].Id) continue;
+            // TODO: check for equal parameters, actually
+            //if (messages[i - 1].Parameters != messages[i].Parameters) continue;
             
             if (prev.Runs[^1].NextSibling() != next.Runs[0]) continue;
 
@@ -27,12 +28,12 @@ public static class RunLintMerger
             var curAutofix = messages[i].AutoFix;
             
             messages[i - 1] = new LintMessage(
-                messages[i].Message,
+                messages[i].Id,
                 newContext,
+                messages[i].Parameters,
                 prevAutofix != null || curAutofix != null 
                     ? () => { prevAutofix?.Invoke(); curAutofix?.Invoke(); }
-                    : null,
-                messages[i].Values
+                    : null
             );
             messages.RemoveAt(i);
             i -= 1;

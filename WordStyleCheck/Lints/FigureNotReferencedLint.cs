@@ -40,7 +40,7 @@ public class FigureNotReferencedLint : ILint
             
             if (wasReferenced) continue;
             
-            ctx.AddMessage(new LintMessage("Figure was never referenced in text", new ParagraphDiagnosticContext(p)));
+            ctx.AddMessage(new LintMessage("FigureNotReferenced", new ParagraphDiagnosticContext(p)));
         }
     }
 }

@@ -43,7 +43,7 @@ public class NeedlessParagraphLint : ILint
             var p = paragraphs[i];
             var prev = paragraphs[i - 1];
             
-            ctx.AddMessage(new LintMessage("Needless paragraph break", new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
+            ctx.AddMessage(new LintMessage("NeedlessParagraphBreak", new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
             {
                 AutoFix = () =>
                 {

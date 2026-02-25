@@ -16,8 +16,9 @@ public static class ParagraphLintMerger
                 continue;
             }
 
-            if (messages[i - 1].Message != messages[i].Message) continue;
-            if (messages[i - 1].Values != messages[i].Values) continue;
+            if (messages[i - 1].Id != messages[i].Id) continue;
+            // TODO: check for equal parameters, actually
+            //if (messages[i - 1].Parameters != messages[i].Parameters) continue;
             
             if (prev.Paragraphs[^1].NextSibling() != next.Paragraphs[0]) continue;
 
@@ -25,15 +26,15 @@ public static class ParagraphLintMerger
 
             var prevAutofix = messages[i - 1].AutoFix;
             var curAutofix = messages[i].AutoFix;
-            
+
             messages[i - 1] = new LintMessage(
-                messages[i].Message,
-                newContext,
-                prevAutofix != null || curAutofix != null 
-                    ? () => { prevAutofix?.Invoke(); curAutofix?.Invoke(); }
-                    : null,
-                messages[i].Values
-            );
+                    messages[i].Id,
+                    newContext,
+                    messages[i].Parameters,
+                    prevAutofix != null || curAutofix != null
+                        ? () => { prevAutofix?.Invoke(); curAutofix?.Invoke(); }
+                        : null
+                );
             messages.RemoveAt(i);
             i -= 1;
         }

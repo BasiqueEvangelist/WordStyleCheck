@@ -151,7 +151,8 @@ public class DocumentAnalysisContext
 
         commentsPart.Comments ??= new Comments();
 
-        Comment c = new Comment(new Paragraph(new Run(new Text(msg.Message))))
+        // TODO: extract from .docx of lint messages
+        Comment c = new Comment(new Paragraph(new Run(new Text(msg.Id))))
         {
             Id = id,
             Author = "WordStyleCheck",

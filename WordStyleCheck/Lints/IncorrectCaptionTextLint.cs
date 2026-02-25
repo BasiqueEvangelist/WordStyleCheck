@@ -18,9 +18,13 @@ public class IncorrectCaptionTextLint : ILint
 
             if (text != correct)
             {
-                ctx.AddMessage(new LintMessage("Incorrect caption text", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintMessage("IncorrectCaptionText", new ParagraphDiagnosticContext(p))
                 {
-                    Values = new(correct, text),
+                    Parameters = new()
+                    {
+                        ["Expected"] = correct,
+                        ["Actual"] = text
+                    },
                     // TODO: figure out how to replace paragraph text properly.
                     AutoFix = () =>
                     {

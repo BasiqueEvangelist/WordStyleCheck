@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, string message) : ILint
+public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -30,9 +30,13 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
 
                 if (tool.FontSize < fontSize)
                 {
-                    ctx.AddMessage(new LintMessage(message, new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
                     {
-                        Values = new(fontSize.ToString(), tool.FontSize.ToString()),
+                        Parameters = new()
+                        {
+                            ["Expected"] = fontSize.ToString(),
+                            ["Actual"] = tool.FontSize?.ToString() ?? "<?>"
+                        },
                         AutoFix = () =>
                         {
                             if (r.RunProperties == null) r.RunProperties = new RunProperties();

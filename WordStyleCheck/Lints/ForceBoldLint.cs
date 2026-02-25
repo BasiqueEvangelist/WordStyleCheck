@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predicate, string message) : ILint
+public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predicate, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -30,7 +30,7 @@ public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predica
 
                 if (tool.Bold != bold)
                 {
-                    ctx.AddMessage(new LintMessage(message, new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
                     {
                         AutoFix = () =>
                         {

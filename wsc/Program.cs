@@ -69,12 +69,7 @@ root.SetAction(res =>
             
         foreach (var message in ctx.Messages)
         {
-            Console.Write(message.Message);
-        
-            if (message.Values != null)
-            {
-                Console.Write($" (expected {message.Values?.Expected}, found {message.Values?.Actual})");
-            }
+            Console.Write(message.Id);
 
             if (message.AutoFix != null && !comments)
             {

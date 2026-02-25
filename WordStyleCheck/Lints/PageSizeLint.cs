@@ -21,9 +21,13 @@ public class PageSizeLint : ILint
 
             if (size != new Size(11906, 16838))
             {
-                ctx.AddMessage(new LintMessage("Page size must be A4", new SectionDiagnosticContext(section))
+                ctx.AddMessage(new LintMessage("IncorrectPageSize", new SectionDiagnosticContext(section))
                 {
-                    Values = new("11906x16838", $"{size.Width}x{size.Height}"),
+                    Parameters = new()
+                    {
+                        ["Expected"] = "11906x16838",
+                        ["Actual"] = $"{size.Width}x{size.Height}"
+                    },
                     AutoFix = () =>
                     {
                         // TODO: add generate-revisions support.

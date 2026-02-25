@@ -3,7 +3,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelow, string message) : ILint
+public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelow, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -15,7 +15,7 @@ public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelo
             
             if (tool.CaptionData.Value.IsBelow == shouldBeBelow) continue;
             
-            ctx.AddMessage(new LintMessage(message, new ParagraphDiagnosticContext(p))
+            ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(p))
             {
                 AutoFix = () =>
                 {

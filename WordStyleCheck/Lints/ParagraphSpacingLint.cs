@@ -23,10 +23,14 @@ public class ParagraphSpacingLint : ILint
             if (tool.BeforeSpacing != 120 || tool.LineSpacing != 360 || tool.AfterSpacing != 120)
             {
                 ctx.AddMessage(new LintMessage(
-                    "Paragraph doesn't have set spacing",
+                    "IncorrectParagraphSpacing",
                     new ParagraphDiagnosticContext(p))
                     {
-                        Values = new("120, 360 and 120", $"{tool.BeforeSpacing}, {tool.LineSpacing} and {tool.AfterSpacing}"),
+                        Parameters = new()
+                        {
+                            ["Expected"] = "120, 360 and 120",
+                            ["Actual"] = $"{tool.BeforeSpacing}, {tool.LineSpacing} and {tool.AfterSpacing}"
+                        },
                         AutoFix = () =>
                         {
                             if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();

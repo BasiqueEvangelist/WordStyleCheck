@@ -3,10 +3,10 @@ using WordStyleCheck.Context;
 namespace WordStyleCheck;
 
 public record LintMessage(
-    string Message,
+    string Id,
     IDiagnosticContext Context,
-    Action? AutoFix = null,
-    LintMessage.ExpectedActual? Values = null
+    Dictionary<string, string>? Parameters = null,
+    Action? AutoFix = null
 )
 {
     public record struct ExpectedActual(string Expected, string? Actual);

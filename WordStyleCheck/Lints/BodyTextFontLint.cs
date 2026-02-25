@@ -30,9 +30,12 @@ public class BodyTextFontLint : ILint
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintMessage("Run doesn't have needed font", new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintMessage("BodyTextFontIncorrect", new RunDiagnosticContext(r))
                     {
-                        Values = new("Times New Roman", tool.AsciiFont),
+                        Parameters = new() {
+                            ["Expected"] = "Times New Roman",
+                            ["Actual"] = tool.AsciiFont ?? "<?>"
+                        },
                         AutoFix = () =>
                         {
                             if (r.RunProperties == null) r.RunProperties = new RunProperties();

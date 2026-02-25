@@ -23,9 +23,14 @@ public class PageMarginsLint : ILint
             
             if (!margins.CloseTo(target))
             {
-                ctx.AddMessage(new LintMessage("Incorrect page margins", new SectionDiagnosticContext(section))
+                ctx.AddMessage(new LintMessage("IncorrectPageMargins", new SectionDiagnosticContext(section))
                 {
-                    Values = new(target.ToString(), margins.ToString()),
+                    Parameters = new()
+                    {
+                        // TODO!!!: improve this.
+                        ["Expected"] = target.ToString(),
+                        ["Actual"] = margins.ToString()
+                    },
                     AutoFix = () =>
                     {
                         // TODO: add generate-revisions support.

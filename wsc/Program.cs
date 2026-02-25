@@ -57,6 +57,8 @@ root.SetAction(res =>
     bool changed = false;
     int totalAutofixed = 0;
 
+    var translations = DiagnosticTranslationsFile.LoadFromDocx("./rules.docx");
+
     using (var doc = WordprocessingDocument.Open(temp, true))
     {
         _ = doc.MainDocumentPart!.Document!;
@@ -83,7 +85,7 @@ root.SetAction(res =>
 
             if (comments)
             {
-                analysisCtx.WriteComment(message);
+                analysisCtx.WriteComment(message, translations);
             }
         }
 

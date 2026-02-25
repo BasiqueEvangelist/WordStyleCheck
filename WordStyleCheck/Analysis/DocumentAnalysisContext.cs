@@ -140,7 +140,7 @@ public class DocumentAnalysisContext
 
     private int commentId = 0;
     
-    public void WriteComment(LintMessage msg)
+    public void WriteComment(LintMessage msg, DiagnosticTranslationsFile translations)
     {
         string id = (commentId++).ToString();
         
@@ -152,13 +152,29 @@ public class DocumentAnalysisContext
         commentsPart.Comments ??= new Comments();
 
         // TODO: extract from .docx of lint messages
-        Comment c = new Comment(new Paragraph(new Run(new Text(msg.Id))))
+        Comment c = new Comment()
         {
             Id = id,
             Author = "WordStyleCheck",
             Initials = "WSC",
             Date = DateTime.Now
         };
+
+        if (translations.Translations.TryGetValue(msg.Id, out var translation))
+        {
+            if (msg.Parameters != null)
+            {
+                foreach (var entry in msg.Parameters.OrderByDescending(x => x.Key))
+                {
+                    translation = translation.Replace("$" + entry.Key, entry.Value);
+                }
+            }
+
+            c.InnerXml = translation;
+        } else
+        {
+            c.Append(new Paragraph(new Run(new Text(msg.Id))));
+        }
 
         commentsPart.Comments.AppendChild(c);
         commentsPart.Comments.Save();

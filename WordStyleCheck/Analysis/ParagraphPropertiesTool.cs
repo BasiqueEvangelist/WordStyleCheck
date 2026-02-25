@@ -36,6 +36,18 @@ public record ParagraphPropertiesTool
         
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(styleId, "Heading");
 
+        string? runFont = Paragraph.ParagraphProperties?.ParagraphMarkRunProperties?.GetFirstChild<RunFonts>()?.Ascii?.Value;
+        if (runFont == null && styleId != null)
+        {
+            runFont = _ctx.FollowStyleChain(styleId, x => x.StyleRunProperties?.RunFonts)?.Ascii;
+        }
+
+        if (runFont != null)
+        {
+            if (runFont.Contains("Code") || runFont == "Consolas" || runFont.Contains("Mono"))
+                ProbablyCodeListing = true;
+        }
+
         if (!IsTableOfContents)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
@@ -92,6 +104,8 @@ public record ParagraphPropertiesTool
     
     public bool ProbablyHeading { get; }
 
+    public bool ProbablyCodeListing { get; }
+
     public StructuralElement? StructuralElementHeader { get; }
     
     public StructuralElement? OfStructuralElement { get; internal set; }
@@ -107,6 +121,7 @@ public record ParagraphPropertiesTool
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (CaptionData != null) return ParagraphClass.Caption;
             if (ProbablyHeading) return ParagraphClass.Heading;
+            if (ProbablyCodeListing) return ParagraphClass.CodeListing;
 
             return ParagraphClass.BodyText;
         }
@@ -148,4 +163,5 @@ public enum ParagraphClass
     TableContent,
     Caption,
     TableOfContents,
+    CodeListing,
 }

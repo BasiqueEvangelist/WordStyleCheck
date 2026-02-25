@@ -15,6 +15,10 @@ public class TextFontLint : ILint
                 continue;
             }
 
+            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
+            
+            if (pTool.Class == ParagraphClass.CodeListing) continue;
+
             foreach (var r in p.Descendants<Run>())
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;

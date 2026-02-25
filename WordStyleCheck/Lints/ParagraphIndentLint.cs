@@ -6,7 +6,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class ParagraphIndentLint : ILint
+public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, int firstLine, int left, string firstLineId, string leftId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -19,24 +19,18 @@ public class ParagraphIndentLint : ILint
 
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
-            // TODO: enforce this for captions, heading, table content.
-            if (tool.Class != ParagraphClass.BodyText) continue; 
+            if (!predicate(tool)) continue; 
             
-            // Appendices can have weird formatting.
-            if (tool.OfStructuralElement == StructuralElement.Appendix) continue;
-            
-            if (tool.FirstLineIndent != 709 || tool.LeftIndent is not null and not 0)
+            if (tool.FirstLineIndent != firstLine)
             {
                 ctx.AddMessage(new LintMessage(
-                    "IncorrectParagraphIndent",
+                    firstLineId,
                     new ParagraphDiagnosticContext(p))
                     {
                         Parameters = new()
                         {
-                            ["ExpectedFirstLine"] = Utils.TwipsToCm(709).ToString(CultureInfo.CurrentCulture),
-                            ["ExpectedLeft"] = "0",
-                            ["ActualFirstLine"] = Utils.TwipsToCm(tool.FirstLineIndent ?? 0).ToString(CultureInfo.CurrentCulture),
-                            ["ActualLeft"] = Utils.TwipsToCm(tool.LeftIndent ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedCm"] = Utils.TwipsToCm(firstLine).ToString(CultureInfo.CurrentCulture),
+                            ["ActualCm"] = Utils.TwipsToCm(tool.FirstLineIndent ?? 0).ToString(CultureInfo.CurrentCulture),
                         },
                         AutoFix = () =>
                         {
@@ -47,8 +41,48 @@ public class ParagraphIndentLint : ILint
                             if (p.ParagraphProperties.Indentation == null)
                                 p.ParagraphProperties.Indentation = new Indentation();
 
-                            p.ParagraphProperties.Indentation.Left = "0";
-                            p.ParagraphProperties.Indentation.FirstLine = "709";
+                            if (firstLine > 0)
+                            {
+                                p.ParagraphProperties.Indentation.FirstLine = firstLine.ToString();
+                                p.ParagraphProperties.Indentation.Hanging = null;
+                            } 
+                            else if (firstLine < 0)
+                            {
+                                p.ParagraphProperties.Indentation.Hanging = (-firstLine).ToString();
+                                p.ParagraphProperties.Indentation.FirstLine = null;
+                            }
+                            else
+                            {
+                                p.ParagraphProperties.Indentation.Hanging = null;
+                                p.ParagraphProperties.Indentation.FirstLine = null;
+                            }
+                            
+                        }
+                    }
+                );
+            }
+            
+            if (!(tool.LeftIndent == left || (left == 0 && tool.LeftIndent == null)))
+            {
+                ctx.AddMessage(new LintMessage(
+                        leftId,
+                        new ParagraphDiagnosticContext(p))
+                    {
+                        Parameters = new()
+                        {
+                            ["ExpectedCm"] = Utils.TwipsToCm(left).ToString(CultureInfo.CurrentCulture),
+                            ["ActualCm"] = Utils.TwipsToCm(tool.LeftIndent ?? 0).ToString(CultureInfo.CurrentCulture),
+                        },
+                        AutoFix = () =>
+                        {
+                            if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
+                
+                            if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                            if (p.ParagraphProperties.Indentation == null)
+                                p.ParagraphProperties.Indentation = new Indentation();
+
+                            p.ParagraphProperties.Indentation.Left = left.ToString();
                         }
                     }
                 );

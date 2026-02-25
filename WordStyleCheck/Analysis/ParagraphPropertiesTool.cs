@@ -55,13 +55,26 @@ public record ParagraphPropertiesTool
         }
     }
     
-    public int? FirstLineIndent =>
-        Utils.ParseTwipsMeasure(FollowPropertyChain(
-            x => x.Indentation?.FirstLine,
-            x => x.Indentation?.FirstLine,
-            x => x.Indentation?.FirstLine
-        )?.Value);
-    
+    public int? FirstLineIndent
+    {
+        get
+        {
+            int? positive = Utils.ParseTwipsMeasure(FollowPropertyChain(
+                x => x.Indentation?.FirstLine,
+                x => x.Indentation?.FirstLine,
+                x => x.Indentation?.FirstLine
+            )?.Value);
+            
+            int? negative = Utils.ParseTwipsMeasure(FollowPropertyChain(
+                x => x.Indentation?.Hanging,
+                x => x.Indentation?.Hanging,
+                x => x.Indentation?.Hanging
+            )?.Value);
+
+            return positive ?? -negative;
+        }
+    }
+
     public int? LeftIndent =>
         Utils.ParseTwipsMeasure(FollowPropertyChain(
             x => x.Indentation?.Left,

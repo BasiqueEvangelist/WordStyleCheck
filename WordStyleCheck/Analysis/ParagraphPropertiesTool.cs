@@ -124,6 +124,10 @@ public record ParagraphPropertiesTool
     public bool ProbablyHeading { get; }
 
     public bool ProbablyCodeListing { get; }
+    
+    public bool HandmadeList { get; internal set; }
+
+    public bool IsListEntry => Paragraph.ParagraphProperties?.NumberingProperties?.NumberingId != null || HandmadeList;
 
     public StructuralElement? StructuralElementHeader { get; }
     

@@ -29,6 +29,8 @@ public class NeedlessParagraphLint : ILint
             if (prevTool.Class != ParagraphClass.BodyText
              || curTool.Class != ParagraphClass.BodyText)
                 continue;
+            
+            if (prevTool.IsListEntry || curTool.IsListEntry) continue;
 
             var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();
             

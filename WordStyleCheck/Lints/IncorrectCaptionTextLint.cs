@@ -25,7 +25,6 @@ public class IncorrectCaptionTextLint : ILint
                         ["Expected"] = correct,
                         ["Actual"] = text
                     },
-                    // TODO: figure out how to replace paragraph text properly.
                     AutoFix = () =>
                     {
                         foreach (var child in p.ChildElements.ToList())

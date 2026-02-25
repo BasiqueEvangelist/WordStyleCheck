@@ -27,20 +27,19 @@ public class CorrectStructuralElementHeaderLint : ILint
                         ["Expected"] = proper,
                         ["Actual"] = text
                     },
-                    // TODO: re-add autofix once it actually works properly
-                    // AutoFix = () =>
-                    // {
-                    //     // TODO: add proper support for generate-revisions.
-                    //
-                    //     foreach (var child in p.ChildElements)
-                    //     {
-                    //         if (child is ParagraphProperties) continue;
-                    //         
-                    //         child.Remove();
-                    //     }
-                    //
-                    //     p.Append(new Run(new Text(proper)));
-                    // }
+                    AutoFix = () =>
+                    {
+                        // TODO: add proper support for generate-revisions.
+                    
+                        foreach (var child in p.ChildElements.ToList())
+                        {
+                            if (child is ParagraphProperties) continue;
+                            
+                            child.Remove();
+                        }
+                    
+                        p.Append(new Run(new Text(proper)));
+                    }
                 });
             }
         }

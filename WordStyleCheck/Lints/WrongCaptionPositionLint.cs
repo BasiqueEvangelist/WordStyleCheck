@@ -17,7 +17,7 @@ public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelo
             
             ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(p))
             {
-                AutoFix = () =>
+                AutoFix = tool.CaptionData.Value.TargetedElement != null ? () =>
                 {
                     p.Remove();
 
@@ -29,7 +29,7 @@ public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelo
                     {
                         tool.CaptionData.Value.TargetedElement.InsertBeforeSelf(p);
                     }
-                }
+                } : null
             });
         }
     }

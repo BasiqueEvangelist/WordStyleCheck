@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WordStyleCheck</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/missing.css@1.2.0">
+    <style>
+        :root {
+            cursor: inherit;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1 class="allcaps">WordStyleCheck</h1>
+</header>
+
+<main>
+    @RenderBody()
+</main>
+
+<footer>
+    Система автоматического нормоконтроля <a href="https://github.com/BasiqueEvangelist/WordStyleCheck">WordStyleCheck</a>.
+    © 2026 Николай Кочулин
+</footer>
+
+<script src="https://unpkg.com/htmx.org@2.0.2"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

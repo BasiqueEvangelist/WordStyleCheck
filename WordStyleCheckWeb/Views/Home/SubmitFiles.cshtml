@@ -1,0 +1,16 @@
+@model TaskListModel
+
+@{
+    Layout = null;
+}
+
+@foreach(var task in Model.Tasks)
+{
+    <div class="box">
+        <p>@task.Name</p>
+        
+        <div hx-get="/task/@task.Id" hx-trigger="load delay:1s" hx-swap="outerHTML">
+            Loading...
+        </div>
+    </div>
+}

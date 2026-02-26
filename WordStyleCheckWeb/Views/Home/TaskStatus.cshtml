@@ -1,0 +1,21 @@
+@model WordStyleCheckWeb.DocumentProcessingService.DocumentTask
+
+@{
+    Layout = null;
+}
+
+@if (Model.Finished.IsCompleted)
+{
+    <span>@Model.StyleErrorCount style errors</span>
+    
+    @if (Model.StyleErrorCount > 0)
+    {
+        <a href="/task/@Model.Id/download">Download annotated file</a>
+    }
+}
+else
+{
+    <div hx-get="/task/@Model.Id" hx-trigger="load delay:1s" hx-swap="outerHTML">
+        Loading...
+    </div>
+}

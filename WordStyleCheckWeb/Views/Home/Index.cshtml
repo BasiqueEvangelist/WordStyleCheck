@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<form hx-post="/submit-files" hx-encoding="multipart/form-data">
+    <label for="inputFileInput">Входные файлы: </label>
+    <input type="file" multiple name="inputFile" id="inputFileInput"/>
+    
+    <input type="submit"/>
+</form>

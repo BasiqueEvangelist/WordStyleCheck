@@ -61,7 +61,7 @@ root.SetAction(res =>
     String temp = Path.GetTempFileName();
     File.Copy(input.FullName, temp, true);
 
-    var translations = DiagnosticTranslationsFile.LoadFromDocx("./rules.docx");
+    var translations = DiagnosticTranslationsFile.LoadEmbedded();
 
     string suffix = autofix ? "FIXED" : "ANNOTATED";
     string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";

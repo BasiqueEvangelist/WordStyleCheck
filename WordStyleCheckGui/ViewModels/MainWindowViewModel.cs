@@ -9,8 +9,9 @@ namespace WordStyleCheckGui.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public static readonly FilePickerFileType DocxFileType = new("Microsoft Word files") {
+    public static readonly FilePickerFileType DocxFileType = new("Файлы Microsoft Word") {
         Patterns = ["*.docx"],
+        MimeTypes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
         // TODO: mime types
     };
 

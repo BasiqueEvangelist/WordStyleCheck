@@ -45,7 +45,7 @@ public partial class DocumentViewModel : ViewModelBase
 
     public string FileName => _fileName;
 
-    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} style errors ({_linter.Diagnostics.Where(x => x.AutoFix != null).Count()} can be autofixed)";
+    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок ({_linter.Diagnostics.Count(x => x.AutoFix != null)} автоисправляемых)";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(InProgress))]
@@ -72,8 +72,7 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        // TODO: make this not an absolute path.
-        var translations = DiagnosticTranslationsFile.LoadFromDocx("C:\\Users\\Nikolay\\source\\repos\\BasiqueEvangelist\\WordStyleCheck\\rules.docx");
+        var translations = DiagnosticTranslationsFile.LoadEmbedded();
 
         foreach (var message in _linter!.Diagnostics)
         {
@@ -103,7 +102,7 @@ public partial class DocumentViewModel : ViewModelBase
         if (file == null) return;
 
         // TODO: make this not an absolute path.
-        var translations = DiagnosticTranslationsFile.LoadFromDocx("C:\\Users\\Nikolay\\source\\repos\\BasiqueEvangelist\\WordStyleCheck\\rules.docx");
+        var translations = DiagnosticTranslationsFile.LoadEmbedded();
 
         _linter!.RunAutofixes();
 

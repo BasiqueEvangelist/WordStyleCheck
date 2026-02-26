@@ -14,35 +14,37 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <StackPanel>
-        <ItemsControl ItemsSource="{Binding Documents}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="vm:DocumentViewModel">
-					<Border Padding="5 5 5 5" BorderBrush="blue" BorderThickness="2" Margin="2 2 2 2">
-						<StackPanel>
-                            <TextBlock Text="{Binding FileName}"/>
+	<ScrollViewer>
+	    <StackPanel>
+	        <ItemsControl ItemsSource="{Binding Documents}">
+	            <ItemsControl.ItemTemplate>
+	                <DataTemplate DataType="vm:DocumentViewModel">
+						<Border Padding="5 5 5 5" BorderBrush="blue" BorderThickness="2" Margin="2 2 2 2">
+							<StackPanel>
+	                            <TextBlock Text="{Binding FileName}"/>
 
-							<StackPanel IsVisible="{Binding Done}">
-							    <TextBlock Text="{Binding TotalDiagnosticsText}"/>
-							    <StackPanel Orientation="Horizontal">
-								    <!-- <Button Margin="0 0 5 0">Save text report</Button> -->
-								    <Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Save annotated file</Button>
-								    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Save fixed file [EXPERIMENTAL]</Button>
-							    </StackPanel>
+								<StackPanel IsVisible="{Binding Done}">
+								    <TextBlock Text="{Binding TotalDiagnosticsText}"/>
+								    <StackPanel Orientation="Horizontal">
+									    <!-- <Button Margin="0 0 5 0">Save text report</Button> -->
+									    <Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Сохранить с пометками</Button>
+									    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Сохранить с исправлениями [ЭКСПЕРИМЕНТ]</Button>
+								    </StackPanel>
+								</StackPanel>
+
+								<TextBlock Text="Загрузка..." IsVisible="{Binding InProgress}"/>
 							</StackPanel>
-
-							<TextBlock Text="Loading..." IsVisible="{Binding InProgress}"/>
-						</StackPanel>
-					</Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-	    
-	    <Panel Margin="10 15" Name="DropZone">
-		    <Rectangle StrokeDashArray="5, 1" Stroke="Gray" StrokeThickness="2"/>
-		    <TextBlock Text="Drag and drop .docx files here" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" />
-	    </Panel>
-    </StackPanel>
+						</Border>
+	                </DataTemplate>
+	            </ItemsControl.ItemTemplate>
+	        </ItemsControl>
+		    
+		    <Panel Margin="10 15" Name="DropZone">
+			    <Rectangle StrokeDashArray="5, 1" Stroke="Gray" StrokeThickness="2"/>
+			    <TextBlock Text="Положите .docx документы сюда, или нажмите, чтобы выбрать файл" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" />
+		    </Panel>
+	    </StackPanel>
+	</ScrollViewer>
     
 
 </Window>

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Reflection;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -46,11 +47,17 @@ namespace WordStyleCheck
 
             return clonedList;
         }
+
+        public static DiagnosticTranslationsFile LoadEmbedded()
+        {
+            return LoadFromDocx(Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("WordStyleCheck.rules.docx")!);
+        }
         
-        public static DiagnosticTranslationsFile LoadFromDocx(string path)
+        public static DiagnosticTranslationsFile LoadFromDocx(Stream stream)
         {
             var translations = new Dictionary<string, List<OpenXmlElement>>();
-            using (var doc = WordprocessingDocument.Open(path, false))
+            using (var doc = WordprocessingDocument.Open(stream, false))
             {
                 string part = "";
                 List<OpenXmlElement> current = [];

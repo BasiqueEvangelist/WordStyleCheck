@@ -2,6 +2,10 @@
   * issues with lists
     + adjust lists to have proper properties
   * issues with tables
+  * ensure numbering of tables and figures is continuous
+  * appendix stuff? maybe
+  * footnotes?
+  * check header text
   * issues with ToC
   * page numbers
   * formulae????

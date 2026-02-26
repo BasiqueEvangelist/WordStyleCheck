@@ -2,7 +2,7 @@
   * issues with lists
     + adjust lists to have proper properties
   * issues with tables
-  * ensure numbering of tables and figures is continuous
+  * ensure numbering of tables is continuous
   * appendix stuff? maybe
   * footnotes?
   * check header text

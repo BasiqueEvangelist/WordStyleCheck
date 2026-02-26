@@ -22,6 +22,7 @@ public class LintManager
         new WrongCaptionPositionLint(CaptionType.Table, false, "IncorrectTableCaptionPosition"),
         new WrongCaptionPositionLint(CaptionType.Figure, true, "IncorrectFigureCaptionPosition"),
         new IncorrectCaptionTextLint(),
+        new IncorrectFigureNumberingLint(),
         new FigureNotReferencedLint(),
         new BibliographySourceNotReferencedLint(),
         new TextFontLint(),

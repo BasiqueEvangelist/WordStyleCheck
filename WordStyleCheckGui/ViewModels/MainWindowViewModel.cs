@@ -19,6 +19,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void AddDocument(IStorageItem file)
     {
-        
+        Documents.Add(new DocumentViewModel()
+        {
+            FileName = file.Name
+        });
     }
 }

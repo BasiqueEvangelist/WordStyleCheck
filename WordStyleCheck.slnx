@@ -1,4 +1,5 @@
 <Solution>
-  <Project Path="WordStyleCheck/WordStyleCheck.csproj" Type="C#" />
-  <Project Path="wsc/wsc.csproj" Type="C#" />
+  <Project Path="WordStyleCheck/WordStyleCheck.csproj" />
+  <Project Path="WordStyleCheckGui/WordStyleCheckGui.csproj" />
+  <Project Path="wsc/wsc.csproj" />
 </Solution>

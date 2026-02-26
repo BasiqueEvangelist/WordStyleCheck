@@ -23,12 +23,17 @@
 					<Border Padding="5 5 5 5" BorderBrush="blue" BorderThickness="2" Margin="2 2 2 2">
 						<StackPanel>
                             <TextBlock Text="{Binding FileName}"/>
-							<TextBlock Text="{Binding TotalDiagnosticsText}"/>
-							<StackPanel Orientation="Horizontal">
-								<Button Margin="0 0 5 0">Save text report</Button>
-								<Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Save annotated file</Button>
-								<Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Save fixed file [EXPERIMENTAL]"</Button>
+
+							<StackPanel IsVisible="{Binding Done}">
+							    <TextBlock Text="{Binding TotalDiagnosticsText}"/>
+							    <StackPanel Orientation="Horizontal">
+								    <Button Margin="0 0 5 0">Save text report</Button>
+								    <Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Save annotated file</Button>
+								    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Save fixed file [EXPERIMENTAL]</Button>
+							    </StackPanel>
 							</StackPanel>
+
+							<TextBlock Text="Loading..." IsVisible="{Binding InProgress}"/>
 						</StackPanel>
 					</Border>
                 </DataTemplate>

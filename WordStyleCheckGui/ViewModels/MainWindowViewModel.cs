@@ -9,6 +9,11 @@ namespace WordStyleCheckGui.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    public static readonly FilePickerFileType DocxFileType = new("Microsoft Word files") {
+        Patterns = ["*.docx"],
+        // TODO: mime types
+    };
+
     public ObservableCollection<DocumentViewModel> Documents { get; } = new();
 
     public bool ShowDndHint => Documents.Count == 0;
@@ -33,10 +38,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
-            FileTypeFilter = [new("Microsoft Word files") {
-                Patterns = ["*.docx"],
-                // TODO: mime types
-            }],
+            FileTypeFilter = [DocxFileType],
             AllowMultiple = true
         });
 

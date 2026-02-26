@@ -3,11 +3,13 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WordStyleCheck;
 
@@ -17,20 +19,41 @@ public partial class DocumentViewModel : ViewModelBase
 {
     private string _path;
     private string _fileName;
-    private DocumentLinter _linter;
+    private Thread _thread;
+    private DocumentLinter? _linter;
  
     public DocumentViewModel(string path)
     {
         _path = path;
         _fileName = Path.GetFileName(path);
-        _linter = new DocumentLinter(path);
 
-        _linter.RunLints();
+        _thread = new Thread(() =>
+        {
+            _linter = new DocumentLinter(path);
+            _linter.RunLints();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                Done = true;
+                CanSave = true;
+            });
+        })
+        {
+            Name = "Linter thread for " + _fileName
+        };
+        _thread.Start();
     }
 
     public string FileName => _fileName;
 
-    public string TotalDiagnosticsText => $"{_linter.Diagnostics.Count} style errors ({_linter.Diagnostics.Where(x => x.AutoFix != null).Count()} can be autofixed)";
+    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} style errors ({_linter.Diagnostics.Where(x => x.AutoFix != null).Count()} can be autofixed)";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(InProgress))]
+    [NotifyPropertyChangedFor(nameof(TotalDiagnosticsText))]
+    private bool _done = false;
+
+    public bool InProgress => !Done;
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAnnotated()
@@ -44,6 +67,7 @@ public partial class DocumentViewModel : ViewModelBase
         {
             SuggestedFileName = Path.GetFileName(target),
             SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Path.GetDirectoryName(_path)!),
+            FileTypeChoices = [MainWindowViewModel.DocxFileType],
             DefaultExtension = "docx"
         });
 
@@ -91,5 +115,5 @@ public partial class DocumentViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveAnnotatedCommand))]
     [NotifyCanExecuteChangedFor(nameof(SaveAutofixedCommand))]
-    private bool _canSave = true;
+    private bool _canSave = false;
 }

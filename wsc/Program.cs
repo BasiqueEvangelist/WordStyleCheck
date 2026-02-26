@@ -31,6 +31,14 @@ Option<bool> autofixOpt = new("--fix", "-f")
 
 root.Options.Add(autofixOpt);
 
+
+Option<string?> onlyOpt = new("--only")
+{
+    Description = "Only invoke these lints",
+};
+
+root.Options.Add(onlyOpt);
+
 Argument<FileInfo> inputFile = new("input")
 {
     Description = "File to lint for style issues",
@@ -66,6 +74,13 @@ root.SetAction(res =>
         DocumentAnalysisContext analysisCtx = new(doc);
         
         LintContext ctx = new LintContext(analysisCtx, res.GetValue(generateRevisions));
+
+        string? only = res.GetValue(onlyOpt);
+        if (only != null)
+        {
+            var set = only.Split(",").ToHashSet();
+            ctx.LintFilter = lint => set.Contains(lint.Id);
+        }
 
         new LintManager().Run(ctx);
             

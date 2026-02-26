@@ -3,7 +3,7 @@
         xmlns:vm="using:WordStyleCheckGui.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+        mc:Ignorable="d" Width="640" Height="480"
         x:Class="WordStyleCheckGui.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="WordStyleCheck">
@@ -14,9 +14,7 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <StackPanel Name="ContainerPanel">
-        <TextBlock Text="Drag and drop .docx files here" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding ShowDndHint}"/>
-        
+    <StackPanel>
         <ItemsControl ItemsSource="{Binding Documents}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="vm:DocumentViewModel">
@@ -27,7 +25,7 @@
 							<StackPanel IsVisible="{Binding Done}">
 							    <TextBlock Text="{Binding TotalDiagnosticsText}"/>
 							    <StackPanel Orientation="Horizontal">
-								    <Button Margin="0 0 5 0">Save text report</Button>
+								    <!-- <Button Margin="0 0 5 0">Save text report</Button> -->
 								    <Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Save annotated file</Button>
 								    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Save fixed file [EXPERIMENTAL]</Button>
 							    </StackPanel>
@@ -39,8 +37,11 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-		<Button Command="{Binding OpenDialogCommand}">Select file...</Button>
+	    
+	    <Panel Margin="10 15" Name="DropZone">
+		    <Rectangle StrokeDashArray="5, 1" Stroke="Gray" StrokeThickness="2"/>
+		    <TextBlock Text="Drag and drop .docx files here" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" />
+	    </Panel>
     </StackPanel>
     
 

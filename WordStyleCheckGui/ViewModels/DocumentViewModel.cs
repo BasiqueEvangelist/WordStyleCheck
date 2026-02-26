@@ -17,9 +17,8 @@ namespace WordStyleCheckGui.ViewModels;
 
 public partial class DocumentViewModel : ViewModelBase
 {
-    private string _path;
-    private string _fileName;
-    private Thread _thread;
+    private readonly string _path;
+    private readonly string _fileName;
     private DocumentLinter? _linter;
  
     public DocumentViewModel(string path)
@@ -27,7 +26,7 @@ public partial class DocumentViewModel : ViewModelBase
         _path = path;
         _fileName = Path.GetFileName(path);
 
-        _thread = new Thread(() =>
+        var thread = new Thread(() =>
         {
             _linter = new DocumentLinter(path);
             _linter.RunLints();
@@ -41,7 +40,7 @@ public partial class DocumentViewModel : ViewModelBase
         {
             Name = "Linter thread for " + _fileName
         };
-        _thread.Start();
+        thread.Start();
     }
 
     public string FileName => _fileName;
@@ -51,7 +50,7 @@ public partial class DocumentViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(InProgress))]
     [NotifyPropertyChangedFor(nameof(TotalDiagnosticsText))]
-    private bool _done = false;
+    private bool _done;
 
     public bool InProgress => !Done;
 
@@ -76,7 +75,7 @@ public partial class DocumentViewModel : ViewModelBase
         // TODO: make this not an absolute path.
         var translations = DiagnosticTranslationsFile.LoadFromDocx("C:\\Users\\Nikolay\\source\\repos\\BasiqueEvangelist\\WordStyleCheck\\rules.docx");
 
-        foreach (var message in _linter.Diagnostics)
+        foreach (var message in _linter!.Diagnostics)
         {
             _linter.DocumentAnalysis.WriteComment(message, translations);
         }
@@ -106,7 +105,7 @@ public partial class DocumentViewModel : ViewModelBase
         // TODO: make this not an absolute path.
         var translations = DiagnosticTranslationsFile.LoadFromDocx("C:\\Users\\Nikolay\\source\\repos\\BasiqueEvangelist\\WordStyleCheck\\rules.docx");
 
-        _linter.RunAutofixes();
+        _linter!.RunAutofixes();
 
         _linter.SaveTo(file.TryGetLocalPath()!);
         CanSave = false;

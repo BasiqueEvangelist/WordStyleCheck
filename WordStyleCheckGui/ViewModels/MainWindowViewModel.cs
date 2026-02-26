@@ -16,23 +16,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ObservableCollection<DocumentViewModel> Documents { get; } = new();
 
-    public bool ShowDndHint => Documents.Count == 0;
-
-    public MainWindowViewModel()
-    {
-        Documents.CollectionChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(ShowDndHint));
-        };
-    }
-
     public void AddDocument(IStorageItem file)
     {
         Documents.Add(new DocumentViewModel(file.TryGetLocalPath()!));
     }
 
-    [RelayCommand]
-    private async Task OpenDialog()
+    public async void OpenDialog()
     {
         var storageProvider = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).MainWindow!.StorageProvider;
 

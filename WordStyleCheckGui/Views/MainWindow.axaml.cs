@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Remote.Protocol.Input;
 using WordStyleCheckGui.ViewModels;
+using MouseButton = Avalonia.Input.MouseButton;
 
 namespace WordStyleCheckGui.Views;
 
@@ -12,8 +13,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         
-        DragDrop.SetAllowDrop(ContainerPanel, true);
-        ContainerPanel.AddHandler(DragDrop.DragOverEvent, (_, args) =>
+        DragDrop.SetAllowDrop(DropZone, true);
+        DropZone.AddHandler(DragDrop.DragOverEvent, (_, args) =>
         {
             Console.WriteLine(args.DataTransfer);
             
@@ -22,7 +23,7 @@ public partial class MainWindow : Window
             if (!args.DataTransfer.Contains(DataFormat.File))
                 args.DragEffects = DragDropEffects.None;
         });
-        ContainerPanel.AddHandler(DragDrop.DropEvent, (_, args) =>
+        DropZone.AddHandler(DragDrop.DropEvent, (_, args) =>
         {
             if (DataContext == null) return;
 
@@ -35,6 +36,14 @@ public partial class MainWindow : Window
                     ((MainWindowViewModel)DataContext).AddDocument(file);
                 }
             }
+        });
+        DropZone.AddHandler(PointerReleasedEvent, (_, args) =>
+        {
+            if (args.InitialPressMouseButton != MouseButton.Left) return;
+            
+            if (DataContext == null) return;
+
+            ((MainWindowViewModel) DataContext).OpenDialog();
         });
     }
 }

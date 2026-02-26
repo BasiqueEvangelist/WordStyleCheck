@@ -1,8 +1,6 @@
 - add more lint types:
   * issues with lists
-    + reconstruct handmade lists into actual proper lists
     + adjust lists to have proper properties
-    + !!! do not conflict with the needless paragraph break lint
   * issues with tables
   * issues with ToC
   * page numbers

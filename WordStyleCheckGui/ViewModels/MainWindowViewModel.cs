@@ -1,5 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace WordStyleCheckGui.ViewModels;
 
@@ -19,9 +23,28 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void AddDocument(IStorageItem file)
     {
-        Documents.Add(new DocumentViewModel()
+        Documents.Add(new DocumentViewModel(file.TryGetLocalPath()!));
+    }
+
+    [RelayCommand]
+    private async Task OpenDialog()
+    {
+        var storageProvider = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).MainWindow!.StorageProvider;
+
+        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
-            FileName = file.Name
+            FileTypeFilter = [new("Microsoft Word files") {
+                Patterns = ["*.docx"],
+                // TODO: mime types
+            }],
+            AllowMultiple = true
         });
+
+        if (files.Count == 0) return;
+
+        foreach (var file in files)
+        {
+            Documents.Add(new DocumentViewModel(file.TryGetLocalPath()!));
+        }
     }
 }

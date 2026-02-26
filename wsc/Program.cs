@@ -7,13 +7,13 @@ using WordStyleCheck.Lints;
 
 RootCommand root = new("Linter for .docx files");
 
-Option<bool> generateRevisions = new("--revisions", "-r")
-{
-    Description = "Write changes as revisions to the document",
-    DefaultValueFactory = _ => false
-};
+//Option<bool> generateRevisions = new("--revisions", "-r")
+//{
+//    Description = "Write changes as revisions to the document",
+//    DefaultValueFactory = _ => false
+//};
 
-root.Options.Add(generateRevisions);
+//root.Options.Add(generateRevisions);
 
 Option<bool> perfTimings = new("--performance-timings", "-p")
 {
@@ -61,37 +61,29 @@ root.SetAction(res =>
     String temp = Path.GetTempFileName();
     File.Copy(input.FullName, temp, true);
 
-    List<LintMessage> messages;
-    bool changed = false;
-    int totalAutofixed = 0;
-
     var translations = DiagnosticTranslationsFile.LoadFromDocx("./rules.docx");
 
-    using (var doc = WordprocessingDocument.Open(temp, true))
+    string suffix = autofix ? "FIXED" : "ANNOTATED";
+    string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";
+
+    using (var linter = new DocumentLinter(input.FullName))
     {
-        _ = doc.MainDocumentPart!.Document!;
-
-        DocumentAnalysisContext analysisCtx = new(doc);
-        
-        LintContext ctx = new LintContext(analysisCtx, res.GetValue(generateRevisions));
-
         string? only = res.GetValue(onlyOpt);
         if (only != null)
         {
             var set = only.Split(",").ToHashSet();
-            ctx.LintFilter = lint => set.Contains(lint.Id);
+            linter.LintFilter = lint => set.Contains(lint.Id);
         }
 
-        new LintManager().Run(ctx);
+        linter.RunLints();
             
-        foreach (var message in ctx.Messages)
+        foreach (var message in linter.Diagnostics)
         {
             Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
 
             if (message.AutoFix != null && autofix)
             {
                 Console.Write(" (autofixed)");
-                totalAutofixed += 1;
             }
 
             Console.WriteLine(":");
@@ -100,54 +92,44 @@ root.SetAction(res =>
 
             if (!autofix)
             {
-                analysisCtx.WriteComment(message, translations);
+                linter.DocumentAnalysis.WriteComment(message, translations);
             }
         }
 
-        if (!autofix && ctx.Messages.Count > 0)
+        bool changed = false;
+        if (!autofix && linter.Diagnostics.Count > 0)
         {
             changed = true;
         }
-        else if (ctx.RunAllAutoFixes())
+        else if (linter.RunAutofixes())
         {
             changed = true;
         }
-        
+
+        if (linter.Diagnostics.Count > 0)
+        {
+            Console.Write($"{linter.Diagnostics.Count} style errors");
+
+            if (autofix)
+            {
+                Console.Write($" ({linter.Diagnostics.Count(x => x.AutoFix != null)} autofixed)");
+            }
+
+            Console.WriteLine(" :(");
+        }
+        else
+        {
+            Console.WriteLine("No errors detected :)");
+        }
+
         if (changed)
-            doc.Save();
-
-        messages = ctx.Messages;
-    }
-
-    if (messages.Count > 0)
-    {
-        Console.Write($"{messages.Count} style errors");
-
-        if (totalAutofixed > 0)
         {
-            Console.Write($" ({totalAutofixed} autofixed)");
+            linter.SaveTo(target);
+            Console.WriteLine("Changes have been saved to " + target);
         }
 
-        Console.WriteLine(" :(");
+        return linter.Diagnostics.Count > 0 ? 1 : 0;
     }
-    else
-    {
-        Console.WriteLine("No errors detected :)");
-    }
-
-    if (changed)
-    {
-        string suffix = autofix ? "FIXED" : "ANNOTATED";
-        string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";
-        File.Move(temp, target,true);
-        Console.WriteLine("Changes have been saved to " + target);
-    }
-    else
-    {
-        File.Delete(temp);
-    }
-
-    return messages.Count > 0 ? 1 : 0;
 });
 
 return root.Parse(args).Invoke();

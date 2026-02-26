@@ -2,7 +2,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Context;
 
-public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs) : IDiagnosticContext
+public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool DisableMerging = false) : IDiagnosticContext
 {
     public ParagraphDiagnosticContext(Paragraph p) : this([p]) { }
     

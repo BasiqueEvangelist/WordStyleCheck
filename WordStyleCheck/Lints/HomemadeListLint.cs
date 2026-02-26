@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
@@ -52,12 +53,12 @@ public class HomemadeListLint : ILint
         {
             foreach (var p in list.Paragraphs)
             {
-                ctx.Document.GetTool(p).HandmadeList = true;
+                ctx.Document.GetTool(p).OfNumbering = list;
             }
             
             ctx.AddMessage(new LintMessage("HandmadeList", new ParagraphDiagnosticContext(list.Paragraphs)));
         }
     }
-
-    private record struct SniffedListData(bool Unordered, List<Paragraph> Paragraphs);
+    
+    private record struct SniffedListData(bool Unordered, List<Paragraph> Paragraphs) : INumbering;
 }

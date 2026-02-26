@@ -14,6 +14,7 @@ public class DocumentAnalysisContext
     private readonly Dictionary<string, Style> _styles = new();
 
     private readonly List<SectionPropertiesTool> _sections = [];
+    private readonly List<NumberingPropertiesTool> _numberings = [];
 
     public Style? DefaultParagraphStyle { get; }
 
@@ -30,10 +31,29 @@ public class DocumentAnalysisContext
                 .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
         }
 
-        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
-        
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
 
+        if (Document.MainDocumentPart?.NumberingDefinitionsPart?.Numbering is { } numbering)
+        {
+            foreach (var inst in numbering.ChildElements.OfType<NumberingInstance>())
+            {
+                var tool = new NumberingPropertiesTool(this, inst);
+
+                foreach (var p in AllParagraphs)
+                {
+                    if (p.ParagraphProperties?.NumberingProperties?.NumberingId?.Val?.Value == inst.NumberID?.Value)
+                    {
+                        tool.Paragraphs.Add(p);
+                        GetTool(p).OfNumbering = tool;
+                    }
+                }
+                
+                _numberings.Add(tool);
+            }
+        }
+
+        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
+        
         StructuralElement? currentElement = null;
         List<Paragraph> currentSection = [];
         

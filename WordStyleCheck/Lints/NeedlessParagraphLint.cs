@@ -30,7 +30,7 @@ public class NeedlessParagraphLint : ILint
              || curTool.Class != ParagraphClass.BodyText)
                 continue;
             
-            if (prevTool.IsListEntry || curTool.IsListEntry) continue;
+            if (prevTool.OfNumbering != null || curTool.OfNumbering != null) continue;
 
             var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();
             

@@ -15,6 +15,8 @@ public static class ParagraphLintMerger
             {
                 continue;
             }
+            
+            if (prev.DisableMerging || next.DisableMerging) continue;
 
             if (messages[i - 1].Id != messages[i].Id) continue;
             // TODO: check for equal parameters, actually

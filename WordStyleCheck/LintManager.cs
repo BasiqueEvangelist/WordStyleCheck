@@ -25,6 +25,7 @@ public class LintManager
         new IncorrectFigureNumberingLint(),
         new FigureNotReferencedLint(),
         new BibliographySourceNotReferencedLint(),
+        new NotEnoughSourcesLint(40, "NotEnoughSources"),
         new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),
         new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 } or {Class: ParagraphClass.StructuralElementHeader}, "HeadingNotBold"),

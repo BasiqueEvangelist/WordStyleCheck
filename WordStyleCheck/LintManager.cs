@@ -13,7 +13,7 @@ public class LintManager
         new HomemadeListLint(),
         new NeedlessParagraphLint(),
         new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, JustificationValues.Center, "StructuralElementHeaderNotCentered"),
-        new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
+        new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix, OfNumbering: null}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 0}, 709, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 2}, -851, 1560, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),

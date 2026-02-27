@@ -21,6 +21,9 @@ public class ParagraphSpacingLint : ILint
             // TODO: enforce this for table cell content, headers, captions.
             if (tool.Class != ParagraphClass.BodyText) continue;
             
+            // TODO: enforce this for numberings.
+            if (tool.OfNumbering != null) continue;
+            
             // Appendices can have weird formatting.
             if (tool.OfStructuralElement == StructuralElement.Appendix) continue;
             
@@ -33,8 +36,10 @@ public class ParagraphSpacingLint : ILint
                         Parameters = new()
                         {
                             ["ExpectedBeforeCm"] = Utils.TwipsToCm(120).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedBeforePt"] = (120/20).ToString(),
                             ["ExpectedLineCm"] = Utils.TwipsToCm(360).ToString(CultureInfo.CurrentCulture),
                             ["ExpectedAfterCm"] = Utils.TwipsToCm(120).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedAfterPt"] = (120/20).ToString(),
                             
                             ["ActualBeforeCm"] = Utils.TwipsToCm(tool.BeforeSpacing ?? 0).ToString(CultureInfo.CurrentCulture),
                             ["ActualLineCm"] = Utils.TwipsToCm(tool.LineSpacing ?? 0).ToString(CultureInfo.CurrentCulture),

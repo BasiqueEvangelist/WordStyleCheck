@@ -39,6 +39,13 @@ Option<string?> onlyOpt = new("--only")
 
 root.Options.Add(onlyOpt);
 
+Option<string?> ignoreOpt = new("--ignore")
+{
+    Description = "Ignore these lints",
+};
+
+root.Options.Add(ignoreOpt);
+
 Argument<FileInfo> inputFile = new("input")
 {
     Description = "File to lint for style issues",
@@ -73,6 +80,13 @@ root.SetAction(res =>
         {
             var set = only.Split(",").ToHashSet();
             linter.LintFilter = lint => set.Contains(lint.Id);
+        }
+        
+        string? ignore = res.GetValue(ignoreOpt);
+        if (ignore != null)
+        {
+            var set = ignore.Split(",").ToHashSet();
+            linter.LintFilter = lint => !set.Contains(lint.Id);
         }
 
         linter.RunLints();

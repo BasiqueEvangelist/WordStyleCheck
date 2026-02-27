@@ -25,7 +25,7 @@ public static class StructuralElementHeaderClassifier
         [StructuralElement.GlossaryAbbreviations] = ["ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ"],
         [StructuralElement.Introduction] = ["ВВЕДЕНИЕ"], 
         [StructuralElement.Conclusion] = ["ЗАКЛЮЧЕНИЕ"],
-        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ"]
+        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ"]
     };
 
     public static string GetProperName(StructuralElement element)
@@ -46,7 +46,7 @@ public static class StructuralElementHeaderClassifier
         {
             foreach (var nameOption in entry.Value)
             {
-                if (Algorithms.LevenshteinNeighbors(text.ToUpperInvariant(), nameOption, 5))
+                if (Algorithms.LevenshteinNeighbors(text.ToUpperInvariant(), nameOption, 2))
                 {
                     return entry.Key;
                 }

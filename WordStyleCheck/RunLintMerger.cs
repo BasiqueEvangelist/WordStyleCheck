@@ -19,8 +19,16 @@ public static class RunLintMerger
             if (messages[i - 1].Id != messages[i].Id) continue;
             // TODO: check for equal parameters, actually
             //if (messages[i - 1].Parameters != messages[i].Parameters) continue;
+
+            var nextAfterPrev = prev.Runs[^1].NextSibling();
+
+            while (nextAfterPrev != next.Runs[0] &&
+                   (nextAfterPrev is Run r && string.IsNullOrWhiteSpace(Utils.CollectText(r))))
+            {
+                nextAfterPrev = nextAfterPrev.NextSibling();
+            }
             
-            if (prev.Runs[^1].NextSibling() != next.Runs[0]) continue;
+            if (nextAfterPrev != next.Runs[0]) continue;
 
             RunDiagnosticContext newContext = new RunDiagnosticContext([..prev.Runs, ..next.Runs]);
 

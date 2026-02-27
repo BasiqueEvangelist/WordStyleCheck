@@ -44,7 +44,7 @@ public record ParagraphPropertiesTool
 
         if (runFont != null)
         {
-            if (runFont.Contains("Code") || runFont == "Consolas" || runFont.Contains("Mono"))
+            if (runFont.Contains("Code") || runFont == "Consolas" || runFont.Contains("Mono") || runFont.Contains("Courier"))
                 ProbablyCodeListing = true;
         }
 

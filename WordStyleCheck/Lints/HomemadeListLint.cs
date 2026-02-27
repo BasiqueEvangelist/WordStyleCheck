@@ -12,6 +12,8 @@ public class HomemadeListLint : ILint
         
         foreach (var p in ctx.Document.AllParagraphs)
         {
+            if (ctx.Document.GetTool(p).Class != ParagraphClass.BodyText) continue;
+            
             string text = Utils.CollectParagraphText(p).Trim();
 
             if (text.StartsWith("—"))

@@ -17,6 +17,8 @@ public class NeedlessParagraphLint : ILint
         
         for (int i = paragraphs.Count - 1; i >= 1; i--)
         {
+            if (paragraphs[i - 1].NextSibling() != paragraphs[i]) continue;
+            
             if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i], 10).Text))
             {
                 continue;

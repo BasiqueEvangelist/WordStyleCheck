@@ -38,7 +38,8 @@ public class LintManager
                 new(
                     x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix), OfNumbering: null},
                     6 * 20,
-                    6 * 20
+                    6 * 20,
+                    contextualSpacing: true
                 )
             ],
             "IncorrectInterParagraphSpacing"

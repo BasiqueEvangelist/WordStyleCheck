@@ -16,7 +16,7 @@ public class HomemadeListLint : ILint
             
             string text = Utils.CollectParagraphText(p).Trim();
 
-            if (text.StartsWith("—"))
+            if (text.StartsWith("—") || text.StartsWith("•"))
             {
                 possibleLists.Add(new SniffedListData(true, [p]));
                 continue;

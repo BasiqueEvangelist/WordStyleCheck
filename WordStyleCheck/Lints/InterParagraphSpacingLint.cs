@@ -37,7 +37,7 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
 
             int totalTwips = entry1.twipsAfter + entry2.twipsBefore; 
             
-            if (entry1 == entry2)
+            if (entry1 == entry2 && entry1.contextualSpacing)
             {
                 totalTwips = 0;
             }
@@ -59,5 +59,6 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
     public record SpacingEntry(
         Predicate<ParagraphPropertiesTool> p,
         int twipsBefore,
-        int twipsAfter);
+        int twipsAfter,
+        bool contextualSpacing = false);
 }

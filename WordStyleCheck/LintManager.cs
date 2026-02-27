@@ -18,6 +18,31 @@ public class LintManager
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 2}, -851, 1560, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphLineSpacingLint(),
+        new InterParagraphSpacingLint(
+            [
+                new(
+                    x => x is {Class: ParagraphClass.Heading, OutlineLevel: 0},
+                    0,
+                    18 * 20
+                ),
+                new(
+                    x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1},
+                    24 * 20,
+                    12 * 20
+                ),
+                new(
+                    x => x is {Class: ParagraphClass.Heading, OutlineLevel: 2},
+                    12 * 20,
+                    6 * 20
+                ),
+                new(
+                    x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix)},
+                    6 * 20,
+                    6 * 20
+                )
+            ],
+            "IncorrectInterParagraphSpacing"
+        ),
         new CorrectStructuralElementHeaderLint(),
         new WrongCaptionPositionLint(CaptionType.Table, false, "IncorrectTableCaptionPosition"),
         new WrongCaptionPositionLint(CaptionType.Figure, true, "IncorrectFigureCaptionPosition"),

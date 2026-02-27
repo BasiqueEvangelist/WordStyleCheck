@@ -83,14 +83,29 @@ public record ParagraphPropertiesTool
         )?.Value);
 
     public int? OutlineLevel { get; }
-
-    public int? BeforeSpacing =>
-        Utils.ParseTwipsMeasure(FollowPropertyChain(
-            x => x.SpacingBetweenLines?.Before,
-            x => x.SpacingBetweenLines?.Before,
-            x => x.SpacingBetweenLines?.Before
-        )?.Value);
     
+    public bool ContextualSpacing => FollowPropertyChain(
+        x => Utils.ConvertOnOffType(x.ContextualSpacing),
+        x => Utils.ConvertOnOffType(x.ContextualSpacing),
+        x => Utils.ConvertOnOffType(x.ContextualSpacing)
+    ) ?? false;
+    
+    public int? ActualBeforeSpacing
+    {
+        get
+        {
+            if (ContextualSpacing && this.Paragraph.PreviousSibling() is Paragraph p &&
+                _ctx.GetTool(p).Style?.StyleId == Style?.StyleId)
+                return 0;
+            
+            return Utils.ParseTwipsMeasure(FollowPropertyChain(
+                x => x.SpacingBetweenLines?.Before,
+                x => x.SpacingBetweenLines?.Before,
+                x => x.SpacingBetweenLines?.Before
+            )?.Value);
+        }
+    }
+
     public int? LineSpacing =>
         Utils.ParseTwipsMeasure(FollowPropertyChain(
             x => x.SpacingBetweenLines?.Line,
@@ -98,12 +113,21 @@ public record ParagraphPropertiesTool
             x => x.SpacingBetweenLines?.Line
         )?.Value);
     
-    public int? AfterSpacing =>
-        Utils.ParseTwipsMeasure(FollowPropertyChain(
-            x => x.SpacingBetweenLines?.After,
-            x => x.SpacingBetweenLines?.After,
-            x => x.SpacingBetweenLines?.After
-        )?.Value);
+    public int? ActualAfterSpacing
+    {
+        get
+        {
+            if (ContextualSpacing && this.Paragraph.NextSibling() is Paragraph p &&
+                _ctx.GetTool(p).Style?.StyleId == Style?.StyleId)
+                return 0;
+            
+            return Utils.ParseTwipsMeasure(FollowPropertyChain(
+                x => x.SpacingBetweenLines?.After,
+                x => x.SpacingBetweenLines?.After,
+                x => x.SpacingBetweenLines?.After
+            )?.Value);
+        }
+    }
     
     public JustificationValues? Justification =>
         FollowPropertyChain(

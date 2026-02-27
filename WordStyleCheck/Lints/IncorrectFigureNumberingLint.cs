@@ -11,7 +11,7 @@ public class IncorrectFigureNumberingLint : ILint
             .Select(x => ctx.Document.GetTool(x))
             .Where(x => x is
             {
-                CaptionData: not null,
+                CaptionData: {Type: CaptionType.Figure},
                 OfStructuralElement: not StructuralElement.Appendix // TODO: handle this for figures in appendices too
             })
             .ToList();

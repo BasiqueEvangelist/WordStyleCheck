@@ -143,4 +143,11 @@ public class Utils
     }
 
     public static double TwipsToCm(double twips) => Math.Round(twips / 566.9291, 2);
+
+    public static bool? ConvertOnOffType(OnOffType? value)
+    {
+        if (value == null) return null;
+        
+        return value.Val?.Value != false; 
+    }
 }

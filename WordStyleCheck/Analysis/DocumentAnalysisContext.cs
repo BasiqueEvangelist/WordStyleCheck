@@ -11,7 +11,7 @@ public class DocumentAnalysisContext
     private readonly Dictionary<Paragraph, ParagraphPropertiesTool> _paragraphTools = new();
     private readonly Dictionary<Run, RunPropertiesTool> _runTools = new();
 
-    private readonly Dictionary<string, Style> _styles = new();
+    private readonly Dictionary<(StyleValues, string), Style> _styles = new();
 
     private readonly List<SectionPropertiesTool> _sections = [];
     private readonly List<NumberingPropertiesTool> _numberings = [];
@@ -25,7 +25,7 @@ public class DocumentAnalysisContext
         if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles != null)
         {
             _styles = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
-                .ToDictionary(x => x.StyleId!.Value!, x => x);
+                .ToDictionary(x => (x.Type!.Value!, x.StyleId!.Value!), x => x);
 
             DefaultParagraphStyle = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
                 .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
@@ -116,16 +116,16 @@ public class DocumentAnalysisContext
         return tool;
     }
 
-    public Style? GetStyle(string styleId)
+    public Style? GetStyle(StyleValues styleType, string styleId)
     {
-        return _styles.GetValueOrDefault(styleId);
+        return _styles.GetValueOrDefault((styleType, styleId));
     }
 
-    public T? FollowStyleChain<T>(string? styleId, Func<Style, T?> getter)
+    public T? FollowStyleChain<T>(StyleValues styleType, string? styleId, Func<Style, T?> getter)
     {
         while (styleId != null)
         {
-            var style = GetStyle(styleId);
+            var style = GetStyle(styleType, styleId);
 
             if (style == null) return default;
 
@@ -138,11 +138,11 @@ public class DocumentAnalysisContext
         return default;
     }
 
-    public bool SniffStyleName(string? styleId, string name)
+    public bool SniffStyleName(StyleValues styleType, string? styleId, string name)
     {
         while (styleId != null)
         {
-            var style = GetStyle(styleId);
+            var style = GetStyle(styleType, styleId);
 
             if (style == null) break;
 

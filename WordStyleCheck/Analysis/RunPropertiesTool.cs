@@ -45,11 +45,11 @@ public record RunPropertiesTool
                 return result;
         }
         
-        T? FollowRunStyleChain(string? styleId)
+        T? FollowRunStyleChain(StyleValues type, string? styleId)
         {
             if (styleId == null) return default;
             
-            var style = _ctx.GetStyle(styleId);
+            var style = _ctx.GetStyle(type, styleId);
 
             if (style == null) return default;
 
@@ -62,7 +62,7 @@ public record RunPropertiesTool
 
             if (style.BasedOn?.Val?.Value != null)
             {
-                return FollowRunStyleChain(style.BasedOn?.Val?.Value);
+                return FollowRunStyleChain(type, style.BasedOn?.Val?.Value);
             }
 
             return default;
@@ -71,7 +71,7 @@ public record RunPropertiesTool
         {
             var styleId = Run.RunProperties?.RunStyle?.Val?.Value;
 
-            var result = FollowRunStyleChain(styleId);
+            var result = FollowRunStyleChain(StyleValues.Character, styleId);
             if (result != null)
                 return result;
         }
@@ -84,14 +84,14 @@ public record RunPropertiesTool
             
             if (pTool.RunStyleId is {} rStyleId)
             {
-                var result = FollowRunStyleChain(rStyleId);
+                var result = FollowRunStyleChain(StyleValues.Character, rStyleId);
                 if (result != null)
                     return result;
             }
             
             if (pTool.Style?.StyleId?.Value is { } pStyleId)
             {
-                var result = FollowRunStyleChain(pStyleId);
+                var result = FollowRunStyleChain(StyleValues.Paragraph, pStyleId);
                 if (result != null)
                     return result;
             }

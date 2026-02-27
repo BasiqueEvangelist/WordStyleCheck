@@ -20,13 +20,13 @@ public record ParagraphPropertiesTool
         {
             if (styleId != null)
             {
-                return ctx.GetStyle(styleId);
+                return ctx.GetStyle(StyleValues.Paragraph, styleId);
             }
 
             return ctx.DefaultParagraphStyle;
         })();
 
-        RunStyleId = _ctx.FollowStyleChain(styleId, x => x.LinkedStyle?.Val?.Value);
+        RunStyleId = _ctx.FollowStyleChain(StyleValues.Paragraph, styleId, x => x.LinkedStyle?.Val?.Value);
         
         OutlineLevel = FollowPropertyChain(
             x => x.OutlineLevel?.Val?.Value,
@@ -34,12 +34,12 @@ public record ParagraphPropertiesTool
             x => x.OutlineLevel?.Val?.Value
         );
         
-        ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(styleId, "Heading");
+        ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
 
         string? runFont = Paragraph.ParagraphProperties?.ParagraphMarkRunProperties?.GetFirstChild<RunFonts>()?.Ascii?.Value;
         if (runFont == null && styleId != null)
         {
-            runFont = _ctx.FollowStyleChain(styleId, x => x.StyleRunProperties?.RunFonts)?.Ascii;
+            runFont = _ctx.FollowStyleChain(StyleValues.Paragraph, styleId, x => x.StyleRunProperties?.RunFonts)?.Ascii;
         }
 
         if (runFont != null)
@@ -183,7 +183,7 @@ public record ParagraphPropertiesTool
         
         if (Style?.StyleId != null)
         {
-            var result = _ctx.FollowStyleChain(Style.StyleId, x => x.StyleParagraphProperties != null ? styleGetter(x.StyleParagraphProperties) : default);
+            var result = _ctx.FollowStyleChain(StyleValues.Paragraph, Style.StyleId, x => x.StyleParagraphProperties != null ? styleGetter(x.StyleParagraphProperties) : default);
             if (result != null)
                 return result;
         }

@@ -83,7 +83,7 @@ public struct CaptionClassifierData
 
         if (firstPartEnd >= text.Length) return null;
 
-        string firstPart = text[..firstPartEnd].ToLowerInvariant();
+        string firstPart = text[..firstPartEnd].ToLowerInvariant().Trim();
         
         bool isContinuation = false;
 

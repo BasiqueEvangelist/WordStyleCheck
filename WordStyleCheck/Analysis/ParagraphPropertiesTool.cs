@@ -148,12 +148,22 @@ public record ParagraphPropertiesTool
     public bool ProbablyHeading { get; }
 
     public bool ProbablyCodeListing { get; }
+
+    public int? NumberingId => FollowPropertyChain(
+        x => x.NumberingProperties?.NumberingId?.Val?.Value,
+        x => x.NumberingProperties?.NumberingId?.Val?.Value,
+        x => x.NumberingProperties?.NumberingId?.Val?.Value
+    );
     
     public INumbering? OfNumbering { get; internal set; }
 
     public StructuralElement? StructuralElementHeader { get; }
     
     public StructuralElement? OfStructuralElement { get; internal set; }
+    
+    public ParagraphPropertiesTool? AssociatedHeading1 { get; internal set; }
+    
+    public string? HeadingNumber { get; internal set; }
     
     public CaptionClassifierData? CaptionData { get; }
     

@@ -12,6 +12,14 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
 
         for (int i = 1; i < paragraphs.Count; i++)
         {
+            if (paragraphs[i - 1].NextSibling() != paragraphs[i]) continue;
+            
+            // TODO: Handle empty paragraphs later.
+            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i - 1], 10).Text))
+            {
+                continue;
+            }
+            
             if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i], 10).Text))
             {
                 continue;

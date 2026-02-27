@@ -32,6 +32,8 @@ public class DocumentAnalysisContext
         }
 
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
+        
+        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
 
         if (Document.MainDocumentPart?.NumberingDefinitionsPart?.Numbering is { } numbering)
         {
@@ -41,20 +43,21 @@ public class DocumentAnalysisContext
 
                 foreach (var p in AllParagraphs)
                 {
-                    if (p.ParagraphProperties?.NumberingProperties?.NumberingId?.Val?.Value == inst.NumberID?.Value)
+                    var pTool = GetTool(p);
+                    
+                    if (pTool.NumberingId == inst.NumberID?.Value)
                     {
                         tool.Paragraphs.Add(p);
-                        GetTool(p).OfNumbering = tool;
+                        pTool.OfNumbering = tool;
                     }
                 }
                 
                 _numberings.Add(tool);
             }
         }
-
-        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
         
         StructuralElement? currentElement = null;
+        ParagraphPropertiesTool? currentHeading1 = null;
         List<Paragraph> currentSection = [];
         
         foreach (var p in AllParagraphs)
@@ -66,7 +69,13 @@ public class DocumentAnalysisContext
                 currentElement = tool.StructuralElementHeader;
             }
 
+            if (tool.OutlineLevel == 0)
+            {
+                currentHeading1 = tool;
+            }
+
             tool.OfStructuralElement = currentElement;
+            tool.AssociatedHeading1 = currentHeading1;
             
             currentSection.Add(p);
 
@@ -80,6 +89,17 @@ public class DocumentAnalysisContext
                 
                 currentSection = [];
             }
+        }
+
+        int i = 1;
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+            
+            if (tool is not {Class: ParagraphClass.Heading, OutlineLevel: 0}) continue;
+
+            tool.HeadingNumber = i.ToString();
+            i += 1;
         }
 
         if (Document.MainDocumentPart!.Document!.Body!.LastChild is SectionProperties lastSectPr)

@@ -21,7 +21,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             
             if (!predicate(tool)) continue; 
             
-            if (tool.FirstLineIndent != firstLine)
+            if (Math.Abs((tool.FirstLineIndent ?? 0) - firstLine) >= 5)
             {
                 ctx.AddMessage(new LintMessage(
                     firstLineId,
@@ -62,7 +62,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
                 );
             }
             
-            if (!(tool.LeftIndent == left || (left == 0 && tool.LeftIndent == null)))
+            if (Math.Abs((tool.LeftIndent ?? 0) - left) >= 5)
             {
                 ctx.AddMessage(new LintMessage(
                         leftId,

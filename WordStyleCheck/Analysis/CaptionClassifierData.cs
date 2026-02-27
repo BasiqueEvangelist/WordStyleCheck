@@ -89,11 +89,11 @@ public struct CaptionClassifierData
 
         switch (type)
         {
-            case CaptionType.Table when Algorithms.LevenshteinNeighbors(firstPart, "продолжение таблицы", 5):
+            case CaptionType.Table when firstPart.Equals("продолжение таблицы", StringComparison.InvariantCultureIgnoreCase):
                 isContinuation = true;        
                 break;
-            case CaptionType.Figure when !Algorithms.LevenshteinNeighbors(firstPart, "рисунок", 2):
-            case CaptionType.Table  when !Algorithms.LevenshteinNeighbors(firstPart, "таблица", 2):
+            case CaptionType.Figure when !firstPart.Equals("рисунок", StringComparison.InvariantCultureIgnoreCase):
+            case CaptionType.Table  when !firstPart.Equals("таблица", StringComparison.InvariantCultureIgnoreCase):
                 return null;
         }
 
@@ -149,7 +149,8 @@ public struct CaptionClassifierData
         {
             (CaptionType.Figure, _) => "Рисунок ",
             (CaptionType.Table, false) => "Таблица ",
-            (CaptionType.Table, true) => "Продолжение таблицы "
+            (CaptionType.Table, true) => "Продолжение таблицы ",
+            _ => throw new ArgumentOutOfRangeException()
         };
 
         correct += Number;

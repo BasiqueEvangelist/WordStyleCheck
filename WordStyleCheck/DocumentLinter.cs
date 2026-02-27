@@ -66,7 +66,7 @@ namespace WordStyleCheck
         {
             if (_tempPath == null) throw new InvalidOperationException("Document was already saved");
 
-            _document.Save();
+            _document!.Save();
             _document.Dispose();
             _document = null;
 

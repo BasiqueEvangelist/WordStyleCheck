@@ -9,7 +9,7 @@ namespace WordStyleCheck.Lints
     {
         public void Run(LintContext ctx)
         {
-            var numberings = ctx.Document.AllParagraphs.Select(ctx.Document.GetTool).Where(x => x.OfStructuralElement == Analysis.StructuralElement.Bibliography && x.OfNumbering != null).Select(x => x.OfNumbering).Distinct().ToList();
+            var numberings = ctx.Document.AllParagraphs.Select(ctx.Document.GetTool).Where(x => x is { OfStructuralElement: Analysis.StructuralElement.Bibliography, OfNumbering: not null }).Select(x => x.OfNumbering!).Distinct().ToList();
 
             int totalSources = numberings.Sum(x => x.Paragraphs.Count);
 

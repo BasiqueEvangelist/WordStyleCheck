@@ -46,7 +46,7 @@ public static class StructuralElementHeaderClassifier
         {
             foreach (var nameOption in entry.Value)
             {
-                if (Algorithms.LevenshteinNeighbors(text.ToUpperInvariant(), nameOption, 2))
+                if (text.Equals(nameOption, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return entry.Key;
                 }
@@ -69,6 +69,6 @@ public static class StructuralElementHeaderClassifier
 
         string firstPart = text[..firstPartEnd].ToLowerInvariant();
         
-        return Algorithms.LevenshteinNeighbors(firstPart.ToLower(), "приложение", 3);
+        return firstPart.Equals("приложение", StringComparison.InvariantCultureIgnoreCase);
     }
 }

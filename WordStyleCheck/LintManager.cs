@@ -36,7 +36,7 @@ public class LintManager
                     6 * 20
                 ),
                 new(
-                    x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix)},
+                    x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix), OfNumbering: null},
                     6 * 20,
                     6 * 20
                 )
@@ -64,7 +64,14 @@ public class LintManager
         {
             using (new LoudStopwatch(lint.GetType().Name))
             {
-                lint.Run(ctx);
+                try
+                {
+                    lint.Run(ctx);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Encountered exception while running {lint.GetType().Name}: {e}");
+                }
             }
         }
 

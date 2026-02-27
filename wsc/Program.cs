@@ -46,7 +46,7 @@ Option<string?> ignoreOpt = new("--ignore")
 
 root.Options.Add(ignoreOpt);
 
-Argument<FileInfo> inputFile = new("input")
+Argument<List<FileInfo>> inputFile = new("input")
 {
     Description = "File to lint for style issues",
 };
@@ -60,90 +60,108 @@ root.SetAction(res =>
 
     bool autofix = res.GetValue(autofixOpt);
     
-    FileInfo input = res.GetValue(inputFile)!;
-    
-    // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
-    // file, open it, and then copy it back to the -FIXED if it was changed in any way.
+    List<FileInfo> input = res.GetValue(inputFile)!;
 
-    String temp = Path.GetTempFileName();
-    File.Copy(input.FullName, temp, true);
+    int diagnosticsTotal = 0;
 
-    var translations = DiagnosticTranslationsFile.LoadEmbedded();
-
-    string suffix = autofix ? "FIXED" : "ANNOTATED";
-    string target = Path.GetFileNameWithoutExtension(input.Name) + $"-{suffix}.docx";
-
-    using (var linter = new DocumentLinter(input.FullName))
+    foreach (var file in input)
     {
-        string? only = res.GetValue(onlyOpt);
-        if (only != null)
+        if (Path.GetFileNameWithoutExtension(file.Name).EndsWith("-ANNOTATED") ||
+            Path.GetFileNameWithoutExtension(file.Name).EndsWith("-FIXED"))
         {
-            var set = only.Split(",").ToHashSet();
-            linter.LintFilter = lint => set.Contains(lint.Id);
+            Console.WriteLine($"Skipping {file.Name}");
+            continue;
         }
         
-        string? ignore = res.GetValue(ignoreOpt);
-        if (ignore != null)
-        {
-            var set = ignore.Split(",").ToHashSet();
-            linter.LintFilter = lint => !set.Contains(lint.Id);
-        }
+        Console.WriteLine($"Processing {file.Name}");
+        // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
+        // file, open it, and then copy it back to the -FIXED if it was changed in any way.
 
-        linter.RunLints();
-            
-        foreach (var message in linter.Diagnostics)
-        {
-            Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
+        String temp = Path.GetTempFileName();
+        File.Copy(file.FullName, temp, true);
 
-            if (message.AutoFix != null && autofix)
+        var translations = DiagnosticTranslationsFile.LoadEmbedded();
+
+        string suffix = autofix ? "FIXED" : "ANNOTATED";
+        string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";
+
+        using (var linter = new DocumentLinter(file.FullName))
+        {
+            string? only = res.GetValue(onlyOpt);
+            if (only != null)
             {
-                Console.Write(" (autofixed)");
+                var set = only.Split(",").ToHashSet();
+                linter.LintFilter = lint => set.Contains(lint.Id);
             }
 
-            Console.WriteLine(":");
-        
-            message.Context.WriteToConsole();
-
-            if (!autofix)
+            string? ignore = res.GetValue(ignoreOpt);
+            if (ignore != null)
             {
-                linter.DocumentAnalysis.WriteComment(message, translations);
-            }
-        }
-
-        bool changed = false;
-        if (!autofix && linter.Diagnostics.Count > 0)
-        {
-            changed = true;
-        }
-        else if (linter.RunAutofixes())
-        {
-            changed = true;
-        }
-
-        if (linter.Diagnostics.Count > 0)
-        {
-            Console.Write($"{linter.Diagnostics.Count} style errors");
-
-            if (autofix)
-            {
-                Console.Write($" ({linter.Diagnostics.Count(x => x.AutoFix != null)} autofixed)");
+                var set = ignore.Split(",").ToHashSet();
+                linter.LintFilter = lint => !set.Contains(lint.Id);
             }
 
-            Console.WriteLine(" :(");
-        }
-        else
-        {
-            Console.WriteLine("No errors detected :)");
-        }
+            linter.RunLints();
 
-        if (changed)
-        {
-            linter.SaveTo(target);
-            Console.WriteLine("Changes have been saved to " + target);
-        }
+            foreach (var message in linter.Diagnostics)
+            {
+                if (input.Count == 1)
+                {
+                    Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
 
-        return linter.Diagnostics.Count > 0 ? 1 : 0;
+                    if (message.AutoFix != null && autofix)
+                    {
+                        Console.Write(" (autofixed)");
+                    }
+
+                    Console.WriteLine(":");
+
+                    message.Context.WriteToConsole();
+                }
+
+                if (!autofix)
+                {
+                    linter.DocumentAnalysis.WriteComment(message, translations);
+                }
+            }
+
+            bool changed = false;
+            if (!autofix && linter.Diagnostics.Count > 0)
+            {
+                changed = true;
+            }
+            else if (linter.RunAutofixes())
+            {
+                changed = true;
+            }
+
+            if (linter.Diagnostics.Count > 0)
+            {
+                Console.Write($"{linter.Diagnostics.Count} style errors");
+
+                if (autofix)
+                {
+                    Console.Write($" ({linter.Diagnostics.Count(x => x.AutoFix != null)} autofixed)");
+                }
+
+                Console.WriteLine(" :(");
+            }
+            else
+            {
+                Console.WriteLine("No errors detected :)");
+            }
+
+            if (changed)
+            {
+                linter.SaveTo(target);
+                Console.WriteLine("Changes have been saved to " + target);
+            }
+
+            diagnosticsTotal += linter.Diagnostics.Count;
+        }
     }
+    
+    return diagnosticsTotal > 0 ? 1 : 0;
 });
 
 return root.Parse(args).Invoke();

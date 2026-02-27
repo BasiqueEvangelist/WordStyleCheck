@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -15,6 +14,8 @@ public class DocumentAnalysisContext
 
     private readonly List<SectionPropertiesTool> _sections = [];
     private readonly List<NumberingPropertiesTool> _numberings = [];
+
+    private readonly HashSet<string> _existingComments = [];
 
     public Style? DefaultParagraphStyle { get; }
 
@@ -114,6 +115,11 @@ public class DocumentAnalysisContext
         {
             throw new NotImplementedException("No last section in document?");
         }
+
+        if (Document.MainDocumentPart.WordprocessingCommentsPart?.Comments is { } comments)
+        {
+            _existingComments = comments.ChildElements.OfType<Comment>().Select(x => x.Id?.Value ?? "").Distinct().ToHashSet();
+        }
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)
@@ -183,6 +189,11 @@ public class DocumentAnalysisContext
     public void WriteComment(LintMessage msg, DiagnosticTranslationsFile translations)
     {
         string id = (_commentId++).ToString();
+
+        while (_existingComments.Contains(id))
+        {
+            id = (_commentId++).ToString();
+        }
         
         msg.Context.WriteCommentReference(id);
 

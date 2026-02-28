@@ -28,14 +28,14 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
                 
                 RunPropertiesTool tool = ctx.Document.GetTool(r);
 
-                if (tool.FontSize < fontSize)
+                if (tool.FontSize != null && tool.FontSize < fontSize)
                 {
                     ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
                     {
                         Parameters = new()
                         {
-                            ["Expected"] = fontSize.ToString(),
-                            ["Actual"] = tool.FontSize?.ToString() ?? "<?>"
+                            ["ExpectedPt"] = (fontSize / 2).ToString(),
+                            ["ActualPt"] = (tool.FontSize.Value / 2).ToString()
                         },
                         AutoFix = () =>
                         {

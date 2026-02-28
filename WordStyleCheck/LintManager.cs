@@ -52,6 +52,7 @@ public class LintManager
         new IncorrectFigureNumberingLint(),
         new FigureNotReferencedLint(),
         new BibliographySourceNotReferencedLint(),
+        new IncorrectHeadingTextLint(),
         new NotEnoughSourcesLint(40, "NotEnoughSources", "NoBibliography"),
         new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),

@@ -11,6 +11,7 @@ public class LintManager
         new PageSizeLint(),
         new PageMarginsLint(),
         new HomemadeListLint(),
+        new HandmadePageBreakLint(),
         new NeedlessParagraphLint(),
         new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, JustificationValues.Center, "StructuralElementHeaderNotCentered"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix, OfNumbering: null}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),

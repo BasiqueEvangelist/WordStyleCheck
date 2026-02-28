@@ -15,7 +15,7 @@ namespace WordStyleCheck.Lints
 
             for (int i = 0; i < paragraphs.Count; i++)
             {
-                bool isEmpty = string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i]));
+                bool isEmpty = ctx.Document.GetTool(paragraphs[i]).IsEmptyOrWhitespace;
 
                 if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
                 {

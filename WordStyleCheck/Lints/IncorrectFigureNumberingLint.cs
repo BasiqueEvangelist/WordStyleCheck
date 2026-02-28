@@ -17,6 +17,7 @@ public class IncorrectFigureNumberingLint : ILint
             .ToList();
 
         int underHeadingNumber = 0;
+        bool prevCorrectWasWithSection = false;
         for (int i = 0; i < figures.Count; i++)
         {
             string correctNumber = (i + 1).ToString();
@@ -27,16 +28,29 @@ public class IncorrectFigureNumberingLint : ILint
 
             var actualNumber = figures[i].CaptionData!.Value.Number;
 
-            if (actualNumber == correctNumber) continue;
-            
-            if (figures[i].AssociatedHeading1 != null && actualNumber == $"{figures[i].AssociatedHeading1!.HeadingNumber}.{underHeadingNumber}")
+            if (actualNumber == correctNumber)
+            {
+                prevCorrectWasWithSection = false;
                 continue;
-            
+            }
+
+            string? correctNumberSection = null;
+            if (figures[i].AssociatedHeading1 != null)
+            {
+                correctNumberSection = $"{figures[i].AssociatedHeading1!.HeadingNumber}.{underHeadingNumber}";
+
+                if (actualNumber == correctNumberSection)
+                {
+                    prevCorrectWasWithSection = true;
+                    continue;
+                }
+            }
+
             ctx.AddMessage(new LintMessage("IncorrectFigureNumbering", new ParagraphDiagnosticContext(figures[i].Paragraph))
             {
                 Parameters = new()
                 {
-                    ["Expected"] = correctNumber,
+                    ["Expected"] = prevCorrectWasWithSection && correctNumberSection != null ? correctNumberSection : correctNumber,
                     ["Actual"] = figures[i].CaptionData!.Value.Number
                 }
             });

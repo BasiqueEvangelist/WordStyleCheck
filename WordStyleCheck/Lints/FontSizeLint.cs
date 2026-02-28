@@ -10,12 +10,12 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
+            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
+         
+            if (pTool.IsEmptyOrDrawing)
             {
                 continue;
             }
-
-            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
             
             if (!predicate(pTool))
             {

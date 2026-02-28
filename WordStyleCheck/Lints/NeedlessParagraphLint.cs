@@ -19,13 +19,10 @@ public class NeedlessParagraphLint : ILint
         {
             if (paragraphs[i - 1].NextSibling() != paragraphs[i]) continue;
             
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i], 10).Text))
-            {
-                continue;
-            }
-
             ParagraphPropertiesTool prevTool = ctx.Document.GetTool(paragraphs[i - 1]);
             ParagraphPropertiesTool curTool = ctx.Document.GetTool(paragraphs[i]);
+            
+            if (curTool.IsEmptyOrDrawing) continue;
 
             if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
             if (prevTool.Class != ParagraphClass.BodyText
@@ -36,7 +33,7 @@ public class NeedlessParagraphLint : ILint
 
             var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();
             
-            if (prevParagraphText.Length == 0 || prevParagraphText[^1] == '.' ||prevParagraphText[^1] == '?' || prevParagraphText[^1] == '!')
+            if (prevParagraphText.Length == 0 || !char.IsLower(prevParagraphText[^1]))
                 continue;
 
             var paraText = Utils.CollectParagraphText(paragraphs[i]);

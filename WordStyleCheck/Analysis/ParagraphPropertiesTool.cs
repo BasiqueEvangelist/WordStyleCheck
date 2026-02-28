@@ -48,11 +48,14 @@ public record ParagraphPropertiesTool
                 ProbablyCodeListing = true;
         }
 
-        if (!IsTableOfContents)
+        if (!IsTableOfContents && ContainingTableCell == null)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
-            CaptionData = CaptionClassifierData.Classify(Paragraph);
+            CaptionData = CaptionClassifierData.Classify(Paragraph, false);
         }
+        
+        IsEmptyOrDrawing = !Paragraph.Descendants().Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
+        IsEmptyOrWhitespace = IsEmptyOrDrawing && !Paragraph.Descendants().Any(x => x is Drawing);
     }
     
     public int? FirstLineIndent
@@ -141,6 +144,8 @@ public record ParagraphPropertiesTool
     public string? RunStyleId { get; }
 
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
+    
+    public TextBoxContent? ContainingTextBox => Utils.AscendToAnscestor<TextBoxContent>(Paragraph);
 
     public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
         .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
@@ -165,7 +170,11 @@ public record ParagraphPropertiesTool
     
     public string? HeadingNumber { get; internal set; }
     
-    public CaptionClassifierData? CaptionData { get; }
+    public CaptionClassifierData? CaptionData { get; internal set; }
+    
+    public bool IsEmptyOrWhitespace { get; }
+    
+    public bool IsEmptyOrDrawing { get; }
     
     public ParagraphClass Class
     {
@@ -177,6 +186,7 @@ public record ParagraphPropertiesTool
             if (CaptionData != null) return ParagraphClass.Caption;
             if (ProbablyHeading) return ParagraphClass.Heading;
             if (ProbablyCodeListing) return ParagraphClass.CodeListing;
+            if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
 
             return ParagraphClass.BodyText;
         }
@@ -219,4 +229,5 @@ public enum ParagraphClass
     Caption,
     TableOfContents,
     CodeListing,
+    InsideDrawing
 }

@@ -10,12 +10,9 @@ public class ParagraphLineSpacingLint : ILint
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
-            {
-                continue;
-            }
-
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
+            
+            if (tool.IsEmptyOrDrawing) continue;
             
             // TODO: enforce this for table cell content, headers, captions.
             if (tool.Class != ParagraphClass.BodyText) continue;

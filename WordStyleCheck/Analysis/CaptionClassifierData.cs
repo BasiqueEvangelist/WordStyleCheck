@@ -15,61 +15,73 @@ public struct CaptionClassifierData
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
     
-    public static CaptionClassifierData? Classify(Paragraph p)
+    public static CaptionClassifierData? Classify(Paragraph p, bool secondPass)
     {
         CaptionType type;
         bool isBelow;
         OpenXmlElement? targeted;
-
-        if (p.Descendants<Picture>().Any())
+        
+        if (!secondPass)
         {
-            type = CaptionType.Figure;
-            targeted = null;
-
-            isBelow = false;
-            foreach (var desc in p.Descendants())
+            if (p.Descendants<Picture>().Any())
             {
-                if (desc is Picture)
+                type = CaptionType.Figure;
+                targeted = null;
+
+                isBelow = false;
+                foreach (var desc in p.Descendants())
                 {
-                    isBelow = true;
-                    break;
+                    if (desc is Picture)
+                    {
+                        isBelow = true;
+                        break;
+                    }
+
+                    if (desc is Text t && !string.IsNullOrWhiteSpace(t.Text))
+                    {
+                        isBelow = false;
+                        break;
+                    }
                 }
 
-                if (desc is Text t && !string.IsNullOrWhiteSpace(t.Text))
-                {
-                    isBelow = false;
-                    break;
-                }
+                if (!isBelow != secondPass)
+                    return null;
             }
-        }
-        else if (p.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
-        {
-            type = CaptionType.Figure;
-            targeted = p.PreviousSibling()!;
-            isBelow = true;
-        }
-        else if (p.NextSibling() is Table)
-        {
-            type = CaptionType.Table;
-            targeted = p.NextSibling()!;
-            isBelow = false;
-        }
-        else if (p.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
-        {
-            type = CaptionType.Figure;
-            targeted = p.NextSibling()!;
-            isBelow = false;
-        } 
-        else if (p.PreviousSibling() is Table)
-        {
-            type = CaptionType.Table;
-            targeted = p.PreviousSibling()!;
-            isBelow = true;
+            else if (p.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
+            {
+                type = CaptionType.Figure;
+                targeted = p.PreviousSibling()!;
+                isBelow = true;
+            }
+            else if (p.NextSibling() is Table)
+            {
+                type = CaptionType.Table;
+                targeted = p.NextSibling()!;
+                isBelow = false;
+            }
+            else
+            {
+                return null;
+            }
         }
         else
         {
-            // Not attached to anything?
-            return null;
+            if (p.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
+            {
+                type = CaptionType.Figure;
+                targeted = p.NextSibling()!;
+                isBelow = false;
+            }
+            else if (p.PreviousSibling() is Table)
+            {
+                type = CaptionType.Table;
+                targeted = p.PreviousSibling()!;
+                isBelow = true;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         string text = Utils.CollectParagraphText(p).Trim();

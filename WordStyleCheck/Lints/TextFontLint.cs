@@ -10,14 +10,15 @@ public class TextFontLint : ILint
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
-            {
-                continue;
-            }
-
             ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
+
+            if (pTool.IsEmptyOrDrawing) continue;
             
+            // We don't force a specific font for code listings, since nobody knows what font they should actually use.
             if (pTool.Class == ParagraphClass.CodeListing) continue;
+
+            // Drawings can have their own stuff. We don't really care.
+            if (pTool.Class == ParagraphClass.InsideDrawing) continue;
 
             foreach (var r in p.Descendants<Run>())
             {

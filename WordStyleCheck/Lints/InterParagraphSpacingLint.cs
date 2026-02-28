@@ -14,19 +14,19 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
         {
             if (paragraphs[i - 1].NextSibling() != paragraphs[i]) continue;
             
+            var tool1 = ctx.Document.GetTool(paragraphs[i - 1]);
+            var tool2 = ctx.Document.GetTool(paragraphs[i]);
+            
             // TODO: Handle empty paragraphs later.
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i - 1], 10).Text))
+            if (tool1.IsEmptyOrDrawing)
             {
                 continue;
             }
             
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i], 10).Text))
+            if (tool2.IsEmptyOrDrawing)
             {
                 continue;
             }
-
-            var tool1 = ctx.Document.GetTool(paragraphs[i - 1]);
-            var tool2 = ctx.Document.GetTool(paragraphs[i]);
             
             if (paragraphs[i - 1].Descendants<Break>().Any()) continue;
 

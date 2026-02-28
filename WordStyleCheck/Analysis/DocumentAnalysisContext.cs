@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -119,6 +120,30 @@ public class DocumentAnalysisContext
         if (Document.MainDocumentPart.WordprocessingCommentsPart?.Comments is { } comments)
         {
             _existingComments = comments.ChildElements.OfType<Comment>().Select(x => x.Id?.Value ?? "").Distinct().ToHashSet();
+        }
+
+        HashSet<OpenXmlElement> alreadyReferenced = [];
+        foreach (var p in AllParagraphs)
+        {
+            if (GetTool(p).CaptionData is not {TargetedElement: {} targeted}) continue;
+
+            alreadyReferenced.Add(targeted);
+        }
+
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+
+            if (tool.Class != ParagraphClass.BodyText) continue;
+
+            var caption = CaptionClassifierData.Classify(p, true);
+            
+            if (!caption.HasValue) continue;
+            
+            if (caption.Value.TargetedElement != null && alreadyReferenced.Contains(caption.Value.TargetedElement))
+                continue;
+
+            tool.CaptionData = caption;
         }
     }
 

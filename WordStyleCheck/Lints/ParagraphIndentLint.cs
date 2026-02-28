@@ -12,13 +12,9 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
-            if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p, 10).Text))
-            {
-                continue;
-            }
-
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
+            if (tool.IsEmptyOrDrawing) continue;
             if (!predicate(tool)) continue; 
             
             if (Math.Abs((tool.FirstLineIndent ?? 0) - firstLine) >= 5)

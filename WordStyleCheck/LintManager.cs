@@ -10,7 +10,7 @@ public class LintManager
     [
         new PageSizeLint(),
         new PageMarginsLint(),
-        new HomemadeListLint(),
+        new HandmadeListLint(),
         new HandmadePageBreakLint(),
         new NeedlessParagraphLint(),
         new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, JustificationValues.Center, "StructuralElementHeaderNotCentered"),

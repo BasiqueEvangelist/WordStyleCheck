@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class HomemadeListLint : ILint
+public class HandmadeListLint : ILint
 {
     public void Run(LintContext ctx)
     {

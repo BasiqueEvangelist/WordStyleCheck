@@ -22,7 +22,7 @@ public class PageSizeLint : ILint
 
             Size target = new(11906, 16838);
 
-            if (size != target)
+            if (Math.Abs(size.Width - target.Width) > 5 || Math.Abs(size.Height - target.Height) > 5)
             {
                 ctx.AddMessage(new LintMessage("IncorrectPageSize", new SectionDiagnosticContext(section))
                 {

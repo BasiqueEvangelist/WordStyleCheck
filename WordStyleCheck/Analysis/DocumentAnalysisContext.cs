@@ -143,6 +143,25 @@ public class DocumentAnalysisContext
         {
             var tool = GetTool(p);
             tool.HeadingData = HeadingClassifierData.Classify(tool);
+
+            bool isListing = false;
+            
+            foreach (var run in Utils.DirectRunChildren(p))
+            {
+                RunPropertiesTool runTool = GetTool(run);
+            
+                if (string.IsNullOrWhiteSpace(Utils.CollectText(run))) continue;
+
+                if (!Utils.IsMonospaceFont(runTool.AsciiFont ?? "<?>"))
+                {
+                    isListing = false;
+                    break;
+                }
+
+                isListing = true;
+            }
+
+            tool.ProbablyCodeListing = isListing;
         }
     }
 

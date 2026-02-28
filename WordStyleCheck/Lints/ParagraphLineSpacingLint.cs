@@ -1,10 +1,11 @@
+using System.Globalization;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class ParagraphLineSpacingLint : ILint
+public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predicate, int lineSpacing, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -13,24 +14,21 @@ public class ParagraphLineSpacingLint : ILint
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
             if (tool.IsEmptyOrDrawing) continue;
+
+            if (!predicate(tool)) continue;
             
-            // TODO: enforce this for table cell content, headers, captions.
-            if (tool.Class != ParagraphClass.BodyText) continue;
+            if (tool.LineSpacing == null) continue;
             
-            // TODO: enforce this for numberings.
-            if (tool.OfNumbering != null) continue;
-            
-            // Appendices can have weird formatting.
-            if (tool.OfStructuralElement == StructuralElement.Appendix) continue;
-            
-            if (tool.LineSpacing != 360)
+            if (tool.LineSpacing != lineSpacing)
             {
                 ctx.AddMessage(new LintMessage(
-                    "IncorrectParagraphLineSpacing",
+                    messageId,
                     new ParagraphDiagnosticContext(p))
                     {
                         Parameters = new()
                         {
+                            ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.CurrentCulture),
+                            ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.CurrentCulture)
                         },
                         AutoFix = () =>
                         {

@@ -173,4 +173,31 @@ public class Utils
         
         return value.Val?.Value != false; 
     }
+
+    public static bool IsMonospaceFont(string font)
+    {
+        return font.Contains("Code") || font == "Consolas" || font.Contains("Mono") || font.Contains("Courier");
+    }
+
+    public static List<Run> DirectRunChildren(Paragraph p)
+    {
+        List<Run> runs = [];
+        
+        foreach (var c in p.ChildElements)
+        {
+            if (c is Run r)
+            {
+                runs.Add(r);
+            }
+            else if (c is Hyperlink h)
+            {
+                foreach (var r2 in h.ChildElements.OfType<Run>())
+                {
+                    runs.Add(r2);
+                }
+            }
+        }
+
+        return runs;
+    }
 }

@@ -36,18 +36,6 @@ public record ParagraphPropertiesTool
         
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
 
-        string? runFont = Paragraph.ParagraphProperties?.ParagraphMarkRunProperties?.GetFirstChild<RunFonts>()?.Ascii?.Value;
-        if (runFont == null && styleId != null)
-        {
-            runFont = _ctx.FollowStyleChain(StyleValues.Paragraph, styleId, x => x.StyleRunProperties?.RunFonts)?.Ascii;
-        }
-
-        if (runFont != null)
-        {
-            if (runFont.Contains("Code") || runFont == "Consolas" || runFont.Contains("Mono") || runFont.Contains("Courier"))
-                ProbablyCodeListing = true;
-        }
-
         if (!IsTableOfContents && ContainingTableCell == null)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
@@ -152,13 +140,19 @@ public record ParagraphPropertiesTool
     
     public bool ProbablyHeading { get; }
 
-    public bool ProbablyCodeListing { get; }
+    public bool ProbablyCodeListing { get; internal set; }
 
     public int? NumberingId => FollowPropertyChain(
         x => x.NumberingProperties?.NumberingId?.Val?.Value,
         x => x.NumberingProperties?.NumberingId?.Val?.Value,
         x => x.NumberingProperties?.NumberingId?.Val?.Value
     );
+    
+    public int NumberingLevel => FollowPropertyChain(
+        x => x.NumberingProperties?.NumberingLevelReference?.Val?.Value,
+        x => x.NumberingProperties?.NumberingLevelReference?.Val?.Value,
+        x => x.NumberingProperties?.NumberingLevelReference?.Val?.Value
+    ) ?? 0;
     
     public INumbering? OfNumbering { get; internal set; }
 
@@ -182,11 +176,11 @@ public record ParagraphPropertiesTool
         {
             if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
-            if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (CaptionData != null) return ParagraphClass.Caption;
+            if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
+            if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (ProbablyHeading || HeadingData != null) return ParagraphClass.Heading;
             if (ProbablyCodeListing) return ParagraphClass.CodeListing;
-            if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
 
             return ParagraphClass.BodyText;
         }

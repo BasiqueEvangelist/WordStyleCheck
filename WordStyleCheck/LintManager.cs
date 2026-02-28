@@ -18,7 +18,20 @@ public class LintManager
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 0}, 709, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 2}, -851, 1560, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
-        new ParagraphLineSpacingLint(),
+        new ParagraphLineSpacingLint(
+            // TODO: enforce this for numberings.
+            // TODO: enforce this for table cell content, headers, captions.
+            x => x is {Class: ParagraphClass.BodyText, OfNumbering: null, OfStructuralElement: not StructuralElement.Appendix},
+            360,
+            "IncorrectTextLineSpacing"
+        ),
+        new ParagraphLineSpacingLint(
+            // TODO: enforce this for numberings.
+            // TODO: enforce this for table cell content, headers, captions.
+            x => x is {Class: ParagraphClass.Caption},
+            240,
+            "IncorrectCaptionLineSpacing"
+        ),
         new InterParagraphSpacingLint(
             [
                 new(

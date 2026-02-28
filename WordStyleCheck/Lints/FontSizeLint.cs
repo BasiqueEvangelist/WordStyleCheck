@@ -22,7 +22,7 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
                 continue;
             }
 
-            foreach (var r in p.Descendants<Run>())
+            foreach (var r in Utils.DirectRunChildren(p))
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
                 

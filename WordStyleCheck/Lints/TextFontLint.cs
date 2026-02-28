@@ -20,11 +20,16 @@ public class TextFontLint : ILint
             // Drawings can have their own stuff. We don't really care.
             if (pTool.Class == ParagraphClass.InsideDrawing) continue;
 
-            foreach (var r in p.Descendants<Run>())
+            foreach (var r in Utils.DirectRunChildren(p))
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
                 
                 RunPropertiesTool tool = ctx.Document.GetTool(r);
+                
+                // TODO: look into font table.
+                if (tool.AsciiFont == null) continue;
+                
+                if (Utils.IsMonospaceFont(tool.AsciiFont)) continue;
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
@@ -32,7 +37,7 @@ public class TextFontLint : ILint
                     {
                         Parameters = new() {
                             ["Expected"] = "Times New Roman",
-                            ["Actual"] = tool.AsciiFont ?? "<?>"
+                            ["Actual"] = tool.AsciiFont!
                         },
                         AutoFix = () =>
                         {

@@ -7,7 +7,7 @@ public class HeadingClassifierData
     
     public static HeadingClassifierData? Classify(ParagraphPropertiesTool p)
     {
-        if (p.OfNumbering != null) return null;
+        if (p.OfNumbering != null && p.Class != ParagraphClass.Heading) return null;
         if (p.IsEmptyOrDrawing) return null;
         if (p.Class is not (ParagraphClass.BodyText or ParagraphClass.Heading)) return null;
         
@@ -15,14 +15,24 @@ public class HeadingClassifierData
 
         if (text.Length < 1) return null;
 
-        int numEnd = 0;
+        int numEnd;
+        string number;
+        if (p.OfNumbering is NumberingPropertiesTool numbering)
+        {
+            numEnd = 0;
+            number = numbering.GetNumber(p.Paragraph);
+        }
+        else
+        {
+            numEnd = 0;
 
-        while (numEnd < text.Length && (char.IsDigit(text[numEnd]) || text[numEnd] == '.'))
-            numEnd += 1;
+            while (numEnd < text.Length && (char.IsDigit(text[numEnd]) || text[numEnd] == '.'))
+                numEnd += 1;
 
-        if (numEnd == text.Length) return null;
-        
-        string number = text[..numEnd].TrimEnd('.');
+            if (numEnd == text.Length) return null;
+
+            number = text[..numEnd].TrimEnd('.');
+        }
 
         string[] numberSplit = number.Split('.');
 

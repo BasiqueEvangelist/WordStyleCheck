@@ -22,7 +22,7 @@ public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predica
                 continue;
             }
             
-            foreach (var r in p.Descendants<Run>())
+            foreach (var r in Utils.DirectRunChildren(p))
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
                 

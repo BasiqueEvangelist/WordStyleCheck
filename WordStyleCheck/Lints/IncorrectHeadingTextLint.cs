@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
@@ -14,7 +15,12 @@ public class IncorrectHeadingTextLint : ILint
             if (tool.HeadingData == null) continue;
 
             string text = Utils.CollectParagraphText(p);
-            string correct = tool.HeadingData.Number + " " + tool.HeadingData.Title;
+            
+            string correct;
+            if (tool.OfNumbering is NumberingPropertiesTool)
+                correct = tool.HeadingData.Title;
+            else
+                correct = tool.HeadingData.Number + " " + tool.HeadingData.Title;
 
             if (text != correct)
             {

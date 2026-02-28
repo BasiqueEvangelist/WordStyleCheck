@@ -20,6 +20,8 @@ public class DocumentAnalysisContext
 
     public Style? DefaultParagraphStyle { get; }
 
+    public List<HandmadeListClassifier.SniffedListData> HandmadeLists { get; }
+
     public DocumentAnalysisContext(WordprocessingDocument document)
     {
         Document = document;
@@ -145,6 +147,8 @@ public class DocumentAnalysisContext
 
             tool.CaptionData = caption;
         }
+
+        HandmadeLists = HandmadeListClassifier.Classify(this);
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)

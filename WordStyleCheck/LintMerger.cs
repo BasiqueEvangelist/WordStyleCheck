@@ -1,37 +1,20 @@
-using DocumentFormat.OpenXml.Wordprocessing;
-using WordStyleCheck.Context;
-
 namespace WordStyleCheck;
 
-public static class RunLintMerger
+public static class LintMerger
 {
     public static void Run(List<LintMessage> messages)
     {
         // TODO: make this not rely on lints being order in execution order.
         for (int i = 1; i < messages.Count; i++)
         {
-            if (!(messages[i - 1].Context is RunDiagnosticContext prev &&
-                  messages[i].Context is RunDiagnosticContext next))
-            {
-                continue;
-            }
-
             if (messages[i - 1].Id != messages[i].Id) continue;
             // TODO: check for equal parameters, actually
             //if (messages[i - 1].Parameters != messages[i].Parameters) continue;
 
-            var nextAfterPrev = prev.Runs[^1].NextSibling();
+            var newContext = messages[i].Context.TryMerge(messages[i - 1].Context);
 
-            while (nextAfterPrev != next.Runs[0] &&
-                   (nextAfterPrev is Run r && string.IsNullOrWhiteSpace(Utils.CollectText(r))))
-            {
-                nextAfterPrev = nextAfterPrev.NextSibling();
-            }
+            if (newContext == null) continue;
             
-            if (nextAfterPrev != next.Runs[0]) continue;
-
-            RunDiagnosticContext newContext = new RunDiagnosticContext([..prev.Runs, ..next.Runs]);
-
             var prevAutofix = messages[i - 1].AutoFix;
             var curAutofix = messages[i].AutoFix;
             

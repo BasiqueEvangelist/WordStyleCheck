@@ -91,10 +91,7 @@ public class LintManager
             }
         }
 
-        using (new LoudStopwatch("RunLintMerger.Run")) 
-            RunLintMerger.Run(ctx.Messages);
-        
-        using (new LoudStopwatch("ParagraphLintMerger.Run")) 
-            ParagraphLintMerger.Run(ctx.Messages);
+        using (new LoudStopwatch("LintMerger.Run")) 
+            LintMerger.Run(ctx.Messages);
     }
 }

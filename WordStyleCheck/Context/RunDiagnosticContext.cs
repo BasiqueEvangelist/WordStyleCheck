@@ -49,4 +49,21 @@ public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
             Id = commentId
         });
     }
+
+    public IDiagnosticContext? TryMerge(IDiagnosticContext previous)
+    {
+        if (previous is not RunDiagnosticContext prevR) return null;
+        
+        var nextAfterPrev = prevR.Runs[^1].NextSibling();
+
+        while (nextAfterPrev != Runs[0] &&
+               (nextAfterPrev is Run r && string.IsNullOrWhiteSpace(Utils.CollectText(r))))
+        {
+            nextAfterPrev = nextAfterPrev.NextSibling();
+        }
+            
+        if (nextAfterPrev != Runs[0]) return null;
+
+        return new RunDiagnosticContext([..prevR.Runs, ..Runs]);
+    }
 }

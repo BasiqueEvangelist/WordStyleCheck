@@ -5,4 +5,6 @@ public interface IDiagnosticContext
     void WriteToConsole();
 
     void WriteCommentReference(string commentId);
+
+    IDiagnosticContext? TryMerge(IDiagnosticContext previous) => null;
 }

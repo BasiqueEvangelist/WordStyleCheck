@@ -50,4 +50,13 @@ public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool Disabl
             Id = commentId
         }));
     }
+
+    public IDiagnosticContext? TryMerge(IDiagnosticContext previous)
+    {
+        if (previous is not ParagraphDiagnosticContext prevP) return null;
+        
+        if (prevP.Paragraphs[^1].NextSibling() != Paragraphs[0]) return null;
+
+        return new ParagraphDiagnosticContext([..prevP.Paragraphs, ..Paragraphs]);
+    }
 }

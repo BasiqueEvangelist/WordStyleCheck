@@ -35,9 +35,9 @@ public class IncorrectFigureNumberingLint : ILint
             }
 
             string? correctNumberSection = null;
-            if (figures[i].AssociatedHeading1 != null)
+            if (figures[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber)
             {
-                correctNumberSection = $"{figures[i].AssociatedHeading1!.HeadingNumber}.{underHeadingNumber}";
+                correctNumberSection = $"{headingNumber}.{underHeadingNumber}";
 
                 if (actualNumber == correctNumberSection)
                 {

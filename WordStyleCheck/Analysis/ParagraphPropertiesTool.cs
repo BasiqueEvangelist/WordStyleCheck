@@ -168,9 +168,9 @@ public record ParagraphPropertiesTool
     
     public ParagraphPropertiesTool? AssociatedHeading1 { get; internal set; }
     
-    public string? HeadingNumber { get; internal set; }
-    
     public CaptionClassifierData? CaptionData { get; internal set; }
+    
+    public HeadingClassifierData? HeadingData { get; internal set; }
     
     public bool IsEmptyOrWhitespace { get; }
     
@@ -184,7 +184,7 @@ public record ParagraphPropertiesTool
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (CaptionData != null) return ParagraphClass.Caption;
-            if (ProbablyHeading) return ParagraphClass.Heading;
+            if (ProbablyHeading || HeadingData != null) return ParagraphClass.Heading;
             if (ProbablyCodeListing) return ParagraphClass.CodeListing;
             if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
 

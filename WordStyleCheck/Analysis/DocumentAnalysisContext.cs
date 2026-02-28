@@ -95,17 +95,6 @@ public class DocumentAnalysisContext
             }
         }
 
-        int i = 1;
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-            
-            if (tool is not {Class: ParagraphClass.Heading, OutlineLevel: 0}) continue;
-
-            tool.HeadingNumber = i.ToString();
-            i += 1;
-        }
-
         if (Document.MainDocumentPart!.Document!.Body!.LastChild is SectionProperties lastSectPr)
         {
             SectionPropertiesTool section = new(this, lastSectPr)
@@ -149,6 +138,12 @@ public class DocumentAnalysisContext
         }
 
         HandmadeLists = HandmadeListClassifier.Classify(this);
+
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+            tool.HeadingData = HeadingClassifierData.Classify(tool);
+        }
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)

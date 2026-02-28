@@ -31,13 +31,18 @@ public class FigureNotReferencedLint : ILint
             {
                 foreach (Match match in option.Matches(text))
                 {
-                    foreach (var res in match.Groups[0].Value.Split(", "))
+                    foreach (var res in match.Groups[1].Value.Split(", "))
                     {
-                        referencedNumbers.Add(res);
+                        referencedNumbers.Add(res.TrimEnd('.'));
                     }
+                    
+                    if (match.Groups.Count >= 3)
+                        referencedNumbers.Add(match.Groups[2].Value.TrimEnd('.'));
                 }
             }
         }
+        
+        Console.WriteLine("Referenced figures: " + string.Join(", ", referencedNumbers));
         
         foreach (var p in ctx.Document.AllParagraphs)
         {

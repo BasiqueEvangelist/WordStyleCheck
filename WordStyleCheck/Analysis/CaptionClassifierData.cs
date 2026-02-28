@@ -138,6 +138,8 @@ public struct CaptionClassifierData
 
     public string GetCorrectText(string originalText)
     {
+        originalText = originalText.Trim();
+        
         int beginDesc = NumberSpan.EndExclusive;
 
         for (; beginDesc < originalText.Length; beginDesc++)

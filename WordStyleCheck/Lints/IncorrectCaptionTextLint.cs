@@ -13,7 +13,7 @@ public class IncorrectCaptionTextLint : ILint
             
             if (tool.CaptionData == null) continue;
 
-            string text = Utils.CollectParagraphText(p);
+            string text = Utils.CollectParagraphText(p).Trim();
             string correct = tool.CaptionData.Value.GetCorrectText(text);
 
             if (text != correct)

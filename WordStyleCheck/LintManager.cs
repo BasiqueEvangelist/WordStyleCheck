@@ -21,7 +21,7 @@ public class LintManager
         new ParagraphLineSpacingLint(
             // TODO: enforce this for numberings.
             // TODO: enforce this for table cell content, headers, captions.
-            x => x is {Class: ParagraphClass.BodyText, OfNumbering: null, OfStructuralElement: not StructuralElement.Appendix},
+            x => x is {Class: ParagraphClass.BodyText, OfNumbering: null, OfStructuralElement: not StructuralElement.Appendix, IsEmptyOrDrawing: false},
             360,
             "IncorrectTextLineSpacing"
         ),

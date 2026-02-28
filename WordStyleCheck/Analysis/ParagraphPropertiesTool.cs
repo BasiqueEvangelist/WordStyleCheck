@@ -42,7 +42,7 @@ public record ParagraphPropertiesTool
             CaptionData = CaptionClassifierData.Classify(Paragraph, false);
         }
         
-        IsEmptyOrDrawing = !Paragraph.Descendants().Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
+        IsEmptyOrDrawing = !Utils.DirectRunChildren(Paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
         IsEmptyOrWhitespace = IsEmptyOrDrawing && !Paragraph.Descendants().Any(x => x is Drawing);
     }
     

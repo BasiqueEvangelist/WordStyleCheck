@@ -5,10 +5,10 @@
   * ensure numbering of tables is continuous
   * appendix stuff? maybe
   * footnotes?
-  * check header text
+  * ensure numbering of headers is continuous
   * issues with ToC
   * page numbers
-  * formulae????
-- handle different types of references to figures
-- write GUI application (Avalonia or WinForms) for easier usage and step-by-step application of diagnostic autofixes
-- write website version for batch uploading and verification
+  * formulas
+    + warn on bad display math equations
+    + inline equations maybe???
+- handle headers with completely incorrect format

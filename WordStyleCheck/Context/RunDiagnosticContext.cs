@@ -1,4 +1,5 @@
 using System.Text;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Context;
@@ -54,13 +55,31 @@ public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
     {
         if (previous is not RunDiagnosticContext prevR) return null;
         
-        var nextAfterPrev = prevR.Runs[^1].NextSibling();
+        OpenXmlElement? nextAfterPrev = prevR.Runs[^1];
 
-        while (nextAfterPrev != Runs[0] &&
-               (nextAfterPrev is Run r && string.IsNullOrWhiteSpace(Utils.CollectText(r))))
+        do
         {
-            nextAfterPrev = nextAfterPrev.NextSibling();
-        }
+            var orig = nextAfterPrev;
+            nextAfterPrev = nextAfterPrev?.NextSibling();
+
+
+            if (nextAfterPrev == null)
+            {
+                var p = Utils.AscendToAnscestor<Paragraph>(orig);
+
+                if (p?.NextSibling() is Paragraph nextP)
+                {
+                    var children = Utils.DirectRunChildren(nextP);
+                    nextAfterPrev = children.Count < 1 ? null : Utils.DirectRunChildren(nextP)[0];
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            while (nextAfterPrev is ProofError) nextAfterPrev = nextAfterPrev.NextSibling();
+        } while (nextAfterPrev != Runs[0] && nextAfterPrev is Run r && string.IsNullOrWhiteSpace(Utils.CollectText(r)));
             
         if (nextAfterPrev != Runs[0]) return null;
 

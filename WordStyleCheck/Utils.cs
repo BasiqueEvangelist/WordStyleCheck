@@ -32,7 +32,8 @@ public class Utils
     {
         StringBuilder neededText = new();
         bool more = false;
-        foreach (var r in p.ChildElements.OfType<Run>())
+        
+        bool CollectRunText(Run r) 
         {
             foreach (var text in r.ChildElements.OfType<Text>())
             {
@@ -41,10 +42,32 @@ public class Utils
                 if (neededText.Length > needed)
                 {
                     more = true;
-                    break;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        foreach (var c in p.ChildElements)
+        {
+            if (c is Run r)
+            {
+                if (CollectRunText(r))
+                    goto outer;
+            }
+            else if (c is Hyperlink h)
+            {
+                foreach (var r2 in h.ChildElements.OfType<Run>())
+                {
+                    if (CollectRunText(r2))
+                    {
+                        goto outer;
+                    }
                 }
             }
         }
+        outer:
 
         return (neededText.ToString().Substring(0, Math.Min(needed, neededText.Length)), more);
     }

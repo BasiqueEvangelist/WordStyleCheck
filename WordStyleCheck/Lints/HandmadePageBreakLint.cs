@@ -15,20 +15,24 @@ namespace WordStyleCheck.Lints
 
             for (int i = 0; i < paragraphs.Count; i++)
             {
-                if (string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i])))
-                {
-                    emptyParagraphsCount++;
-                }
-                else
+                bool isEmpty = string.IsNullOrWhiteSpace(Utils.CollectParagraphText(paragraphs[i]));
+
+                if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
                 {
                     if (emptyParagraphsCount > 3)
                     {
                         var chosen = paragraphs[(i - emptyParagraphsCount)..i].ToList();
 
-                        ctx.AddMessage(new LintMessage("HandmadePageBreak", new ParagraphDiagnosticContext(chosen, true)));
+                        ctx.AddMessage(new LintMessage("HandmadePageBreak",
+                            new ParagraphDiagnosticContext(chosen, true)));
                     }
 
                     emptyParagraphsCount = 0;
+                }
+                
+                if (isEmpty)
+                {
+                    emptyParagraphsCount++;
                 }
             }
         }

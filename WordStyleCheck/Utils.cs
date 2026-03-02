@@ -33,7 +33,7 @@ public class Utils
         StringBuilder neededText = new();
         bool more = false;
         
-        bool CollectRunText(Run r) 
+        foreach (var r in DirectRunChildren(p))
         {
             foreach (var text in r.ChildElements.OfType<Text>())
             {
@@ -42,32 +42,10 @@ public class Utils
                 if (neededText.Length > needed)
                 {
                     more = true;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        
-        foreach (var c in p.ChildElements)
-        {
-            if (c is Run r)
-            {
-                if (CollectRunText(r))
-                    goto outer;
-            }
-            else if (c is Hyperlink h)
-            {
-                foreach (var r2 in h.ChildElements.OfType<Run>())
-                {
-                    if (CollectRunText(r2))
-                    {
-                        goto outer;
-                    }
+                    break;
                 }
             }
         }
-        outer:
 
         return (neededText.ToString().Substring(0, Math.Min(needed, neededText.Length)), more);
     }
@@ -196,8 +174,25 @@ public class Utils
                     runs.Add(r2);
                 }
             }
+            else if (c is SimpleField f)
+            {
+                foreach (var r2 in f.ChildElements.OfType<Run>())
+                {
+                    runs.Add(r2);
+                }
+            }
         }
 
         return runs;
+    }
+
+    public static bool IsWhiteSpaceOrOtherJunk(char c)
+    {
+        return char.IsWhiteSpace(c) || c == '\u200e';
+    }
+
+    public static string TrimJunk(string s)
+    {
+        return s.Trim(['\u200e', ' ', '\t']);
     }
 }

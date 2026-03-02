@@ -89,13 +89,13 @@ public struct CaptionClassifierData
         int firstPartEnd;
         for (firstPartEnd = 0; firstPartEnd < text.Length; firstPartEnd++)
         {
-            if (!(char.IsLetter(text[firstPartEnd]) || char.IsWhiteSpace(text[firstPartEnd]) || text[firstPartEnd] == '.')) 
+            if (!(char.IsLetter(text[firstPartEnd]) || Utils.IsWhiteSpaceOrOtherJunk(text[firstPartEnd]) || text[firstPartEnd] == '.')) 
                 break;
         }
 
         if (firstPartEnd >= text.Length) return null;
 
-        string firstPart = text[..firstPartEnd].ToLowerInvariant().Trim();
+        string firstPart = Utils.TrimJunk(text[..firstPartEnd].ToLowerInvariant());
         
         bool isContinuation = false;
 

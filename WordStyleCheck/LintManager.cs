@@ -64,7 +64,7 @@ public class LintManager
         new IncorrectCaptionTextLint(),
         new IncorrectCaptionedNumberingLint(CaptionType.Figure, "IncorrectFigureNumbering"),
         new IncorrectCaptionedNumberingLint(CaptionType.Table, "IncorrectTableNumbering"),
-        new FigureNotReferencedLint(),
+        new FigureTableNotReferencedLint(),
         new BibliographySourceNotReferencedLint(),
         new IncorrectHeadingTextLint(),
         new NotEnoughSourcesLint(40, "NotEnoughSources", "NoBibliography"),

@@ -11,7 +11,7 @@ public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId)
             .Select(x => ctx.Document.GetTool(x))
             .Where(x => x is
             {
-                CaptionData: not null,
+                CaptionData: { IsContinuation: false },
                 OfStructuralElement: not StructuralElement.Appendix // TODO: handle this for figures in appendices too
             } && x.CaptionData.Value.Type == type)
             .ToList();

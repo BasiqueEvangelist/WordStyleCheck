@@ -191,8 +191,8 @@ public class Utils
         return char.IsWhiteSpace(c) || c == '\u200e';
     }
 
-    public static string TrimJunk(string s)
+    public static string StripJunk(string s)
     {
-        return s.Trim(['\u200e', ' ', '\t']);
+        return s.Replace("\u200e", "").Trim();
     }
 }

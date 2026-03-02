@@ -84,7 +84,7 @@ public struct CaptionClassifierData
             }
         }
 
-        string text = Utils.CollectParagraphText(p).Trim();
+        string text = Utils.StripJunk(Utils.CollectParagraphText(p));
         
         int firstPartEnd;
         for (firstPartEnd = 0; firstPartEnd < text.Length; firstPartEnd++)
@@ -95,7 +95,7 @@ public struct CaptionClassifierData
 
         if (firstPartEnd >= text.Length) return null;
 
-        string firstPart = Utils.TrimJunk(text[..firstPartEnd].ToLowerInvariant());
+        string firstPart = Utils.StripJunk(text[..firstPartEnd].ToLowerInvariant());
         
         bool isContinuation = false;
 
@@ -128,7 +128,7 @@ public struct CaptionClassifierData
             Type = type,
             IsBelow = isBelow,
             IsContinuation = isContinuation,
-            Number = text.Substring(secondPartStart, secondPartEnd - secondPartStart).Trim().TrimEnd('.'),
+            Number = Utils.StripJunk(text.Substring(secondPartStart, secondPartEnd - secondPartStart)).TrimEnd('.'),
             
             TargetedElement = targeted,
             TypeSpan = new StringSpan(0, firstPartEnd),

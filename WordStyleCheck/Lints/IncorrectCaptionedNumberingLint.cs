@@ -3,29 +3,29 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class IncorrectFigureNumberingLint : ILint
+public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
-        var figures = ctx.Document.AllParagraphs
+        var elements = ctx.Document.AllParagraphs
             .Select(x => ctx.Document.GetTool(x))
             .Where(x => x is
             {
-                CaptionData: {Type: CaptionType.Figure},
+                CaptionData: not null,
                 OfStructuralElement: not StructuralElement.Appendix // TODO: handle this for figures in appendices too
-            })
+            } && x.CaptionData.Value.Type == type)
             .ToList();
 
         int underHeadingNumber = 0;
-        for (int i = 0; i < figures.Count; i++)
+        for (int i = 0; i < elements.Count; i++)
         {
             string correctNumber = (i + 1).ToString();
 
             underHeadingNumber += 1;
 
-            if (i > 0 && figures[i - 1].AssociatedHeading1 != figures[i].AssociatedHeading1) underHeadingNumber = 1;
+            if (i > 0 && elements[i - 1].AssociatedHeading1 != elements[i].AssociatedHeading1) underHeadingNumber = 1;
 
-            var actualNumber = figures[i].CaptionData!.Value.Number;
+            var actualNumber = elements[i].CaptionData!.Value.Number;
 
             if (actualNumber == correctNumber)
             {
@@ -33,7 +33,7 @@ public class IncorrectFigureNumberingLint : ILint
             }
 
             string? correctNumberSection = null;
-            if (figures[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber)
+            if (elements[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber)
             {
                 correctNumberSection = $"{headingNumber}.{underHeadingNumber}";
 
@@ -43,9 +43,9 @@ public class IncorrectFigureNumberingLint : ILint
                 }
             }
 
-            var actual = figures[i].CaptionData!.Value.Number;
+            var actual = elements[i].CaptionData!.Value.Number;
 
-            ctx.AddMessage(new LintMessage("IncorrectFigureNumbering", new ParagraphDiagnosticContext(figures[i].Paragraph))
+            ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
             {
                 Parameters = new()
                 {

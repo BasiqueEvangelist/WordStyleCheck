@@ -2,7 +2,6 @@
   * issues with lists
     + adjust lists to have proper properties
   * issues with tables
-  * ensure numbering of tables is continuous
   * appendix stuff? maybe
   * footnotes?
   * ensure numbering of headers is continuous

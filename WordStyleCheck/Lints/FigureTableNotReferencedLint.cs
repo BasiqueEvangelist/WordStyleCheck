@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System.Text.RegularExpressions;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
@@ -8,25 +10,26 @@ public class FigureTableNotReferencedLint : ILint
 {
     private static readonly Regex[] FigureRegexes =
     [
-        new("\\(рис\\. ([0-9\\.]+(?:, [0-9\\.]+)*)\\)", RegexOptions.Compiled),
-        new("рисунок ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("рисунки ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("рисунке ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("рисунком ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("рисунках ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
+        new("\\(рис\\. ([0-9\\.]+(?:, [0-9\\.]+)*)\\)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("рисунок ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("рисунки ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("рисунке ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("рисунком ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("рисунках ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
     ];
 
     private static readonly Regex[] TableRegexes =
     [
-        new("таблица ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("таблицы ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
-        new("таблице ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled),
+        new("табл\\. ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("таблица ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("таблицы ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new("таблице ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
     ];
 
     public void Run(LintContext ctx)
     {
-        HashSet<string> referencedFigureNumbers = [];
-        HashSet<string> referencedTableNumbers = [];
+        Dictionary<string, Paragraph> referencedFigureNumbers = [];
+        Dictionary<string, Paragraph> referencedTableNumbers = [];
 
         foreach (var other in ctx.Document.AllParagraphs)
         {
@@ -40,11 +43,21 @@ public class FigureTableNotReferencedLint : ILint
                 {
                     foreach (var res in match.Groups[1].Value.Split(", "))
                     {
-                        referencedFigureNumbers.Add(res.TrimEnd('.'));
+                        string referenced = res.TrimEnd('.');
+
+                        if (referencedFigureNumbers.ContainsKey(referenced)) continue;
+
+                        referencedFigureNumbers[referenced] = other;
                     }
-                    
+
                     if (match.Groups.Count >= 3)
-                        referencedFigureNumbers.Add(match.Groups[2].Value.TrimEnd('.'));
+                    {
+                        string referenced = match.Groups[2].Value.TrimEnd('.');
+
+                        if (referencedFigureNumbers.ContainsKey(referenced)) continue;
+
+                        referencedFigureNumbers[referenced] = other;
+                    }
                 }
             }
 
@@ -54,11 +67,21 @@ public class FigureTableNotReferencedLint : ILint
                 {
                     foreach (var res in match.Groups[1].Value.Split(", "))
                     {
-                        referencedTableNumbers.Add(res.TrimEnd('.'));
+                        string referenced = res.TrimEnd('.');
+
+                        if (referencedTableNumbers.ContainsKey(referenced)) continue;
+
+                        referencedTableNumbers[referenced] = other;
                     }
 
                     if (match.Groups.Count >= 3)
-                        referencedTableNumbers.Add(match.Groups[2].Value.TrimEnd('.'));
+                    {
+                        string referenced = match.Groups[2].Value.TrimEnd('.');
+
+                        if (referencedTableNumbers.ContainsKey(referenced)) continue;
+
+                        referencedTableNumbers[referenced] = other;
+                    }
                 }
             }
         }
@@ -69,16 +92,55 @@ public class FigureTableNotReferencedLint : ILint
 
             if ((tool.CaptionData?.Type) == CaptionType.Figure)
             {
-                if (referencedFigureNumbers.Contains(tool.CaptionData.Value.Number)) continue;
+                if (referencedFigureNumbers.TryGetValue(tool.CaptionData.Value.Number, out var firstMention))
+                {
+                    var fToplevel = FindTopLevel(p);
+                    var mToplevel = FindTopLevel(firstMention);
 
-                ctx.AddMessage(new LintMessage("FigureNotReferenced", new ParagraphDiagnosticContext(p)));
+                    var bodyList = fToplevel.Parent!.ChildElements.ToList();
+
+                    var fIdx = bodyList.IndexOf(fToplevel);
+                    var mIdx = bodyList.IndexOf(mToplevel);
+
+                    if (fIdx < mIdx)
+                    {
+                        ctx.AddMessage(new LintMessage("FigureBeforeFirstReference", new ParagraphDiagnosticContext(p)));
+                    }
+                }
+                else
+                {
+                    ctx.AddMessage(new LintMessage("FigureNotReferenced", new ParagraphDiagnosticContext(p)));
+                }
             }
             else if (tool is { CaptionData: { Type: CaptionType.Table, IsContinuation: false } })
             {
-                if (referencedTableNumbers.Contains(tool.CaptionData.Value.Number)) continue;
+                if (referencedTableNumbers.TryGetValue(tool.CaptionData.Value.Number, out var firstMention))
+                {
+                    var fToplevel = FindTopLevel(p);
+                    var mToplevel = FindTopLevel(firstMention);
 
-                ctx.AddMessage(new LintMessage("TableNotReferenced", new ParagraphDiagnosticContext(p)));
+                    var bodyList = fToplevel.Parent!.ChildElements.ToList();
+
+                    var fIdx = bodyList.IndexOf(fToplevel);
+                    var mIdx = bodyList.IndexOf(mToplevel);
+
+                    if (fIdx < mIdx)
+                    {
+                        ctx.AddMessage(new LintMessage("TableBeforeFirstReference", new ParagraphDiagnosticContext(p)));
+                    }
+                }
+                else
+                {
+                    ctx.AddMessage(new LintMessage("TableNotReferenced", new ParagraphDiagnosticContext(p)));
+                }
             }
         }
+    }
+
+    private static OpenXmlElement FindTopLevel(OpenXmlElement e)
+    {
+        while (e.Parent is not (null or Body)) e = e.Parent;
+
+        return e;
     }
 }

@@ -3,6 +3,7 @@ namespace WordStyleCheck.Analysis;
 public class HeadingClassifierData
 {
     public required string Number { get; init; }
+    public required int Level { get; init; }
     public required string Title { get; init; }
     
     public static HeadingClassifierData? Classify(ParagraphPropertiesTool p)
@@ -39,6 +40,8 @@ public class HeadingClassifierData
         if (numberSplit.Any(string.IsNullOrWhiteSpace)) return null;
         if (numberSplit.Length < 3 && p.Class != ParagraphClass.Heading) return null;
 
+        int level = numberSplit.Length;
+
         int titleBegin = numEnd;
 
         while (titleBegin < text.Length && !char.IsLetter(text[titleBegin]))
@@ -51,6 +54,7 @@ public class HeadingClassifierData
         return new HeadingClassifierData
         {
             Number = number,
+            Level = level,
             Title = title
         };
     }

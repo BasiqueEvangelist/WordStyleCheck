@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Text.RegularExpressions;
@@ -8,22 +9,39 @@ namespace WordStyleCheck.Lints;
 
 public class FigureTableNotReferencedLint : ILint
 {
+    [StringSyntax("Regex")]
+    private const string Reference = @"(?:[А-Я]\.)?[0-9]+(?:\.[0-9]+)*";
+    
+    [StringSyntax("Regex")]
+    private const string ReferenceSpan = $@"({Reference})\s*(?:-|–)\s*({Reference})";
+
+    private static readonly Regex ReferenceRegex =
+        new(Reference, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    
+    private static readonly Regex ReferenceSpanRegex =
+        new(ReferenceSpan, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    private const string ReferenceOrSpan = $@"{Reference}(\s*(?:-|–)\s*({Reference}))?";
+    
+    [StringSyntax("Regex")]
+    private const string ReferenceList = $@"{ReferenceOrSpan}(?:,\s+{ReferenceOrSpan})*(?:и\s+{ReferenceOrSpan})?"; 
+    
     private static readonly Regex[] FigureRegexes =
     [
-        new("\\(рис\\. ([0-9\\.]+(?:, [0-9\\.]+)*)\\)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("рисунок ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("рисунки ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("рисунке ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("рисунком ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("рисунках ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рис\\.\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рисунок\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рисунки\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рисунке\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рисунком\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"рисунках\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
     ];
 
     private static readonly Regex[] TableRegexes =
     [
-        new("табл\\. ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("таблица ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("таблицы ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new("таблице ([0-9\\.]+(?:, [0-9\\.]+)*)(?:и ([0-9\\.]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"табл\\.\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"таблица\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"таблицы\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new($"таблице\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
     ];
 
     public void Run(LintContext ctx)
@@ -34,58 +52,56 @@ public class FigureTableNotReferencedLint : ILint
         foreach (var other in ctx.Document.AllParagraphs)
         {
             if (ctx.Document.GetTool(other).Class == ParagraphClass.Caption) continue;
-                
+
             var text = Utils.CollectParagraphText(other);
-                
-            foreach (var option in FigureRegexes)
+
+            void AddMatches(Dictionary<string, Paragraph> referencedNumbers, Regex[] regexes)
             {
-                foreach (Match match in option.Matches(text))
+                foreach (var option in regexes)
                 {
-                    foreach (var res in match.Groups[1].Value.Split(", "))
+                    foreach (Match match in option.Matches(text))
                     {
-                        string referenced = res.TrimEnd('.');
+                        string matched = match.Value;
 
-                        if (referencedFigureNumbers.ContainsKey(referenced)) continue;
+                        foreach (Match subMatch in ReferenceRegex.Matches(matched))
+                        {
+                            string referenced = subMatch.Value.TrimEnd('.');
 
-                        referencedFigureNumbers[referenced] = other;
-                    }
+                            referencedNumbers.TryAdd(referenced, other);
+                        }
 
-                    if (match.Groups.Count >= 3)
-                    {
-                        string referenced = match.Groups[2].Value.TrimEnd('.');
+                        foreach (Match subMatch in ReferenceSpanRegex.Matches(matched))
+                        {
+                            string start = subMatch.Groups[1].Value;
+                            string end = subMatch.Groups[2].Value;
 
-                        if (referencedFigureNumbers.ContainsKey(referenced)) continue;
+                            string[] startSplit = start.Split(".");
+                            string[] endSplit = end.Split(".");
 
-                        referencedFigureNumbers[referenced] = other;
+                            if (startSplit.Length != endSplit.Length) continue;
+                            if (!startSplit[..^1].SequenceEqual(endSplit[..^1])) continue;
+
+                            if (!int.TryParse(startSplit[^1], out var startNum)) continue;
+                            if (!int.TryParse(endSplit[^1], out var endNum)) continue;
+
+                            for (int i = startNum; i <= endNum; i++)
+                            {
+                                startSplit[^1] = i.ToString();
+
+                                string referenced = string.Join(".", startSplit);
+
+                                referencedNumbers.TryAdd(referenced, other);
+                            }
+                        }
                     }
                 }
             }
 
-            foreach (var option in TableRegexes)
-            {
-                foreach (Match match in option.Matches(text))
-                {
-                    foreach (var res in match.Groups[1].Value.Split(", "))
-                    {
-                        string referenced = res.TrimEnd('.');
+            AddMatches(referencedFigureNumbers, FigureRegexes);
 
-                        if (referencedTableNumbers.ContainsKey(referenced)) continue;
-
-                        referencedTableNumbers[referenced] = other;
-                    }
-
-                    if (match.Groups.Count >= 3)
-                    {
-                        string referenced = match.Groups[2].Value.TrimEnd('.');
-
-                        if (referencedTableNumbers.ContainsKey(referenced)) continue;
-
-                        referencedTableNumbers[referenced] = other;
-                    }
-                }
-            }
+            AddMatches(referencedTableNumbers, TableRegexes);
         }
-        
+
         foreach (var p in ctx.Document.AllParagraphs)
         {
             var tool = ctx.Document.GetTool(p);

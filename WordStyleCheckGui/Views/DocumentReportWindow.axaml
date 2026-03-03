@@ -22,11 +22,11 @@
 								<ItemsControl ItemsSource="{Binding Context}">
 									<ItemsControl.ItemTemplate>
 										<DataTemplate DataType="wscc:DiagnosticContextLine">
-											<StackPanel Orientation="Horizontal">
-												<TextBlock Text="{Binding Before}" />
-												<TextBlock Text="{Binding Text}" />
-												<TextBlock Text="{Binding After}" />
-											</StackPanel>
+											<TextBlock>
+												<Run Text="{Binding Before}" />
+												<Run Text="{Binding Text}" TextDecorations="Underline" />
+												<Run Text="{Binding After}" />
+											</TextBlock>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>

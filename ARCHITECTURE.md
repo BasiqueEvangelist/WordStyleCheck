@@ -163,12 +163,14 @@ Warns if there are not enough sources, or if there is no bibliography at all.
 
 Instantiated to generate `NotEnoughSources` and `NoBibliography`.
 
+<!--
 ### `IncorrectOutlineLevelLint`
 Checks the outline level (i.e. the level in the ToC) of paragraphs.
 
 Instantiated to generate `BodyTextInToC`.  
 Instantiated to generate `IncorrectHeaderOutlineLevel`.  
 Instantiated to generate `SubPointsInToC`.
+-->
 
 ### `TextFontLint`
 Warns if text is not written in Times New Roman.

@@ -23,7 +23,7 @@
 							<StackPanel>
 	                            <TextBlock Text="{Binding FileName}"/>
 
-								<StackPanel IsVisible="{Binding Done}">
+								<StackPanel IsVisible="{Binding IsSuccess}">
 								    <TextBlock Text="{Binding TotalDiagnosticsText}"/>
 								    <StackPanel Orientation="Horizontal">
 									    <!-- <Button Margin="0 0 5 0">Save text report</Button> -->
@@ -33,7 +33,9 @@
 								    </StackPanel>
 								</StackPanel>
 
-								<TextBlock Text="Загрузка..." IsVisible="{Binding InProgress}"/>
+								<TextBlock Text="{Binding Error}" IsVisible="{Binding IsError}"/>
+	                            
+	                            <TextBlock Text="Загрузка..." IsVisible="{Binding InProgress}"/>
 							</StackPanel>
 						</Border>
 	                </DataTemplate>

@@ -23,6 +23,8 @@ public partial class DocumentViewModel : ViewModelBase
     private readonly string _path;
     private readonly string _fileName;
     private DocumentLinter? _linter;
+
+    private Exception? _exception;
  
     public DocumentViewModel(string path)
     {
@@ -31,13 +33,22 @@ public partial class DocumentViewModel : ViewModelBase
 
         var thread = new Thread(() =>
         {
-            _linter = new DocumentLinter(path);
-            _linter.RunLints();
+            try
+            {
+                _linter = new DocumentLinter(path);
+                _linter.RunLints();
+            }
+            catch (Exception e)
+            {
+                _exception = e;
+            }
 
             Dispatcher.UIThread.Post(() =>
             {
                 Done = true;
-                CanSave = true;
+                
+                if (_exception == null)
+                    CanSave = true;
             });
         })
         {
@@ -54,10 +65,19 @@ public partial class DocumentViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(InProgress))]
+    [NotifyPropertyChangedFor(nameof(IsError))]
+    [NotifyPropertyChangedFor(nameof(Error))]
+    [NotifyPropertyChangedFor(nameof(IsSuccess))]
     [NotifyPropertyChangedFor(nameof(TotalDiagnosticsText))]
     private bool _done;
 
     public bool InProgress => !Done;
+
+    public bool IsSuccess => Done &&  _exception == null;
+    
+    public bool IsError => Done && _exception != null;
+
+    public Exception? Error => _exception;
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAnnotated()

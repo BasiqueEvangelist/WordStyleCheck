@@ -163,6 +163,33 @@ public class DocumentAnalysisContext
 
             tool.ProbablyCodeListing = isListing;
         }
+
+        HashSet<OpenXmlElement> continuationTables = [];
+        foreach (var p in AllParagraphs)
+        {
+            if (GetTool(p) is { CaptionData: { IsContinuation: true, Type: CaptionType.Table, TargetedElement: { } targeted } })
+            {
+                continuationTables.Add(targeted);
+            }
+        }
+
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+
+            if (tool.ContainingTableRow is not { } tr) continue;
+
+            var table = (Table?)tr.Parent;
+
+            if (table == null || continuationTables.Contains(table)) continue;
+
+            int rowIndex = table.ChildElements.ToList().IndexOf(tr);
+
+            if (rowIndex == 0)
+            {
+                tool.ProbablyTableColumnHeader = true;
+            }
+        }
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)

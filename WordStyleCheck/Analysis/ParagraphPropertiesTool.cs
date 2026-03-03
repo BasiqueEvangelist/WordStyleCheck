@@ -131,6 +131,8 @@ public record ParagraphPropertiesTool
 
     public string? RunStyleId { get; }
 
+    public TableRow? ContainingTableRow => Utils.AscendToAnscestor<TableRow>(Paragraph);
+
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
     
     public TextBoxContent? ContainingTextBox => Utils.AscendToAnscestor<TextBoxContent>(Paragraph);
@@ -141,6 +143,8 @@ public record ParagraphPropertiesTool
     public bool ProbablyHeading { get; }
 
     public bool ProbablyCodeListing { get; internal set; }
+
+    public bool ProbablyTableColumnHeader { get; internal set; }
 
     public int? NumberingId => FollowPropertyChain(
         x => x.NumberingProperties?.NumberingId?.Val?.Value,
@@ -178,6 +182,7 @@ public record ParagraphPropertiesTool
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (CaptionData != null) return ParagraphClass.Caption;
             if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
+            if (ProbablyTableColumnHeader) return ParagraphClass.TableColumnHeader;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (ProbablyHeading || HeadingData != null) return ParagraphClass.Heading;
             if (ProbablyCodeListing) return ParagraphClass.CodeListing;
@@ -219,6 +224,7 @@ public enum ParagraphClass
     BodyText,
     StructuralElementHeader,
     Heading, // TODO: Headings of different levels.
+    TableColumnHeader,
     TableContent,
     Caption,
     TableOfContents,

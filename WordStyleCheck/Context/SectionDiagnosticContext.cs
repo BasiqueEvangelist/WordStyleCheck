@@ -5,6 +5,13 @@ namespace WordStyleCheck.Context;
 
 public record SectionDiagnosticContext(SectionPropertiesTool Section) : IDiagnosticContext
 {
+    public List<DiagnosticContextLine> Lines => Section.Paragraphs.Select(x =>
+    {
+        var text = Utils.CollectParagraphText(x, 25);
+
+        return new DiagnosticContextLine("", text.Text, text.More ? "…" : "");
+    }).ToList();
+
     public void WriteToConsole()
     {
         // TODO: write proper context.

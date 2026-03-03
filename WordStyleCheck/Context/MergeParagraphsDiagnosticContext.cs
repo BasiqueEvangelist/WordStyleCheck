@@ -4,6 +4,17 @@ namespace WordStyleCheck.Context;
 
 public record MergeParagraphsDiagnosticContext(Paragraph First, Paragraph Second) : IDiagnosticContext
 {
+    public List<DiagnosticContextLine> Lines
+    {
+        get
+        {
+            var fText = Utils.CollectParagraphText(First);
+            var sText = Utils.CollectParagraphText(Second);
+
+            return [new(fText[Math.Max(fText.Length - 25, 0)..], "¶", sText[..Math.Min(sText.Length, 25)])];
+        }
+    }
+
     public void WriteToConsole()
     {
         var fText = Utils.CollectParagraphText(First);

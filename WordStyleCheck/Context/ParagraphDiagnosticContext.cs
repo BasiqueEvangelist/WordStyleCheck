@@ -4,6 +4,13 @@ namespace WordStyleCheck.Context;
 
 public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool DisableMerging = false) : IDiagnosticContext
 {
+    public List<DiagnosticContextLine> Lines => Paragraphs.Select(x =>
+    {
+        var text = Utils.CollectParagraphText(x, 25);
+
+        return new DiagnosticContextLine("", text.Text, text.More ? "…" : "");
+    }).ToList();
+
     public ParagraphDiagnosticContext(Paragraph p) : this([p]) { }
     
     public void WriteToConsole()

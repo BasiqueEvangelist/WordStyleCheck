@@ -10,7 +10,7 @@ public class Utils
     {
         // TODO: StringBuilder.
         string text = "";
-        bool first = false;
+        bool first = true;
 
         foreach (var el in elements)
         {

@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace WordStyleCheckGui.ViewModels;
 
 public partial class DocumentViewModel : ViewModelBase
 {
+    private static readonly DiagnosticTranslationsFile translations = DiagnosticTranslationsFile.LoadEmbedded();
+
     private readonly string _path;
     private readonly string _fileName;
     private DocumentLinter? _linter;
@@ -45,6 +48,8 @@ public partial class DocumentViewModel : ViewModelBase
 
     public string FileName => _fileName;
 
+    public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(translations, x)).ToList();
+
     public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок ({_linter.Diagnostics.Count(x => x.AutoFix != null)} автоисправляемых)";
 
     [ObservableProperty]
@@ -71,8 +76,6 @@ public partial class DocumentViewModel : ViewModelBase
         });
 
         if (file == null) return;
-
-        var translations = DiagnosticTranslationsFile.LoadEmbedded();
 
         foreach (var message in _linter!.Diagnostics)
         {
@@ -101,13 +104,21 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        // TODO: make this not an absolute path.
-        var translations = DiagnosticTranslationsFile.LoadEmbedded();
-
         _linter!.RunAutofixes();
 
         _linter.SaveTo(file.TryGetLocalPath()!);
         CanSave = false;
+    }
+
+    [RelayCommand]
+    private void OpenWindow()
+    {
+        var window = new DocumentReportWindow()
+        {
+            DataContext = this
+        };
+
+        window.Show();
     }
 
     [ObservableProperty]

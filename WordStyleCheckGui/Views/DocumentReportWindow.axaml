@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:WordStyleCheckGui.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:wscc="using:WordStyleCheck.Context"
+		Width="640"
+		Height="480"
+        mc:Ignorable="d"
+        x:Class="WordStyleCheckGui.DocumentReportWindow"
+		x:DataType="vm:DocumentViewModel"
+        Title="{Binding FileName}">
+	<ScrollViewer>
+		<StackPanel>
+			<ItemsControl ItemsSource="{Binding Diagnostics}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="vm:DiagnosticViewModel">
+						<Border Padding="5 5 5 5" BorderBrush="blue" BorderThickness="2" Margin="2 2 2 2">
+							<StackPanel>
+								<TextBlock Text="{Binding TranslatedDescription}" Margin="0 0 0 25"/>
+
+								<ItemsControl ItemsSource="{Binding Context}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate DataType="wscc:DiagnosticContextLine">
+											<StackPanel Orientation="Horizontal">
+												<TextBlock Text="{Binding Before}" />
+												<TextBlock Text="{Binding Text}" />
+												<TextBlock Text="{Binding After}" />
+											</StackPanel>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+	</ScrollViewer>
+</Window>

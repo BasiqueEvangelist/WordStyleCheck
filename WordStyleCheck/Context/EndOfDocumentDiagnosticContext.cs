@@ -4,6 +4,8 @@ namespace WordStyleCheck.Context;
 
 public record EndOfDocumentDiagnosticContext(Paragraph EndParagraph) : IDiagnosticContext
 {
+    public List<DiagnosticContextLine> Lines => [];
+
     public void WriteToConsole()
     {
         

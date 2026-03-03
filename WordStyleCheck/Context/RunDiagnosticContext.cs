@@ -6,6 +6,24 @@ namespace WordStyleCheck.Context;
 
 public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
 {
+    public List<DiagnosticContextLine> Lines
+    {
+        get
+        {
+            StringBuilder text = new StringBuilder();
+
+            foreach (var r in Runs)
+            {
+                foreach (var t in r.Descendants<Text>())
+                {
+                    text.Append(t.Text);
+                }
+            }
+
+            return [new("…", Utils.Truncate(text.ToString()), "…")];
+        }
+    }
+
     public RunDiagnosticContext(Run r) : this([r]) { }
 
     public void WriteToConsole()

@@ -29,4 +29,10 @@
   <ItemGroup>
     <ProjectReference Include="..\WordStyleCheck\WordStyleCheck.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\DocumentReportWindow.axaml.cs">
+      <DependentUpon>DocumentReportWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

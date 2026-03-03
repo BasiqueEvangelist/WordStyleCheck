@@ -21,7 +21,7 @@ public class HeadingClassifierData
         if (p.OfNumbering is NumberingPropertiesTool numbering)
         {
             numEnd = 0;
-            number = numbering.GetNumber(p.Paragraph);
+            number = numbering.GetNumber(p.Paragraph).TrimEnd('.');
         }
         else
         {

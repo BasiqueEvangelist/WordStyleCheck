@@ -8,8 +8,9 @@ public static class LintMerger
         for (int i = 1; i < messages.Count; i++)
         {
             if (messages[i - 1].Id != messages[i].Id) continue;
-            // TODO: check for equal parameters, actually
-            //if (messages[i - 1].Parameters != messages[i].Parameters) continue;
+            // TODO: make this more efficient.
+            if ((messages[i - 1].Parameters == null) != (messages[i].Parameters == null)) continue;
+            if (messages[i - 1].Parameters != null && messages[i - 1].Parameters!.Except(messages[i].Parameters!).Any()) continue;
 
             var newContext = messages[i].Context.TryMerge(messages[i - 1].Context);
 

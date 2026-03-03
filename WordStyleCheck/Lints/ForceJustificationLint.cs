@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate, JustificationValues justification, string messageId) : ILint
+public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate, List<JustificationValues> justification, string messageId) : ILint
 {
     public void Run(LintContext ctx)
     {
@@ -14,7 +14,7 @@ public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate
             
             if (!predicate(tool)) continue;
 
-            if (tool.Justification != justification)
+            if (!justification.Contains(tool.Justification ?? JustificationValues.Left))
             {
                 ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(p))
                 {
@@ -27,7 +27,7 @@ public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate
                         if (p.ParagraphProperties.Justification == null)
                             p.ParagraphProperties.Justification = new Justification();
 
-                        p.ParagraphProperties.Justification.Val = justification;
+                        p.ParagraphProperties.Justification.Val = justification[0];
 ;                   }
                 });
             }

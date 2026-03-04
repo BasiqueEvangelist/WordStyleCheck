@@ -40,7 +40,7 @@ namespace WordStyleCheck
                 {
                     foreach (var entry in parameters.OrderByDescending(x => x.Key))
                     {
-                        text.Text = text.Text.Replace("$" + entry.Key, entry.Value);
+                        text.Text = text.Text.Replace("${" + entry.Key + "}", entry.Value);
                     }
                 }
             }

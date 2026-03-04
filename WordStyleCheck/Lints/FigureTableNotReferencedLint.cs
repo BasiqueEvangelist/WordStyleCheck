@@ -26,23 +26,9 @@ public class FigureTableNotReferencedLint : ILint
     [StringSyntax("Regex")]
     private const string ReferenceList = $@"{ReferenceOrSpan}(?:,\s+{ReferenceOrSpan})*(?:и\s+{ReferenceOrSpan})?"; 
     
-    private static readonly Regex[] FigureRegexes =
-    [
-        new($"рис\\.\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"рисунок\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"рисунки\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"рисунке\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"рисунком\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"рисунках\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-    ];
+    private static readonly Regex FigureRegex = new($"(рис\\.|рисунок|рисунки|рисунке|рисунком|рисунках)\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    private static readonly Regex[] TableRegexes =
-    [
-        new($"табл\\.\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"таблица\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"таблицы\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-        new($"таблице\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-    ];
+    private static readonly Regex TableRegex = new($"(табл\\.|таблица|таблицы|таблице)\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public IReadOnlyList<string> EmittedDiagnostics { get; } =
     [
@@ -60,51 +46,47 @@ public class FigureTableNotReferencedLint : ILint
 
             var text = Utils.CollectParagraphText(other);
 
-            void AddMatches(Dictionary<string, Paragraph> referencedNumbers, Regex[] regexes)
+            void AddMatches(Dictionary<string, Paragraph> referencedNumbers, Regex regex)
             {
-                foreach (var option in regexes)
+                foreach (Match match in regex.Matches(text))
                 {
-                    foreach (Match match in option.Matches(text))
-                    {
-                        string matched = match.Value;
+                    string matched = match.Value;
 
-                        foreach (Match subMatch in ReferenceRegex.Matches(matched))
+                    foreach (Match subMatch in ReferenceRegex.Matches(matched))
+                    {
+                        string referenced = subMatch.Value.TrimEnd('.');
+
+                        referencedNumbers.TryAdd(referenced, other);
+                    }
+
+                    foreach (Match subMatch in ReferenceSpanRegex.Matches(matched))
+                    {
+                        string start = subMatch.Groups[1].Value;
+                        string end = subMatch.Groups[2].Value;
+
+                        string[] startSplit = start.Split(".");
+                        string[] endSplit = end.Split(".");
+
+                        if (startSplit.Length != endSplit.Length) continue;
+                        if (!startSplit[..^1].SequenceEqual(endSplit[..^1])) continue;
+
+                        if (!int.TryParse(startSplit[^1], out var startNum)) continue;
+                        if (!int.TryParse(endSplit[^1], out var endNum)) continue;
+
+                        for (int i = startNum; i <= endNum; i++)
                         {
-                            string referenced = subMatch.Value.TrimEnd('.');
+                            startSplit[^1] = i.ToString();
+
+                            string referenced = string.Join(".", startSplit);
 
                             referencedNumbers.TryAdd(referenced, other);
-                        }
-
-                        foreach (Match subMatch in ReferenceSpanRegex.Matches(matched))
-                        {
-                            string start = subMatch.Groups[1].Value;
-                            string end = subMatch.Groups[2].Value;
-
-                            string[] startSplit = start.Split(".");
-                            string[] endSplit = end.Split(".");
-
-                            if (startSplit.Length != endSplit.Length) continue;
-                            if (!startSplit[..^1].SequenceEqual(endSplit[..^1])) continue;
-
-                            if (!int.TryParse(startSplit[^1], out var startNum)) continue;
-                            if (!int.TryParse(endSplit[^1], out var endNum)) continue;
-
-                            for (int i = startNum; i <= endNum; i++)
-                            {
-                                startSplit[^1] = i.ToString();
-
-                                string referenced = string.Join(".", startSplit);
-
-                                referencedNumbers.TryAdd(referenced, other);
-                            }
                         }
                     }
                 }
             }
 
-            AddMatches(referencedFigureNumbers, FigureRegexes);
-
-            AddMatches(referencedTableNumbers, TableRegexes);
+            AddMatches(referencedFigureNumbers, FigureRegex);
+            AddMatches(referencedTableNumbers, TableRegex);
         }
 
         foreach (var p in ctx.Document.AllParagraphs)

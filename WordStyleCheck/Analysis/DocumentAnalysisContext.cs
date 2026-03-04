@@ -284,7 +284,6 @@ public class DocumentAnalysisContext
         c.Append(translation);
 
         commentsPart.Comments.AppendChild(c);
-        commentsPart.Comments.Save();
     }
 
     public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;

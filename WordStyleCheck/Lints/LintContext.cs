@@ -10,11 +10,11 @@ public class LintContext(DocumentAnalysisContext document, bool generateRevision
 
     public List<LintMessage> Messages { get; } = [];
 
-    public Predicate<LintMessage> LintFilter { get; set; } = _ => true;
+    public Predicate<string> LintIdFilter { get; set; } = _ => true;
     
     public void AddMessage(LintMessage message)
     {
-        if (!LintFilter(message)) return;
+        if (!LintIdFilter(message.Id)) return;
         
         Messages.Add(message);
     }

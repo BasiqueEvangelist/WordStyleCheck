@@ -83,6 +83,9 @@ public class LintManager
     {
         foreach (var lint in _lints)
         {
+            if (!lint.EmittedDiagnostics.Any(ctx.LintIdFilter.Invoke))
+                continue;
+            
             using (new LoudStopwatch(lint.GetType().Name))
             {
                 try

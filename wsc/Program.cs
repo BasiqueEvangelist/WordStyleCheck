@@ -113,14 +113,14 @@ root.SetAction(res =>
             if (only != null)
             {
                 var set = only.Split(",").ToHashSet();
-                linter.LintFilter = lint => set.Contains(lint.Id);
+                linter.LintIdFilter = lint => set.Contains(lint);
             }
 
             string? ignore = res.GetValue(ignoreOpt);
             if (ignore != null)
             {
                 var set = ignore.Split(",").ToHashSet();
-                linter.LintFilter = lint => !set.Contains(lint.Id);
+                linter.LintIdFilter = lint => !set.Contains(lint);
             }
 
             linter.RunLints();

@@ -49,10 +49,10 @@ namespace WordStyleCheck
 
         public List<LintMessage> Diagnostics => _lintCtx.Messages;
 
-        public Predicate<LintMessage> LintFilter
+        public Predicate<string> LintIdFilter
         {
-            get => _lintCtx.LintFilter;
-            set => _lintCtx.LintFilter = value;
+            get => _lintCtx.LintIdFilter;
+            set => _lintCtx.LintIdFilter = value;
         }
 
         public DocumentAnalysisContext DocumentAnalysis => _analysisCtx;

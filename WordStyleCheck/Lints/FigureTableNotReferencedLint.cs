@@ -42,9 +42,11 @@ public class FigureTableNotReferencedLint : ILint
 
         foreach (var other in ctx.Document.AllParagraphs)
         {
-            if (ctx.Document.GetTool(other).Class == ParagraphClass.Caption) continue;
+            var oTool = ctx.Document.GetTool(other);
+            
+            if (oTool.Class == ParagraphClass.Caption) continue;
 
-            var text = Utils.CollectParagraphText(other);
+            var text = oTool.Contents;
 
             void AddMatches(Dictionary<string, Paragraph> referencedNumbers, Regex regex)
             {

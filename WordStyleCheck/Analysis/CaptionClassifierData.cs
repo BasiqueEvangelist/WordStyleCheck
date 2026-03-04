@@ -15,7 +15,7 @@ public struct CaptionClassifierData
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
     
-    public static CaptionClassifierData? Classify(Paragraph p, bool secondPass)
+    public static CaptionClassifierData? Classify(ParagraphPropertiesTool p, bool secondPass)
     {
         CaptionType type;
         bool isBelow;
@@ -23,13 +23,13 @@ public struct CaptionClassifierData
         
         if (!secondPass)
         {
-            if (p.Descendants<Picture>().Any())
+            if (p.Paragraph.Descendants<Picture>().Any())
             {
                 type = CaptionType.Figure;
                 targeted = null;
 
                 isBelow = false;
-                foreach (var desc in p.Descendants())
+                foreach (var desc in p.Paragraph.Descendants())
                 {
                     if (desc is Picture)
                     {
@@ -47,16 +47,16 @@ public struct CaptionClassifierData
                 if (!isBelow != secondPass)
                     return null;
             }
-            else if (p.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
+            else if (p.Paragraph.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
             {
                 type = CaptionType.Figure;
-                targeted = p.PreviousSibling()!;
+                targeted = p.Paragraph.PreviousSibling()!;
                 isBelow = true;
             }
-            else if (p.NextSibling() is Table)
+            else if (p.Paragraph.NextSibling() is Table)
             {
                 type = CaptionType.Table;
-                targeted = p.NextSibling()!;
+                targeted = p.Paragraph.NextSibling()!;
                 isBelow = false;
             }
             else
@@ -66,16 +66,16 @@ public struct CaptionClassifierData
         }
         else
         {
-            if (p.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
+            if (p.Paragraph.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
             {
                 type = CaptionType.Figure;
-                targeted = p.NextSibling()!;
+                targeted = p.Paragraph.NextSibling()!;
                 isBelow = false;
             }
-            else if (p.PreviousSibling() is Table)
+            else if (p.Paragraph.PreviousSibling() is Table)
             {
                 type = CaptionType.Table;
-                targeted = p.PreviousSibling()!;
+                targeted = p.Paragraph.PreviousSibling()!;
                 isBelow = true;
             }
             else
@@ -84,7 +84,7 @@ public struct CaptionClassifierData
             }
         }
 
-        string text = Utils.StripJunk(Utils.CollectParagraphText(p));
+        string text = p.Contents;
         
         int firstPartEnd;
         for (firstPartEnd = 0; firstPartEnd < text.Length; firstPartEnd++)

@@ -33,12 +33,12 @@ public class NeedlessParagraphLint : ILint
             
             if (prevTool.OfNumbering != null || curTool.OfNumbering != null) continue;
 
-            var prevParagraphText = Utils.CollectParagraphText(paragraphs[i - 1]).TrimEnd();
+            var prevParagraphText = prevTool.Contents.TrimEnd();
             
             if (prevParagraphText.Length == 0 || !char.IsLower(prevParagraphText[^1]))
                 continue;
 
-            var paraText = Utils.CollectParagraphText(paragraphs[i]);
+            var paraText = curTool.Contents;
             
             if (char.IsUpper(paraText[0]))
                 continue;

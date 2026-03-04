@@ -11,9 +11,11 @@ public class HandmadeListClassifier
         
         foreach (var p in ctx.AllParagraphs)
         {
-            if (ctx.GetTool(p).Class != ParagraphClass.BodyText) continue;
+            var tool = ctx.GetTool(p);
             
-            string text = Utils.CollectParagraphText(p).Trim();
+            if (tool.Class != ParagraphClass.BodyText) continue;
+            
+            string text = tool.Contents.Trim();
 
             if (text.StartsWith("-") || text.StartsWith("—") || text.StartsWith("•"))
             {

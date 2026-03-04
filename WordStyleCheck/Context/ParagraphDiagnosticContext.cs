@@ -61,6 +61,8 @@ public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool Disabl
     public IDiagnosticContext? TryMerge(IDiagnosticContext previous)
     {
         if (previous is not ParagraphDiagnosticContext prevP) return null;
+
+        if (prevP.DisableMerging || DisableMerging) return null;
         
         if (prevP.Paragraphs[^1].NextSibling() != Paragraphs[0]) return null;
 

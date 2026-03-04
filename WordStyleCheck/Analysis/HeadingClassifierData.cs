@@ -12,7 +12,7 @@ public class HeadingClassifierData
         if (p.IsEmptyOrDrawing) return null;
         if (p.Class is not (ParagraphClass.BodyText or ParagraphClass.Heading)) return null;
         
-        string text = Utils.CollectParagraphText(p.Paragraph).Trim();
+        string text = p.Contents;
 
         if (text.Length < 1) return null;
 

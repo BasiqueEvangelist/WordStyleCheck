@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -8,12 +9,28 @@ namespace WordStyleCheck.Analysis;
 public record RunPropertiesTool
 {
     private readonly DocumentAnalysisContext _ctx;
+    private readonly ParagraphPropertiesTool _parent;
     public Run Run { get; }
  
-    public RunPropertiesTool(DocumentAnalysisContext ctx, Run Run)
+    public RunPropertiesTool(DocumentAnalysisContext ctx, ParagraphPropertiesTool parent, Run Run)
     {
         this._ctx = ctx;
+        _parent = parent;
         this.Run = Run;
+        
+        StringBuilder contents = new();
+
+        foreach (var t in Run.ChildElements.OfType<Text>())
+        {
+            contents.Append(t.Text);
+        }
+
+        Contents = contents.ToString();
+
+        if (Caps)
+        {
+            Contents = Contents.ToUpper();
+        }
     }
 
     public string? AsciiFont => FollowPropertyChain(
@@ -34,7 +51,15 @@ public record RunPropertiesTool
         x => Utils.ConvertOnOffType(x.Bold)
     ) ?? false;
     
-    public Paragraph? ContainingParagraph => Utils.AscendToAnscestor<Paragraph>(Run);
+    public bool Caps => FollowPropertyChain(
+        x => Utils.ConvertOnOffType(x.Caps),
+        x => Utils.ConvertOnOffType(x.Caps),
+        x => Utils.ConvertOnOffType(x.Caps)
+    ) ?? false;
+    
+    public Paragraph ContainingParagraph => _parent.Paragraph;
+    
+    public string Contents { get; }
 
     private T? FollowPropertyChain<T>(Func<RunProperties, T?> getter, Func<StyleRunProperties, T?> styleGetter, Func<RunPropertiesBaseStyle, T?> baseStyleGetter)
     {
@@ -76,20 +101,17 @@ public record RunPropertiesTool
                 return result;
         }
 
-        if (ContainingParagraph != null)
         {
-            ParagraphPropertiesTool pTool = _ctx.GetTool(ContainingParagraph);
-
             // TODO: figure out in which order these two should go... or whether we should process linked styles at all...
             
-            if (pTool.RunStyleId is {} rStyleId)
+            if (_parent.RunStyleId is {} rStyleId)
             {
                 var result = FollowRunStyleChain(StyleValues.Character, rStyleId);
                 if (result != null)
                     return result;
             }
             
-            if (pTool.Style?.StyleId?.Value is { } pStyleId)
+            if (_parent.Style?.StyleId?.Value is { } pStyleId)
             {
                 var result = FollowRunStyleChain(StyleValues.Paragraph, pStyleId);
                 if (result != null)

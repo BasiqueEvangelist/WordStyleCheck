@@ -17,7 +17,7 @@ public class CorrectStructuralElementHeaderLint : ILint
             if (tool.StructuralElementHeader == null) continue;
             if (tool.StructuralElementHeader == StructuralElement.Appendix) continue;
 
-            var text = Utils.CollectParagraphText(p).Trim();
+            var text = tool.Contents.Trim();
             var proper = StructuralElementHeaderClassifier.GetProperName(tool.StructuralElementHeader.Value);
 
             if (text != proper)

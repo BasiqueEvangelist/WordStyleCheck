@@ -127,7 +127,7 @@ public class DocumentAnalysisContext
 
             if (tool.Class != ParagraphClass.BodyText) continue;
 
-            var caption = CaptionClassifierData.Classify(p, true);
+            var caption = CaptionClassifierData.Classify(tool, true);
             
             if (!caption.HasValue) continue;
             
@@ -202,11 +202,13 @@ public class DocumentAnalysisContext
         return tool;
     }
     
-    public RunPropertiesTool GetTool(Run r)
+    public RunPropertiesTool GetTool(Run r, ParagraphPropertiesTool? parent = null)
     {
         if (_runTools.TryGetValue(r, out var tool)) return tool;
+
+        if (parent == null) parent = GetTool(Utils.AscendToAnscestor<Paragraph>(r)!);
         
-        tool = new RunPropertiesTool(this, r);
+        tool = new RunPropertiesTool(this, parent, r);
         _runTools[r] = tool;
 
         return tool;

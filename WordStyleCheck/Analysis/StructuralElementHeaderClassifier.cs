@@ -33,10 +33,8 @@ public static class StructuralElementHeaderClassifier
         return Names[element][0];
     }
     
-    public static StructuralElement? Classify(Paragraph p)
+    public static StructuralElement? Classify(string text)
     {
-        string text = Utils.CollectParagraphText(p);
-
         if (text.Length > 100) return null;
 
         if (ClassifyAppendixHeader(text))

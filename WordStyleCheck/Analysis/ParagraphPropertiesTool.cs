@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Text;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -7,12 +8,19 @@ namespace WordStyleCheck.Analysis;
 public record ParagraphPropertiesTool
 {
     private readonly DocumentAnalysisContext _ctx;
-    public Paragraph Paragraph { get; init; }
+    public Paragraph Paragraph { get; }
 
     internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph Paragraph)
     {
         _ctx = ctx;
         this.Paragraph = Paragraph;
+
+        StringBuilder contents = new();
+        foreach (var r in Utils.DirectRunChildren(Paragraph))
+        {
+            contents.Append(ctx.GetTool(r, this).Contents);
+        }
+        Contents = Utils.StripJunk(contents.ToString());
        
         string? styleId = Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
         
@@ -38,13 +46,15 @@ public record ParagraphPropertiesTool
 
         if (!IsTableOfContents && ContainingTableCell == null)
         {
-            StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Paragraph);
-            CaptionData = CaptionClassifierData.Classify(Paragraph, false);
+            StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Contents);
+            CaptionData = CaptionClassifierData.Classify(this, false);
         }
         
         IsEmptyOrDrawing = !Utils.DirectRunChildren(Paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
         IsEmptyOrWhitespace = IsEmptyOrDrawing && !Paragraph.Descendants().Any(x => x is Drawing);
     }
+    
+    public string Contents { get; }
     
     public int? FirstLineIndent
     {

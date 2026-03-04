@@ -16,7 +16,7 @@ public class IncorrectHeadingTextLint : ILint
             
             if (tool.HeadingData == null) continue;
 
-            string text = Utils.CollectParagraphText(p);
+            string text = tool.Contents;
             
             string correct;
             if (tool.OfNumbering is NumberingPropertiesTool)

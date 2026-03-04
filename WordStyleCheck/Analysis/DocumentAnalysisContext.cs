@@ -21,6 +21,8 @@ public class DocumentAnalysisContext
     public Style? DefaultParagraphStyle { get; }
 
     public List<HandmadeListClassifier.SniffedListData> HandmadeLists { get; }
+    
+    public Dictionary<string, BookmarkStart> BookmarkStarts { get; }
 
     public DocumentAnalysisContext(WordprocessingDocument document)
     {
@@ -190,6 +192,10 @@ public class DocumentAnalysisContext
                 tool.ProbablyTableColumnHeader = true;
             }
         }
+
+        BookmarkStarts = Document.MainDocumentPart.Document.Body.Descendants<BookmarkStart>()
+            .DistinctBy(x => x.Name!.Value!)
+            .ToDictionary(x => x.Name!.Value!, x => x);
     }
 
     public ParagraphPropertiesTool GetTool(Paragraph p)

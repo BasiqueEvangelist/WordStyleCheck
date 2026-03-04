@@ -10,6 +10,7 @@ public class LintManager
     [
         new PageSizeLint(),
         new PageMarginsLint(),
+        new TocReferencesLint(),
         new HandmadeListLint(),
         new HandmadePageBreakLint(),
         new NeedlessParagraphLint(),

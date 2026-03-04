@@ -272,7 +272,6 @@ public class DocumentAnalysisContext
 
         commentsPart.Comments ??= new Comments();
 
-        // TODO: extract from .docx of lint messages
         Comment c = new Comment()
         {
             Id = id,

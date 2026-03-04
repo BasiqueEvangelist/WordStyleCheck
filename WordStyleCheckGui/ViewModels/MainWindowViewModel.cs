@@ -12,7 +12,6 @@ public partial class MainWindowViewModel : ViewModelBase
     public static readonly FilePickerFileType DocxFileType = new("Файлы Microsoft Word") {
         Patterns = ["*.docx"],
         MimeTypes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
-        // TODO: mime types
     };
 
     public ObservableCollection<DocumentViewModel> Documents { get; } = new();

@@ -223,7 +223,7 @@ public enum ParagraphClass
 {
     BodyText,
     StructuralElementHeader,
-    Heading, // TODO: Headings of different levels.
+    Heading,
     TableColumnHeader,
     TableContent,
     Caption,

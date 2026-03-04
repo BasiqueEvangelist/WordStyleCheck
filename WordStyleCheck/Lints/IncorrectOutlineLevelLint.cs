@@ -8,6 +8,8 @@ namespace WordStyleCheck.Lints
 {
     public class IncorrectOutlineLevelLint(Predicate<ParagraphPropertiesTool> predicate, Func<ParagraphPropertiesTool, int?> outlineLevel, string messageId) : ILint
     {
+        public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+        
         public void Run(LintContext ctx)
         {
             foreach (var p in ctx.Document.AllParagraphs)

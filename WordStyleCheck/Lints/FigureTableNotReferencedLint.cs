@@ -44,6 +44,11 @@ public class FigureTableNotReferencedLint : ILint
         new($"таблице\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase),
     ];
 
+    public IReadOnlyList<string> EmittedDiagnostics { get; } =
+    [
+        "FigureBeforeFirstReference", "FigureNotReferenced", "TableBeforeFirstReference", "TableNotReferenced"
+    ];
+    
     public void Run(LintContext ctx)
     {
         Dictionary<string, Paragraph> referencedFigureNumbers = [];

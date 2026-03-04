@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints
 {
     public class NotEnoughSourcesLint(int neededCount, string messageId, string noBibliographyMessageId) : ILint
     {
+        public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId, noBibliographyMessageId];
+        
         public void Run(LintContext ctx)
         {
             var numberings = ctx.Document.AllParagraphs.Select(ctx.Document.GetTool).Where(x => x is { OfStructuralElement: Analysis.StructuralElement.Bibliography, OfNumbering: not null }).Select(x => x.OfNumbering!).Distinct().ToList();

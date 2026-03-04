@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints;
 
 public class PageMarginsLint : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectPageMargins"];
+
     public void Run(LintContext ctx)
     {
         foreach (var section in ctx.Document.AllSections)

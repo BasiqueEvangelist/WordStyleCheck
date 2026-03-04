@@ -8,6 +8,8 @@ namespace WordStyleCheck.Lints;
 
 public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, int firstLine, int left, string firstLineId, string leftId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [firstLineId, leftId];
+
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)

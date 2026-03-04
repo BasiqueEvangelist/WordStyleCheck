@@ -5,6 +5,8 @@ namespace WordStyleCheck.Lints;
 
 public class BibliographySourceNotReferencedLint : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = ["BibliographySourceNotReferenced"];
+    
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)

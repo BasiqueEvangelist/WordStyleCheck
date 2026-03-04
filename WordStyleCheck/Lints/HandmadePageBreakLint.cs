@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints
 {
     public class HandmadePageBreakLint : ILint
     {
+        public IReadOnlyList<string> EmittedDiagnostics { get; } = ["HandmadePageBreak"];
+
         public void Run(LintContext ctx)
         {
             int emptyParagraphsCount = 0;

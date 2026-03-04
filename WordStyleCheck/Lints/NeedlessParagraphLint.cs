@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints;
 
 public class NeedlessParagraphLint : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NeedlessParagraphBreak"];
+    
     public void Run(LintContext ctx)
     {
         var body = ctx.Document.Document.MainDocumentPart?.Document?.Body;

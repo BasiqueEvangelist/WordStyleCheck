@@ -6,6 +6,8 @@ namespace WordStyleCheck.Lints;
 
 public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate, List<JustificationValues> justification, string messageId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+    
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)

@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints;
 
 public class PageSizeLint : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectPageSize"];
+
     public void Run(LintContext ctx)
     {
         foreach (var section in ctx.Document.AllSections)

@@ -99,4 +99,6 @@ public class LintManager
         using (new LoudStopwatch("LintMerger.Run")) 
             LintMerger.Run(ctx.Messages);
     }
+
+    public List<string> AllPossibleDiagnostics => _lints.SelectMany(x => x.EmittedDiagnostics).ToList();
 }

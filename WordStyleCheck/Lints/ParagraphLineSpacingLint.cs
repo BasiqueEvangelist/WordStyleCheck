@@ -7,6 +7,8 @@ namespace WordStyleCheck.Lints;
 
 public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predicate, int lineSpacing, string messageId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)

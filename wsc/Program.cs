@@ -31,7 +31,6 @@ Option<bool> autofixOpt = new("--fix", "-f")
 
 root.Options.Add(autofixOpt);
 
-
 Option<string?> onlyOpt = new("--only")
 {
     Description = "Only invoke these lints",
@@ -53,8 +52,31 @@ Argument<List<FileInfo>> inputFile = new("input")
 
 root.Arguments.Add(inputFile);
 
+Option<bool> listDiagnosticsOpt = new("--list-diagnostics")
+{
+    Description = "List all possible diagnostics and their translations.",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(listDiagnosticsOpt);
+
 root.SetAction(res =>
 {
+    if (res.GetValue(listDiagnosticsOpt))
+    {
+        LintManager manager = new LintManager();
+        DiagnosticTranslationsFile translations = DiagnosticTranslationsFile.LoadEmbedded();
+
+        foreach (var diagnostic in manager.AllPossibleDiagnostics)
+        {
+            Console.WriteLine($"{diagnostic}:");
+            Console.WriteLine(Utils.ToPlainText(translations.Translate(diagnostic, new())));
+            Console.WriteLine();
+        }
+        
+        return 0;
+    }
+    
     if (res.GetValue(perfTimings))
         LoudStopwatch.Enabled = true;
 

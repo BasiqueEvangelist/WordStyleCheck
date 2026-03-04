@@ -6,6 +6,8 @@ namespace WordStyleCheck.Lints;
 
 public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, string messageId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+
     public void Run(LintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)

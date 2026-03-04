@@ -6,6 +6,8 @@ namespace WordStyleCheck.Lints;
 
 public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEntry> entries, string messageId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+    
     public void Run(LintContext ctx)
     {
         var paragraphs = ctx.Document.Document.MainDocumentPart!.Document!.Body!.ChildElements.OfType<Paragraph>().ToList();

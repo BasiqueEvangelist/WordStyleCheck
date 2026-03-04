@@ -5,6 +5,8 @@ namespace WordStyleCheck.Lints;
 
 public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId) : ILint
 {
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+
     public void Run(LintContext ctx)
     {
         var elements = ctx.Document.AllParagraphs

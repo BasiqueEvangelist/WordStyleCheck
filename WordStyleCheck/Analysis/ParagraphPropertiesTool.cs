@@ -91,6 +91,12 @@ public record ParagraphPropertiesTool
         x => Utils.ConvertOnOffType(x.ContextualSpacing)
     ) ?? false;
     
+    public bool PageBreakBefore => FollowPropertyChain(
+        x => Utils.ConvertOnOffType(x.PageBreakBefore),
+        x => Utils.ConvertOnOffType(x.PageBreakBefore),
+        x => Utils.ConvertOnOffType(x.PageBreakBefore)
+    ) ?? false;
+    
     public int? ActualBeforeSpacing
     {
         get

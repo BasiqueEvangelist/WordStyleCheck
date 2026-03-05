@@ -14,6 +14,7 @@ public class LintManager
         new HandmadeListLint(),
         new HandmadePageBreakLint(),
         new NeedlessParagraphLint(),
+        new ForcePageBreakBeforeLint(x => x is {Class: ParagraphClass.Heading, HeadingData.Level: 1} or {Class: ParagraphClass.StructuralElementHeader}, "NeedsPageBreakBeforeHeader"),
         new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, [JustificationValues.Center], "StructuralElementHeaderNotCentered"),
         new ForceJustificationLint(x => x is {CaptionData.Type: CaptionType.Table}, [JustificationValues.Left, JustificationValues.Both], "TableCaptionNotLeftAligned"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix, OfNumbering: null}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),

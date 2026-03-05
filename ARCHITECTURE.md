@@ -100,6 +100,11 @@ and the second doesn't start with an uppercase letter.
 
 Generates `NeedlessParagraphBreak`.
 
+### `ForcePageBreakBeforeLint`
+Checks that a paragraph has a page break between any previous paragraphs' text and its contents.
+
+Instantiated to generate `NeedsPageBreakBeforeHeader` for level 1 headings and structural element headings.
+
 ### `ForceJustificationLint`
 Generic lint, forces justification to be one of a set of values.
 

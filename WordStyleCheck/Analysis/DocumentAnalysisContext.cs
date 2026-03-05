@@ -14,7 +14,7 @@ public class DocumentAnalysisContext
     private readonly Dictionary<(StyleValues, string), Style> _styles = new();
 
     private readonly List<SectionPropertiesTool> _sections = [];
-    private readonly List<NumberingPropertiesTool> _numberings = [];
+    private readonly Dictionary<int, NumberingPropertiesTool> _numberings = [];
 
     private readonly HashSet<string> _existingComments = [];
 
@@ -46,19 +46,18 @@ public class DocumentAnalysisContext
             foreach (var inst in numbering.ChildElements.OfType<NumberingInstance>())
             {
                 var tool = new NumberingPropertiesTool(this, inst);
-
-                foreach (var p in AllParagraphs)
-                {
-                    var pTool = GetTool(p);
+                _numberings[inst.NumberID!.Value!] = tool;
+            }
+            
+            foreach (var p in AllParagraphs)
+            {
+                var pTool = GetTool(p);
                     
-                    if (pTool.NumberingId == inst.NumberID?.Value)
-                    {
-                        tool.Paragraphs.Add(p);
-                        pTool.OfNumbering = tool;
-                    }
+                if (pTool.NumberingId is {} numId && _numberings.TryGetValue(numId, out var tool))
+                {
+                    tool.Paragraphs.Add(p);
+                    pTool.OfNumbering = tool;
                 }
-                
-                _numberings.Add(tool);
             }
         }
         

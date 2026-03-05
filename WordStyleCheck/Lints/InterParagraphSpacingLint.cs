@@ -30,7 +30,8 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
                 continue;
             }
             
-            if (paragraphs[i - 1].Descendants<Break>().Any()) continue;
+            if (paragraphs[i - 1].Descendants<Break>().Any(x => x.Type?.Value == BreakValues.Page)) continue;
+            if (paragraphs[i].Descendants<Break>().Any(x => x.Type?.Value == BreakValues.Page)) continue;
 
             var entry1 = entries.FirstOrDefault(x => x.p(tool1));
             var entry2 = entries.FirstOrDefault(x => x.p(tool2));

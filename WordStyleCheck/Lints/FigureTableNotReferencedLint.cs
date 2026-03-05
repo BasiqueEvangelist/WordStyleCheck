@@ -32,7 +32,7 @@ public class FigureTableNotReferencedLint : ILint
             string ConsumeWord()
             {
                 int wStart = i;
-                while (i < text.Length && !char.IsWhiteSpace(text[i]))
+                while (i < text.Length && (char.IsLetter(text[i]) || text[i] == '.'))
                 {
                     i += 1;
                 }

@@ -18,7 +18,8 @@ namespace WordStyleCheckGui.ViewModels;
 
 public partial class DocumentViewModel : ViewModelBase
 {
-    private static readonly DiagnosticTranslationsFile translations = DiagnosticTranslationsFile.LoadEmbedded();
+    private static readonly LinterThreadPool Pool = new(Environment.ProcessorCount);
+    private static readonly DiagnosticTranslationsFile Translations = DiagnosticTranslationsFile.LoadEmbedded();
 
     private readonly string _path;
     private readonly string _fileName;
@@ -30,13 +31,15 @@ public partial class DocumentViewModel : ViewModelBase
     {
         _path = path;
         _fileName = Path.GetFileName(path);
-
-        var thread = new Thread(() =>
+        
+        async void RunThing()
         {
+            var task = new LintTask(path, _ => true, false, null);
+            Pool.AddTask(task);
+
             try
             {
-                _linter = new DocumentLinter(path);
-                _linter.RunLints();
+                _linter = await task.Result;
             }
             catch (Exception e)
             {
@@ -46,20 +49,16 @@ public partial class DocumentViewModel : ViewModelBase
             Dispatcher.UIThread.Post(() =>
             {
                 Done = true;
-                
-                if (_exception == null)
-                    CanSave = true;
+                CanSave = _exception == null;
             });
-        })
-        {
-            Name = "Linter thread for " + _fileName
-        };
-        thread.Start();
+        }
+        
+        RunThing();
     }
 
     public string FileName => _fileName;
 
-    public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(translations, x)).ToList();
+    public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(Translations, x)).ToList();
 
     public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок ({_linter.Diagnostics.Count(x => x.AutoFix != null)} автоисправляемых)";
 
@@ -99,7 +98,7 @@ public partial class DocumentViewModel : ViewModelBase
 
         foreach (var message in _linter!.Diagnostics)
         {
-            _linter.DocumentAnalysis.WriteComment(message, translations);
+            _linter.DocumentAnalysis.WriteComment(message, Translations);
         }
 
         _linter.SaveTo(file.TryGetLocalPath()!);

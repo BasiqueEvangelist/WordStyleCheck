@@ -21,7 +21,9 @@ public class HomeController : Controller
 
     [HttpPost]
     [Route("/submit-files")]
-    public async Task<IActionResult> SubmitFiles([FromForm] List<IFormFile> inputFile)
+    [RequestSizeLimit(512 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 512 * 1024 * 1024)]
+    public async Task<IActionResult> SubmitFiles(List<IFormFile> inputFile)
     {
         var tasks = await Task.WhenAll(inputFile.Select(async x =>
         {

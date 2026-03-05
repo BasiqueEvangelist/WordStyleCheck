@@ -37,12 +37,27 @@ public class LinterThreadPool : IDisposable
             {
                 return;
             }
-            
-            var linter = new DocumentLinter(task.Path, task.TakeOwnership);
-            linter.LintIdFilter = task.LintIdFilter;
-            linter.RunLints();
-            
-            task._resultSrc.SetResult(linter);
+
+            try
+            {
+                var linter = new DocumentLinter(task.Path, task.TakeOwnership);
+                linter.LintIdFilter = task.LintIdFilter;
+                linter.RunLints();
+
+                if (task.CommentsTranslations != null)
+                {
+                    foreach (var message in linter.Diagnostics)
+                    {
+                        linter.DocumentAnalysis.WriteComment(message, task.CommentsTranslations);
+                    }
+                }
+
+                task._resultSrc.SetResult(linter);
+            }
+            catch (Exception e)
+            {
+                task._resultSrc.SetException(e);
+            }
         }
     }
 
@@ -52,11 +67,12 @@ public class LinterThreadPool : IDisposable
     }
 }
 
-public class LintTask(string path, Predicate<string> lintIdFilter, bool takeOwnership)
+public class LintTask(string path, Predicate<string> lintIdFilter, bool takeOwnership, DiagnosticTranslationsFile? commentsTranslations)
 {
     public string Path { get; } = path;
     public bool TakeOwnership { get; } = takeOwnership;
     public Predicate<string> LintIdFilter { get; } = lintIdFilter;
+    public DiagnosticTranslationsFile? CommentsTranslations { get; } = commentsTranslations;
 
     internal TaskCompletionSource<DocumentLinter> _resultSrc = new();
 

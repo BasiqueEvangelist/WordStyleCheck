@@ -24,6 +24,8 @@ namespace WordStyleCheck
             }
             else
             {
+                // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
+                // file, open it, and then copy it back to the -FIXED if it was changed in any way.
                 _tempPath = Path.GetTempFileName();
                 File.Copy(path, _tempPath, true);
             }

@@ -11,3 +11,4 @@
     + warn on bad display math equations
     + inline equations maybe???
 - handle headers with completely incorrect format
+- warn when referencing nonexistent figures, tables and sources

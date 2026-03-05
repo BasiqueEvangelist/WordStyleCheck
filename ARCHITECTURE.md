@@ -78,6 +78,12 @@ Verifies that every (page break) section has the correct page margins.
 
 Generates `IncorrectPageMargins`.
 
+### `TocReferencesLint`
+Goes through the table of contents and checks that everything that should be there, is there, and everything that
+shouldn't be there, isn't there. Also generates `NoToc` if there is no table of contents.
+
+Generates `NoToc`, `ShouldNotBeInToc`, `ShouldBeInToc`.
+
 ### `HandmadeListLint`
 Generates messages for all instances of handmade lists that were discovered during classification.
 
@@ -146,10 +152,18 @@ Instantiated to generate `IncorrectTableNumbering`.
 Checks the text for references to figures and tables, and warns if the respective object is not referenced or placed
 before the first reference.
 
+In general, we need to handle different options, like different declensions of "рисунок"/"таблица" and people specifying
+either many objects at once or specifying a range of them (e.g. "рисунки 1 - 2"). The lint uses two crazy regexes that
+find any references, and then uses two other regexes to extract the actual ranges and numbers and records them. 
+
 Generates `FigureBeforeFirstReference`, `FigureNotReferenced`, `TableBeforeFirstReference`, `TableNotReferenced`.
 
 ### `BibliographySourceNotReferencedLint`
 Checks the text for references to sources and warns if a source wasn't used.
+
+The ГОСТ at the very least defines that references should be in square brackets, but inside those square brackets can be
+a list of sources (or ranges of sources) and random junk (like page numbers). This lint uses a handmade parser to record
+all used sources.
 
 Generates `BibliographySourceNotReferenced`.
 

@@ -147,7 +147,7 @@ public record ParagraphPropertiesTool
     
     public TextBoxContent? ContainingTextBox => Utils.AscendToAnscestor<TextBoxContent>(Paragraph);
 
-    public bool IsTableOfContents => FieldStackTracker.GetContextFor(Paragraph)
+    public bool IsTableOfContents => _ctx.GetContextFor(Paragraph)
         .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
     
     public bool ProbablyHeading { get; }

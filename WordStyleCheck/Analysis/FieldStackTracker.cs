@@ -6,20 +6,20 @@ namespace WordStyleCheck.Analysis;
 
 public static class FieldStackTracker
 {
-    private static readonly ConditionalWeakTable<OpenXmlElement, List<FieldStackEntry>> FieldStackMappings = new();
-
-    public static List<FieldStackEntry> GetContextFor(OpenXmlElement el) => FieldStackMappings.GetOrCreateValue(el);
-    
-    public static void Run(Document doc)
+    public static Dictionary<OpenXmlElement, List<FieldStackEntry>> Run(Document doc)
     {
-        if (doc.Body == null) return;
-        
+        Dictionary<OpenXmlElement, List<FieldStackEntry>> dict = [];
+
+        if (doc.Body == null) return dict;
+
         List<FieldStackEntry> stack = [];
 
-        Run(stack, doc.Body);
+        Run(stack, dict, doc.Body);
+
+        return dict;
     }
 
-    private static void Run(List<FieldStackEntry> stack, OpenXmlElement element)
+    private static void Run(List<FieldStackEntry> stack, Dictionary<OpenXmlElement, List<FieldStackEntry>> dict, OpenXmlElement element)
     {
         if (element is FieldChar fldChar)
         {
@@ -38,22 +38,25 @@ public static class FieldStackTracker
 
         if (stack.Count > 0 && element is Paragraph)
         {
-            FieldStackMappings.Add(element, [..stack]);
+            dict.Add(element, [..stack]);
         }
 
         foreach (var child in element.ChildElements)
         {
-            Run(stack, child);
+            Run(stack, dict, child);
         }
         
         if (stack.Count > 0 && element is Paragraph)
         {
-            var mapping = FieldStackMappings.GetOrCreateValue(element);
+            var mapping = dict.GetValueOrDefault(element);
 
-            foreach (var el in stack)
+            if (mapping != null)
             {
-                if (!mapping.Contains(el))
-                    mapping.Add(el);
+                foreach (var el in stack)
+                {
+                    if (!mapping.Contains(el))
+                        mapping.Add(el);
+                }
             }
         }
     }

@@ -18,6 +18,8 @@ public class DocumentAnalysisContext
 
     private readonly HashSet<string> _existingComments = [];
 
+    private readonly Dictionary<OpenXmlElement, List<FieldStackTracker.FieldStackEntry>> _fieldStacks;
+
     public Style? DefaultParagraphStyle { get; }
 
     public List<HandmadeListClassifier.SniffedListData> HandmadeLists { get; }
@@ -39,7 +41,7 @@ public class DocumentAnalysisContext
 
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
         
-        FieldStackTracker.Run(document.MainDocumentPart!.Document!);
+        _fieldStacks = FieldStackTracker.Run(document.MainDocumentPart!.Document!);
 
         if (Document.MainDocumentPart?.NumberingDefinitionsPart?.Numbering is { } numbering)
         {
@@ -197,6 +199,9 @@ public class DocumentAnalysisContext
             .ToDictionary(x => x.Name!.Value!, x => x);
     }
 
+    private static readonly List<FieldStackTracker.FieldStackEntry> _emptyList = [];
+    public List<FieldStackTracker.FieldStackEntry> GetContextFor(OpenXmlElement el) => _fieldStacks.GetValueOrDefault(el, _emptyList);
+    
     public ParagraphPropertiesTool GetTool(Paragraph p)
     {
         if (_paragraphTools.TryGetValue(p, out var tool)) return tool;

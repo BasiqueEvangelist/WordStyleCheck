@@ -9,27 +9,6 @@ namespace WordStyleCheck.Lints;
 
 public class FigureTableNotReferencedLint : ILint
 {
-    [StringSyntax("Regex")]
-    private const string Reference = @"(?:[А-Я]\.)?[0-9]+(?:\.[0-9]+)*";
-    
-    [StringSyntax("Regex")]
-    private const string ReferenceSpan = $@"({Reference})\s*(?:-|–)\s*({Reference})";
-
-    private static readonly Regex ReferenceRegex =
-        new(Reference, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    
-    private static readonly Regex ReferenceSpanRegex =
-        new(ReferenceSpan, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-    private const string ReferenceOrSpan = $@"{Reference}(\s*(?:-|–)\s*({Reference}))?";
-    
-    [StringSyntax("Regex")]
-    private const string ReferenceList = $@"{ReferenceOrSpan}(?:,\s+{ReferenceOrSpan})*(?:и\s+{ReferenceOrSpan})?"; 
-    
-    private static readonly Regex FigureRegex = new($"(рис\\.|рисунок|рисунки|рисунке|рисунком|рисунках)\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-    private static readonly Regex TableRegex = new($"(табл\\.|таблица|таблицы|таблице)\\s+{ReferenceList}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
     public IReadOnlyList<string> EmittedDiagnostics { get; } =
     [
         "FigureBeforeFirstReference", "FigureNotReferenced", "TableBeforeFirstReference", "TableNotReferenced"
@@ -48,47 +27,113 @@ public class FigureTableNotReferencedLint : ILint
 
             var text = oTool.Contents;
 
-            void AddMatches(Dictionary<string, Paragraph> referencedNumbers, Regex regex)
+            int i = 0;
+
+            string ConsumeWord()
             {
-                foreach (Match match in regex.Matches(text))
+                int wStart = i;
+                while (i < text.Length && !char.IsWhiteSpace(text[i]))
                 {
-                    string matched = match.Value;
+                    i += 1;
+                }
 
-                    foreach (Match subMatch in ReferenceRegex.Matches(matched))
-                    {
-                        string referenced = subMatch.Value.TrimEnd('.');
+                return text.Substring(wStart, i - wStart);
+            }
+            
+            string? ConsumeObjectNumber()
+            {
+                int nStart = i;
 
-                        referencedNumbers.TryAdd(referenced, other);
-                    }
+                if (i >= text.Length) return null;
 
-                    foreach (Match subMatch in ReferenceSpanRegex.Matches(matched))
-                    {
-                        string start = subMatch.Groups[1].Value;
-                        string end = subMatch.Groups[2].Value;
+                if (char.IsLetter(text[i]))
+                {
+                    i++;
+                    if (i >= text.Length || text[i] != '.') return null;
+                    i++;
+                }
+                
+                if (i >= text.Length || !char.IsDigit(text[i])) return null;
+                
+                while (i < text.Length && (char.IsDigit(text[i]) || text[i] == '.')) i++;
 
-                        string[] startSplit = start.Split(".");
-                        string[] endSplit = end.Split(".");
 
-                        if (startSplit.Length != endSplit.Length) continue;
-                        if (!startSplit[..^1].SequenceEqual(endSplit[..^1])) continue;
+                return text.Substring(nStart, i - nStart).TrimEnd('.');
+            }
 
-                        if (!int.TryParse(startSplit[^1], out var startNum)) continue;
-                        if (!int.TryParse(endSplit[^1], out var endNum)) continue;
+            void ConsumeWhitespace()
+            {
+                while (i < text.Length && char.IsWhiteSpace(text[i])) i += 1;
+            }
 
-                        for (int i = startNum; i <= endNum; i++)
-                        {
-                            startSplit[^1] = i.ToString();
-
-                            string referenced = string.Join(".", startSplit);
-
-                            referencedNumbers.TryAdd(referenced, other);
-                        }
-                    }
+            void AddRange(string start, string end, Dictionary<string, Paragraph> references)
+            {
+                string[] startSplit = start.Split(".");
+                string[] endSplit = end.Split(".");
+                        
+                if (startSplit.Length != endSplit.Length) return;
+                if (!startSplit[..^1].SequenceEqual(endSplit[..^1])) return;
+                        
+                if (!int.TryParse(startSplit[^1], out var startNum)) return;
+                if (!int.TryParse(endSplit[^1], out var endNum)) return;
+                        
+                for (int j = startNum; j <= endNum; j++)
+                {
+                    startSplit[^1] = j.ToString();
+                        
+                    string referenced = string.Join(".", startSplit);
+                        
+                    references.TryAdd(referenced, other);
                 }
             }
 
-            AddMatches(referencedFigureNumbers, FigureRegex);
-            AddMatches(referencedTableNumbers, TableRegex);
+            void ConsumeReferences(Dictionary<string, Paragraph> references)
+            {
+                ConsumeWhitespace();
+
+                while (true)
+                {
+                    string? start = ConsumeObjectNumber();
+                    
+                    if (start == null) return;
+                    
+                    references.TryAdd(start, other);
+                    
+                    ConsumeWhitespace();
+                    
+                    if (i < text.Length && text[i] is '-' or '–')
+                    {
+                        i += 1;
+                        ConsumeWhitespace();
+                        string? end = ConsumeObjectNumber();
+                        if (end != null)
+                        {
+                            AddRange(start, end, references);
+                        }
+
+                        ConsumeWhitespace();
+                    }
+
+                    if (i < text.Length && text[i] == ',') i += 1;
+                    
+                    ConsumeWhitespace();
+                }
+            }
+            
+            while (i < text.Length)
+            {
+                string word = ConsumeWord();
+
+                if (word is "рис." or "рисунок" or "рисунки" or "рисунке" or "рисунком" or "рисунках")
+                {
+                    ConsumeReferences(referencedFigureNumbers);
+                } else if (word is "табл." or "таблица" or "таблицы" or "таблице")
+                {
+                    ConsumeReferences(referencedTableNumbers);
+                }
+
+                if (string.IsNullOrWhiteSpace(word)) i += 1;
+            }
         }
 
         foreach (var p in ctx.Document.AllParagraphs)

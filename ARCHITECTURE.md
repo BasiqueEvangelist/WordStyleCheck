@@ -153,8 +153,8 @@ Checks the text for references to figures and tables, and warns if the respectiv
 before the first reference.
 
 In general, we need to handle different options, like different declensions of "рисунок"/"таблица" and people specifying
-either many objects at once or specifying a range of them (e.g. "рисунки 1 - 2"). The lint uses two crazy regexes that
-find any references, and then uses two other regexes to extract the actual ranges and numbers and records them. 
+either many objects at once or specifying a range of them (e.g. "рисунки 1 - 2"). The lint uses a custom parser that
+finds any references and extracts the actual ranges and numbers and records them. 
 
 Generates `FigureBeforeFirstReference`, `FigureNotReferenced`, `TableBeforeFirstReference`, `TableNotReferenced`.
 

@@ -17,7 +17,7 @@ public class HandmadeListClassifier
             
             string text = tool.Contents.Trim();
 
-            if (text.StartsWith("-") || text.StartsWith("—") || text.StartsWith("•"))
+            if (text.StartsWith("-") || text.StartsWith("—") || text.StartsWith("•") || text.StartsWith("–"))
             {
                 possibleLists.Add(new SniffedListData(true, [p]));
                 continue;

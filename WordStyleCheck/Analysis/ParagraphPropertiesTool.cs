@@ -49,6 +49,11 @@ public record ParagraphPropertiesTool
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Contents);
             CaptionData = CaptionClassifierData.Classify(this, false);
         }
+
+        if (Class == ParagraphClass.BodyText)
+        {
+            EquationData = EquationClassifierData.Classify(this);
+        }
         
         IsEmptyOrDrawing = !Utils.DirectRunChildren(Paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
         IsEmptyOrWhitespace = IsEmptyOrDrawing && !Paragraph.Descendants().Any(x => x is Drawing);
@@ -186,6 +191,8 @@ public record ParagraphPropertiesTool
     
     public HeadingClassifierData? HeadingData { get; internal set; }
     
+    public EquationClassifierData? EquationData { get; }
+    
     public bool IsEmptyOrWhitespace { get; }
     
     public bool IsEmptyOrDrawing { get; }
@@ -197,6 +204,7 @@ public record ParagraphPropertiesTool
             if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (CaptionData != null) return ParagraphClass.Caption;
+            if (EquationData != null) return ParagraphClass.DisplayEquation;
             if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
             if (ProbablyTableColumnHeader) return ParagraphClass.TableColumnHeader;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
@@ -245,5 +253,6 @@ public enum ParagraphClass
     Caption,
     TableOfContents,
     CodeListing,
-    InsideDrawing
+    InsideDrawing,
+    DisplayEquation
 }

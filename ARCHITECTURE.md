@@ -37,10 +37,13 @@ The phases of paragraph classification are as follows:
          it's classified as a structural element header.
       2. If the paragraph has an image right before (or inside it? Figures are very weird.) or a table right after it,
          the text is parsed, and on success the text is classified as a caption.
-   3. If the text only contains whitespace runs, it is classified as being empty or a drawing.
+   3. If the paragraph is currently classified as body text, but has an OfficeMath element before any non-whitespace
+      text and the text is either fully whitespace or consists of a number surrounded by parentheses, the paragraph is   
+      marked as a display equation.
+   4. If the text only contains whitespace runs, it is classified as being empty or a drawing.
       
       This makes a bunch of lints ignore this paragraph.
-   4. If there is no drawing in the paragraph, it is classified as being empty.
+   5. If there is no drawing in the paragraph, it is classified as being empty.
       
       This is used for the handmade page break lint.
 3. All numberings are iterated through, and numberings are associated with their paragraphs.

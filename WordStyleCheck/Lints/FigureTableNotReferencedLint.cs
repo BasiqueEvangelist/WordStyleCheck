@@ -124,10 +124,10 @@ public class FigureTableNotReferencedLint : ILint
             {
                 string word = ConsumeWord();
 
-                if (word is "рис." or "рисунок" or "рисунки" or "рисунке" or "рисунком" or "рисунках")
+                if (word.ToLower() is "рис." or "рисунок" or "рисунки" or "рисунке" or "рисунком" or "рисунках")
                 {
                     ConsumeReferences(referencedFigureNumbers);
-                } else if (word is "табл." or "таблица" or "таблицы" or "таблице")
+                } else if (word.ToLower() is "табл." or "таблица" or "таблицы" or "таблице" or "таблицу")
                 {
                     ConsumeReferences(referencedTableNumbers);
                 }

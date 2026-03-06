@@ -64,7 +64,6 @@ public class DocumentAnalysisContext
         }
         
         StructuralElement? currentElement = null;
-        ParagraphPropertiesTool? currentHeading1 = null;
         List<Paragraph> currentSection = [];
         
         foreach (var p in AllParagraphs)
@@ -76,13 +75,7 @@ public class DocumentAnalysisContext
                 currentElement = tool.StructuralElementHeader;
             }
 
-            if (tool.OutlineLevel == 0)
-            {
-                currentHeading1 = tool;
-            }
-
             tool.OfStructuralElement = currentElement;
-            tool.AssociatedHeading1 = currentHeading1;
             
             currentSection.Add(p);
 
@@ -165,6 +158,19 @@ public class DocumentAnalysisContext
             }
 
             tool.ProbablyCodeListing = isListing;
+        }
+        
+        ParagraphPropertiesTool? currentHeading1 = null;
+        foreach (var p in AllParagraphs)
+        {
+            var tool = GetTool(p);
+
+            if (tool.HeadingData?.Level == 1)
+            {
+                currentHeading1 = tool;
+            }
+
+            tool.AssociatedHeading1 = currentHeading1;
         }
 
         HashSet<OpenXmlElement> continuationTables = [];

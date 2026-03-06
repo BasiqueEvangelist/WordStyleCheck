@@ -47,7 +47,7 @@ The phases of paragraph classification are as follows:
       
       This is used for the handmade page break lint.
 3. All numberings are iterated through, and numberings are associated with their paragraphs.
-4. A pass goes through all paragraphs and tracks what structural element header, level 1 heading and section they are
+4. A pass goes through all paragraphs and tracks what structural element header and section they are
    associated with.  
    At this point section tools are created.
 5. A second caption pass is run to catch captions that are positioned respective to their targeted element wrongly -
@@ -59,7 +59,8 @@ The phases of paragraph classification are as follows:
    shouldn't be in the ToC, and therefore don't have an outline level - but it's also useful for other levels, since we
    can figure out if somebody forgot to set the outline level, or wrote the heading incorrectly.
 8. If every (non-whitespace) run of a paragraph is in a monospace font, the paragraph is marked as a code listing.
-9. Tables are marked as continuations, and the paragraphs in the cells of the first rows of non-continuation tables
+9. A pass goes through all paragraphs and tracks what level 1 heading they are associated with.
+10. Tables are marked as continuations, and the paragraphs in the cells of the first rows of non-continuation tables
    are marked as table column headers.
 
 

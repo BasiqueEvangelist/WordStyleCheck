@@ -14,6 +14,11 @@ public struct CaptionClassifierData
     public required OpenXmlElement? TargetedElement { get; init; }
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
+
+    private static bool HasFigure(Paragraph p)
+    {
+        return p.Descendants().Any(x => x is Picture or Drawing or EmbeddedObject);
+    }
     
     public static CaptionClassifierData? Classify(ParagraphPropertiesTool p, bool secondPass)
     {
@@ -23,7 +28,7 @@ public struct CaptionClassifierData
         
         if (!secondPass)
         {
-            if (p.Paragraph.Descendants<Picture>().Any())
+            if (HasFigure(p.Paragraph))
             {
                 type = CaptionType.Figure;
                 targeted = null;
@@ -47,7 +52,7 @@ public struct CaptionClassifierData
                 if (!isBelow != secondPass)
                     return null;
             }
-            else if (p.Paragraph.PreviousSibling() is Paragraph prev && prev.Descendants<Drawing>().Any())
+            else if (p.Paragraph.PreviousSibling() is Paragraph prev && HasFigure(prev))
             {
                 type = CaptionType.Figure;
                 targeted = p.Paragraph.PreviousSibling()!;
@@ -66,7 +71,7 @@ public struct CaptionClassifierData
         }
         else
         {
-            if (p.Paragraph.NextSibling() is Paragraph next && next.Descendants<Drawing>().Any())
+            if (p.Paragraph.NextSibling() is Paragraph next && HasFigure(next))
             {
                 type = CaptionType.Figure;
                 targeted = p.Paragraph.NextSibling()!;

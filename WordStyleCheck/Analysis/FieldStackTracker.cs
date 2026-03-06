@@ -50,13 +50,15 @@ public static class FieldStackTracker
         {
             var mapping = dict.GetValueOrDefault(element);
 
-            if (mapping != null)
+            if (mapping == null)
             {
-                foreach (var el in stack)
-                {
-                    if (!mapping.Contains(el))
-                        mapping.Add(el);
-                }
+                dict[element] = mapping = [];
+            }
+
+            foreach (var el in stack)
+            {
+                if (!mapping.Contains(el))
+                    mapping.Add(el);
             }
         }
     }

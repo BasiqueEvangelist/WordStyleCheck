@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dict>
+    <str key="IncorrectPageSize">
+        Размер страницы должнен быть A4. (${ExpectedWidthCm}см × ${ExpectedHeightCm}см ≠ ${ActualWidthCm}см × ${ActualHeightCm}см)
+    </str>
+    
+    <str key="IncorrectPageMargins">
+        Размеры полей страницы должны быть следующими: левое — ${ExpectedLeftCm}см, правое — ${ExpectedRightCm}см, верхнее — ${ExpectedTopCm}см, нижнее — ${ExpectedBottomCm}см.
+    </str>
+    
+    <str key="NeedlessParagraphBreak">
+        Ненужный разрыв параграфа.
+    </str>
+    
+    <str key="IncorrectBodyTextFirstLineIndent">
+        В тексте работы должен быть абзацный отступ ${ExpectedCm}см.
+    </str>
+    
+    <str key="IncorrectBodyTextLeftIndent">
+        В тексте работы не должен быть отступ слева.
+    </str>
+    
+    <str key="IncorrectHeadingFirstLineIndent">
+        Этот заголовок должен иметь абзацный отступ ${ExpectedCm}см.
+    </str>
+    
+    <str key="IncorrectHeadingLeftIndent">
+        Этот заголовок должен иметь отступ слева ${ExpectedCm}см.
+    </str>
+    
+    <str key="IncorrectTextLineSpacing">
+        Должен быть межстрочный интервал 1,5.
+    </str>
+    
+    <str key="IncorrectCaptionLineSpacing">
+        Подписи к рисункам и таблицам должны быть записаны через один межстрочный интервал.
+    </str>
+    
+    <str key="StructuralElementHeaderContentsIncorrect">
+        Правильное название этого структурного элемента отчета — «${Expected}».
+    </str>
+    
+    <str key="IncorrectTableCaptionPosition">
+        Подпись к таблице должна быть над таблицей.
+    </str>
+    
+    <str key="IncorrectFigureCaptionPosition">
+        Подпись к рисунку должна быть под рисунком.
+    </str>
+    
+    <str key="IncorrectCaptionText">
+        Правильное оформление подписи — «${Expected}».
+    </str>
+    
+    <str key="FigureNotReferenced">
+        Рисунок не был упомянут в тексте.
+    </str>
+    
+    <str key="FigureBeforeFirstReference">
+        Рисунок должен быть расположен <b>после</b> своего первого упоминания.
+    </str>
+    
+    <str key="TableNotReferenced">
+        Таблица не была упомянута в тексте.
+    </str>
+    
+    <str key="TableBeforeFirstReference">
+        Таблица должна быть расположена <b>после</b> своего первого упоминания.
+    </str>
+    
+    <str key="TextFontIncorrect">
+        Текст должен быть написан в фонте ${Expected}, не ${Actual}.
+    </str>
+    
+    <str key="BodyTextBold">
+        Текст работы не должен быть в полужирном шрифте.
+    </str>
+    
+    <str key="HeadingNotBold">
+        Заголовки структурных элементов, разделов и подразделов должны быть в полужирном шрифте.
+    </str>
+    
+    <str key="SubSubHeadingBold">
+        Заголовки пунктов и подпунктов не должны быть в полужирном шрифте.
+    </str>
+    
+    <str key="StructuralElementHeaderNotCentered">
+        Заголовок структурного элемента должен быть в центре строки.
+    </str>
+    
+    <str key="TableCaptionNotLeftAligned">
+        Подписи к таблицам должны быть помещены над таблицей слева.
+    </str>
+    
+    <str key="HandmadeList">
+        Списки должны быть оформлены средствами Word, не вручную.
+    </str>
+    
+    <str key="BibliographySourceNotReferenced">
+        Указываемый источник не был использован в тексте.
+    </str>
+    
+    <str key="IncorrectFigureNumbering">
+        Рисунки нумеруются арабскими цифрами сквозной нумерацией. Правильный номер рисунка — ${Expected}.
+    </str>
+    
+    <str key="IncorrectTableNumbering">
+        Таблицы нумеруются арабскими цифрами сквозной нумерацией. Правильный номер таблицы — ${Expected}.
+    </str>
+    
+    <str key="NotEnoughSources">
+        Недостаточно источников — должно быть ${Expected}, не ${Actual}.
+    </str>
+    
+    <str key="NoBibliography">
+        Не найден список использованных источников.
+    </str>
+    
+    <str key="IncorrectInterParagraphSpacing">
+        Между этими абзацами должен быть интервал ${ExpectedPt}пт.
+    </str>
+    
+    <str key="HandmadePageBreak">
+        Перевод на новую страницу должен быть оформлен средствами Word, не вручную.
+    </str>
+    
+    <str key="IncorrectFontSize">
+        Размер шрифта должен быть не менее ${ExpectedPt}пт.
+    </str>
+    
+    <str key="IncorrectHeadingText">
+        Правильное оформление заголовка — «${Expected}».
+    </str>
+    
+    <str key="NoToc">
+        Не найдено содержание.
+    </str>
+    
+    <str key="ShouldNotBeInToc">
+        Абзац не должен быть в содержании.
+    </str>
+    
+    <str key="ShouldBeInToc">
+        Абзац должен быть в содержании.
+    </str>
+    
+    <str key="NeedsPageBreakBeforeHeader">
+        Перед заголовками структурных элементов и разделов должен быть разрыв страницы.
+    </str>
+</dict>

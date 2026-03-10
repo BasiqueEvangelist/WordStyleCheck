@@ -19,7 +19,7 @@ namespace WordStyleCheckGui.ViewModels;
 public partial class DocumentViewModel : ViewModelBase
 {
     private static readonly LinterThreadPool Pool = new(Environment.ProcessorCount);
-    private static readonly DiagnosticTranslationsFile Translations = DiagnosticTranslationsFile.LoadEmbedded();
+    private static readonly XmlTranslationsFile Translations = XmlTranslationsFile.LoadEmbedded();
 
     private readonly string _path;
     private readonly string _fileName;

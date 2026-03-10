@@ -274,7 +274,7 @@ public class DocumentAnalysisContext
 
     private int _commentId = 0;
     
-    public void WriteComment(LintMessage msg, DiagnosticTranslationsFile translations)
+    public void WriteComment(LintMessage msg, XmlTranslationsFile translations)
     {
         string id = (_commentId++).ToString();
 
@@ -298,10 +298,18 @@ public class DocumentAnalysisContext
             Date = DateTime.Now
         };
 
-        var translation = translations.Translate(msg.Id, msg.Parameters ?? new());
+        var translation = translations.Translate(msg.Id, msg.Parameters ?? new(), this);
         c.Append(translation);
 
         commentsPart.Comments.AppendChild(c);
+    }
+
+    public string AllocateHyperlinkRelationship(Uri url)
+    {
+        var existing = Document.MainDocumentPart!.HyperlinkRelationships.FirstOrDefault(x => x.Uri == url);
+        if (existing != null) return existing.Id;
+
+        return Document.MainDocumentPart.AddHyperlinkRelationship(url, true).Id;
     }
 
     public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;

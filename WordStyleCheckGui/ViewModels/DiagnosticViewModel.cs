@@ -13,9 +13,9 @@ namespace WordStyleCheckGui.ViewModels
 
         public List<DiagnosticContextLine> Context { get; }
 
-        public DiagnosticViewModel(DiagnosticTranslationsFile translations, LintMessage message)
+        public DiagnosticViewModel(XmlTranslationsFile translations, LintMessage message)
         {
-            TranslatedDescription = Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new()));
+            TranslatedDescription = Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null));
             Context = message.Context.Lines;
         }
     }

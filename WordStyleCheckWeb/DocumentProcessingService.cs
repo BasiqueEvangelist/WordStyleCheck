@@ -6,7 +6,7 @@ public class DocumentProcessingService : BackgroundService
 {
     private readonly Dictionary<Guid, DocumentTask> _tasks = new();
     private readonly LinterThreadPool _pool = new(Environment.ProcessorCount);
-    private readonly DiagnosticTranslationsFile _translations = DiagnosticTranslationsFile.LoadEmbedded();
+    private readonly XmlTranslationsFile _translations = XmlTranslationsFile.LoadEmbedded();
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -40,7 +40,7 @@ public class DocumentProcessingService : BackgroundService
         private DateTime? finishedAt;
         private Task finished;
         
-        public DocumentTask(string name, string tempPath, LinterThreadPool pool, DiagnosticTranslationsFile translations)
+        public DocumentTask(string name, string tempPath, LinterThreadPool pool, XmlTranslationsFile translations)
         {
             Name = name;
 

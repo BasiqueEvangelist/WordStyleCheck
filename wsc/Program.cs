@@ -65,12 +65,12 @@ root.SetAction(res =>
     if (res.GetValue(listDiagnosticsOpt))
     {
         LintManager manager = new LintManager();
-        DiagnosticTranslationsFile translations = DiagnosticTranslationsFile.LoadEmbedded();
+        XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
 
         foreach (var diagnostic in manager.AllPossibleDiagnostics)
         {
             Console.WriteLine($"{diagnostic}:");
-            Console.WriteLine(Utils.ToPlainText(translations.Translate(diagnostic, new())));
+            Console.WriteLine(Utils.ToPlainText(translations.Translate(diagnostic, new(), null)));
             Console.WriteLine();
         }
         
@@ -102,7 +102,7 @@ root.SetAction(res =>
         String temp = Path.GetTempFileName();
         File.Copy(file.FullName, temp, true);
 
-        var translations = DiagnosticTranslationsFile.LoadEmbedded();
+        var translations = XmlTranslationsFile.LoadEmbedded();
 
         string suffix = autofix ? "FIXED" : "ANNOTATED";
         string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";
@@ -129,7 +129,7 @@ root.SetAction(res =>
             {
                 if (input.Count == 1)
                 {
-                    Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new())));
+                    Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
 
                     if (message.AutoFix != null && autofix)
                     {

@@ -67,12 +67,12 @@ public class LinterThreadPool : IDisposable
     }
 }
 
-public class LintTask(string path, Predicate<string> lintIdFilter, bool takeOwnership, DiagnosticTranslationsFile? commentsTranslations)
+public class LintTask(string path, Predicate<string> lintIdFilter, bool takeOwnership, XmlTranslationsFile? commentsTranslations)
 {
     public string Path { get; } = path;
     public bool TakeOwnership { get; } = takeOwnership;
     public Predicate<string> LintIdFilter { get; } = lintIdFilter;
-    public DiagnosticTranslationsFile? CommentsTranslations { get; } = commentsTranslations;
+    public XmlTranslationsFile? CommentsTranslations { get; } = commentsTranslations;
 
     internal TaskCompletionSource<DocumentLinter> _resultSrc = new();
 

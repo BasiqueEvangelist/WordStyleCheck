@@ -196,6 +196,8 @@ public record ParagraphPropertiesTool
     public bool IsEmptyOrWhitespace { get; }
     
     public bool IsEmptyOrDrawing { get; }
+
+    public bool IsOutsideOfText => AssociatedHeading1 == null && OfStructuralElement == null;
     
     public ParagraphClass Class
     {

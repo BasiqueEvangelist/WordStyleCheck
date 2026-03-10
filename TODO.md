@@ -12,3 +12,4 @@
     + inline equations maybe???
 - handle headers with completely incorrect format
 - warn when referencing nonexistent figures, tables and sources
+- do not recognize structural element headers inside appendices

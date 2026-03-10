@@ -14,10 +14,8 @@ public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predica
         {
             ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
             
-            if (pTool.IsEmptyOrDrawing)
-            {
-                continue;
-            }
+            if (pTool.IsEmptyOrDrawing) continue;
+            if (pTool.IsOutsideOfText) continue;
 
             if (!predicate(pTool))
             {

@@ -19,7 +19,7 @@ public class BibliographySourceNotReferencedLint : ILint
 
             int i = 0;
 
-            int ConsumeNumber()
+            int? ConsumeNumber()
             {
                 StringBuilder numBuilder = new();
 
@@ -30,7 +30,10 @@ public class BibliographySourceNotReferencedLint : ILint
                 }
 
                 // TODO: span.
-                return int.Parse(numBuilder.ToString());
+                if (int.TryParse(numBuilder.ToString(), out var res))
+                    return res;
+                else
+                    return null;
             }
             
             void ConsumeReference()
@@ -41,22 +44,26 @@ public class BibliographySourceNotReferencedLint : ILint
                 {
                     if (char.IsDigit(text[i]))
                     {
-                        int first = ConsumeNumber();
+                        int? first = ConsumeNumber();
+                        if (first is null) return;
 
                         if (i < text.Length && text[i] is '-' or '–')
                         {
                             i += 1;
 
-                            int second = ConsumeNumber();
-
-                            for (int j = first; j <= second; j++)
+                            int? second = ConsumeNumber();
+                            
+                            if (second is not null)
                             {
-                                referenced.Add(j);
+                                for (int j = first.Value; j <= second; j++)
+                                {
+                                    referenced.Add(j);
+                                }
                             }
                         }
                         else
                         {
-                            referenced.Add(first);
+                            referenced.Add(first.Value);
                         }
                     }
                     else

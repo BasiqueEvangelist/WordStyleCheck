@@ -53,7 +53,7 @@ public class LintManager
                     6 * 20
                 ),
                 new(
-                    x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix), OfNumbering: null},
+                    x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not (StructuralElement.Bibliography or StructuralElement.Appendix), OfNumbering: null} and not {OfStructuralElement: null, AssociatedHeading1: null},
                     6 * 20,
                     6 * 20,
                     contextualSpacing: true

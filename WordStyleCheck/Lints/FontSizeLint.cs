@@ -14,10 +14,8 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
         {
             ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
          
-            if (pTool.IsEmptyOrDrawing)
-            {
-                continue;
-            }
+            if (pTool.IsEmptyOrDrawing) continue;
+            if (pTool.IsOutsideOfText) continue;
             
             if (!predicate(pTool))
             {

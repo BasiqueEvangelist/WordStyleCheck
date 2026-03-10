@@ -16,6 +16,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
             if (tool.IsEmptyOrDrawing) continue;
+            if (tool.IsOutsideOfText) continue;
 
             if (!predicate(tool)) continue;
             

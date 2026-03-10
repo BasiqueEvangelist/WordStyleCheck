@@ -25,6 +25,7 @@ public class NeedlessParagraphLint : ILint
             ParagraphPropertiesTool curTool = ctx.Document.GetTool(paragraphs[i]);
             
             if (curTool.IsEmptyOrDrawing) continue;
+            if (prevTool.IsOutsideOfText || curTool.IsOutsideOfText) continue;
 
             if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
             if (prevTool.Class != ParagraphClass.BodyText

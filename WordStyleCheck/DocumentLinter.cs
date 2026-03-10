@@ -31,6 +31,7 @@ namespace WordStyleCheck
             }
 
             _document = WordprocessingDocument.Open(_tempPath, true);
+            StripOldComments.Run(_document);
             _analysisCtx = new DocumentAnalysisContext(_document);
             _manager = new LintManager();
             _lintCtx = new LintContext(_analysisCtx, false);
@@ -44,6 +45,7 @@ namespace WordStyleCheck
                 stream.CopyTo(wStream);
 
             _document = WordprocessingDocument.Open(_tempPath, true);
+            StripOldComments.Run(_document);
             _analysisCtx = new DocumentAnalysisContext(_document);
             _manager = new LintManager();
             _lintCtx = new LintContext(_analysisCtx, false);

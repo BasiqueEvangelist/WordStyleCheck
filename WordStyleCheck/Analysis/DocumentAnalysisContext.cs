@@ -103,7 +103,7 @@ public class DocumentAnalysisContext
         {
             throw new NotImplementedException("No last section in document?");
         }
-
+        
         if (Document.MainDocumentPart.WordprocessingCommentsPart?.Comments is { } comments)
         {
             _existingComments = comments.ChildElements.OfType<Comment>().Select(x => x.Id?.Value ?? "").Distinct().ToHashSet();

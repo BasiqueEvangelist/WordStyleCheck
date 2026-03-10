@@ -62,10 +62,11 @@ root.Options.Add(listDiagnosticsOpt);
 
 root.SetAction(res =>
 {
+    XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
+
     if (res.GetValue(listDiagnosticsOpt))
     {
         LintManager manager = new LintManager();
-        XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
 
         foreach (var diagnostic in manager.AllPossibleDiagnostics)
         {
@@ -101,8 +102,6 @@ root.SetAction(res =>
 
         String temp = Path.GetTempFileName();
         File.Copy(file.FullName, temp, true);
-
-        var translations = XmlTranslationsFile.LoadEmbedded();
 
         string suffix = autofix ? "FIXED" : "ANNOTATED";
         string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";

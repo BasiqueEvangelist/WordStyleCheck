@@ -65,19 +65,11 @@ public record ParagraphPropertiesTool
     {
         get
         {
-            int? positive = Utils.ParseTwipsMeasure(FollowPropertyChain(
-                x => x.Indentation?.FirstLine,
-                x => x.Indentation?.FirstLine,
-                x => x.Indentation?.FirstLine
-            )?.Value);
-            
-            int? negative = Utils.ParseTwipsMeasure(FollowPropertyChain(
-                x => x.Indentation?.Hanging,
-                x => x.Indentation?.Hanging,
-                x => x.Indentation?.Hanging
-            )?.Value);
-
-            return positive ?? -negative;
+            return FollowPropertyChain(
+                x => Utils.ParseTwipsMeasure(x.Indentation?.FirstLine) ?? -Utils.ParseTwipsMeasure(x.Indentation?.Hanging),
+                x => Utils.ParseTwipsMeasure(x.Indentation?.FirstLine) ?? -Utils.ParseTwipsMeasure(x.Indentation?.Hanging),
+                x => Utils.ParseTwipsMeasure(x.Indentation?.FirstLine) ?? -Utils.ParseTwipsMeasure(x.Indentation?.Hanging)
+            );
         }
     }
 
@@ -86,6 +78,12 @@ public record ParagraphPropertiesTool
             x => x.Indentation?.Left,
             x => x.Indentation?.Left,
             x => x.Indentation?.Left
+        )?.Value)
+        ??
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.Indentation?.Start,
+            x => x.Indentation?.Start,
+            x => x.Indentation?.Start
         )?.Value);
 
     public int? OutlineLevel { get; }

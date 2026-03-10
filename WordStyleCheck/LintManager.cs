@@ -77,7 +77,7 @@ public class LintManager
         // new IncorrectOutlineLevelLint(x => x is { HeadingData.Level: 4 }, x => null, "SubPointsInToC"),
         // TODO: make text font lint configurable.
         // new TextFontLint(),
-        new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),
+        new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix}, 24, "IncorrectFontSize"),
         new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 } or {Class: ParagraphClass.StructuralElementHeader}, "HeadingNotBold"),
         new ForceBoldLint(false, x => x is { OutlineLevel: >= 2 }, "SubSubHeadingBold"),
         new ForceBoldLint(false, x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Bibliography}, "BodyTextBold"),

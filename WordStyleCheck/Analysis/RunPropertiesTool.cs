@@ -104,16 +104,16 @@ public record RunPropertiesTool
         {
             // TODO: figure out in which order these two should go... or whether we should process linked styles at all...
             
-            if (_parent.RunStyleId is {} rStyleId)
+            if (_parent.Style?.StyleId?.Value is { } pStyleId)
             {
-                var result = FollowRunStyleChain(StyleValues.Character, rStyleId);
+                var result = FollowRunStyleChain(StyleValues.Paragraph, pStyleId);
                 if (result != null)
                     return result;
             }
             
-            if (_parent.Style?.StyleId?.Value is { } pStyleId)
+            if (_parent.RunStyleId is {} rStyleId)
             {
-                var result = FollowRunStyleChain(StyleValues.Paragraph, pStyleId);
+                var result = FollowRunStyleChain(StyleValues.Character, rStyleId);
                 if (result != null)
                     return result;
             }

@@ -24,31 +24,33 @@ public class TocReferencesLint : ILint
 
         foreach (var p in tocParagraphs)
         {
-            var anchors = p.Paragraph
-                .Descendants<FieldCode>()
-                .Select(x => x.Text.Trim())
-                .Where(x => x.StartsWith("PAGEREF "))
-                .Select(x => x.Substring("PAGEREF".Length).Trim())
-                .ToList();
+            var links = p.Paragraph.Descendants<Hyperlink>().Select(x => x.Anchor?.Value).Where(x => x is not null).ToList();
 
             string anchor;
             
-            if (anchors.Count != 1)
+            if (links.Count != 1)
             {
-                var links = p.Paragraph.Descendants<Hyperlink>().Select(x => x.Anchor?.Value).Where(x => x is not null).ToList();
-
-                if (links.Count != 1)
+                var anchors = p.Paragraph
+                    .Descendants<FieldCode>()
+                    .Select(x => x.Text.Trim())
+                    .Where(x => x.StartsWith("PAGEREF "))
+                    .Select(x => x.Substring("PAGEREF".Length).Trim())
+                    .ToList();
+                
+                if (anchors.Count != 1)
                 {
                     // Probably some random junk.
                     // TODO: check for this.
                     continue;
                 }
 
-                anchor = links[0]!;
+                anchor = anchors[0];
+                
+                if (anchor.EndsWith("\\h")) anchor = anchor[..^2];
             }
             else
             {
-                anchor = anchors[0];
+                anchor = links[0]!;
             }
 
             if (!ctx.Document.BookmarkStarts.TryGetValue(anchor, out var bookmarkStart)) continue;

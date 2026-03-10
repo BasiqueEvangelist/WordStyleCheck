@@ -149,7 +149,7 @@ public class Utils
     {
         if (value == null) return null;
         
-        return value.Val?.Value != false; 
+        return value.Val?.Value ?? true; 
     }
 
     public static bool IsMonospaceFont(string font)

@@ -32,6 +32,10 @@ public class NeedlessParagraphLint : ILint
              || curTool.Class != ParagraphClass.BodyText)
                 continue;
             
+            if (prevTool.OfStructuralElement == StructuralElement.Appendix 
+             || curTool.OfStructuralElement == StructuralElement.Appendix)
+                continue;
+            
             if (prevTool.OfNumbering != null || curTool.OfNumbering != null) continue;
 
             var prevParagraphText = prevTool.Contents.TrimEnd();

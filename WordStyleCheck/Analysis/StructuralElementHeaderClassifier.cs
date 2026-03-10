@@ -20,12 +20,12 @@ public static class StructuralElementHeaderClassifier
     private static readonly Dictionary<StructuralElement, List<string>> Names = new() {
         [StructuralElement.Authors] = ["СПИСОК ИСПОЛНИТЕЛЕЙ"],
         [StructuralElement.Abstract] = ["РЕФЕРАТ"],
-        [StructuralElement.TableOfContents] = ["СОДЕРЖАНИЕ"],
+        [StructuralElement.TableOfContents] = ["СОДЕРЖАНИЕ", "ОГЛАВЛЕНИЕ"],
         [StructuralElement.GlossaryTerms] = ["ТЕРМИНЫ И ОПРЕДЕЛЕНИЯ"], 
         [StructuralElement.GlossaryAbbreviations] = ["ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ"],
         [StructuralElement.Introduction] = ["ВВЕДЕНИЕ"], 
         [StructuralElement.Conclusion] = ["ЗАКЛЮЧЕНИЕ"],
-        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ"]
+        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ"]
     };
 
     public static string GetProperName(StructuralElement element)
@@ -37,6 +37,8 @@ public static class StructuralElementHeaderClassifier
     {
         if (text.Length > 100) return null;
 
+        text = text.Trim().Trim('.', ':');
+        
         if (ClassifyAppendixHeader(text))
             return StructuralElement.Appendix;
 

@@ -70,11 +70,13 @@ public class LintManager
         new FigureTableNotReferencedLint(),
         new BibliographySourceNotReferencedLint(),
         new IncorrectHeadingTextLint(),
-        new NotEnoughSourcesLint(40, "NotEnoughSources", "NoBibliography"),
+        // TODO: make this lint configurable.
+        // new NotEnoughSourcesLint(40, "NotEnoughSources", "NoBibliography"),
         // new IncorrectOutlineLevelLint(x => x is { Class: ParagraphClass.BodyText }, _ => null, "BodyTextInToC"),
         // new IncorrectOutlineLevelLint(x => x is { HeadingData.Level: < 4 }, x => x.HeadingData!.Level - 1, "IncorrectHeaderOutlineLevel"),
         // new IncorrectOutlineLevelLint(x => x is { HeadingData.Level: 4 }, x => null, "SubPointsInToC"),
-        new TextFontLint(),
+        // TODO: make text font lint configurable.
+        // new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText}, 24, "IncorrectFontSize"),
         new ForceBoldLint(true, x => x is { Class: ParagraphClass.Heading, OutlineLevel: null or < 2 } or {Class: ParagraphClass.StructuralElementHeader}, "HeadingNotBold"),
         new ForceBoldLint(false, x => x is { OutlineLevel: >= 2 }, "SubSubHeadingBold"),

@@ -157,10 +157,21 @@ public record ParagraphPropertiesTool
     public TableCell? ContainingTableCell => Utils.AscendToAnscestor<TableCell>(Paragraph);
     
     public TextBoxContent? ContainingTextBox => Utils.AscendToAnscestor<TextBoxContent>(Paragraph);
-
-    public bool IsTableOfContents => _ctx.GetContextFor(Paragraph)
-        .Any(x => x.InstrText != null && x.InstrText.Contains("TOC"));
     
+    public SdtBlock? ContainingSdtBlock => Utils.AscendToAnscestor<SdtBlock>(Paragraph);
+
+    public bool IsTableOfContents
+    {
+        get
+        {
+            if (_ctx.GetContextFor(Paragraph).Any(x => x.InstrText != null && x.InstrText.Contains("TOC"))) return true;
+            if (ContainingSdtBlock is {SdtProperties: {} props} && props.Descendants<DocPartGallery>().Any(x => x.Val?.Value == "Table of Contents"))
+                return true;
+            
+            return false;
+        }
+    }
+
     public bool ProbablyHeading { get; }
 
     public bool ProbablyCodeListing { get; internal set; }

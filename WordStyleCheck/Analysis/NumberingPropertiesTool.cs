@@ -22,42 +22,51 @@ public class NumberingPropertiesTool : INumbering
 
     public string GetNumber(Paragraph p)
     {
-        List<int> numbers = [];
-        
-        foreach (Paragraph sub in Paragraphs)
+        try
         {
-            var sTool = _ctx.GetTool(sub);
+            List<int> numbers = [];
 
-            if (sTool.NumberingLevel + 1 > numbers.Count)
+            foreach (Paragraph sub in Paragraphs)
             {
-                for (int i = numbers.Count; i <= sTool.NumberingLevel; i++)
+                var sTool = _ctx.GetTool(sub);
+
+                if (sTool.NumberingLevel + 1 > numbers.Count)
                 {
-                    numbers.Add(AbstractNumbering.ChildElements.OfType<Level>().First(x => x.LevelIndex!.Value == i).StartNumberingValue?.Val ?? 0);
+                    for (int i = numbers.Count; i <= sTool.NumberingLevel; i++)
+                    {
+                        numbers.Add(AbstractNumbering.ChildElements.OfType<Level>().First(x => x.LevelIndex!.Value == i)
+                            .StartNumberingValue?.Val ?? 0);
+                    }
                 }
-            }
-            else
-            {
-                while (sTool.NumberingLevel + 1 < numbers.Count)
-                    numbers.RemoveAt(numbers.Count - 1);
-
-                numbers[^1] += 1;
-            }
-
-            if (sub == p)
-            {
-                var level = AbstractNumbering.ChildElements.OfType<Level>().First(x => x.LevelIndex!.Value == numbers.Count - 1);
-
-                string text = level.LevelText!.Val!.Value!;
-
-                for (int i = 0; i < numbers.Count; i++)
+                else
                 {
-                    text = text.Replace($"%{i + 1}", numbers[i].ToString());
+                    while (sTool.NumberingLevel + 1 < numbers.Count)
+                        numbers.RemoveAt(numbers.Count - 1);
+
+                    numbers[^1] += 1;
                 }
 
-                return text;
+                if (sub == p)
+                {
+                    var level = AbstractNumbering.ChildElements.OfType<Level>()
+                        .First(x => x.LevelIndex!.Value == numbers.Count - 1);
+
+                    string text = level.LevelText!.Val!.Value!;
+
+                    for (int i = 0; i < numbers.Count; i++)
+                    {
+                        text = text.Replace($"%{i + 1}", numbers[i].ToString());
+                    }
+
+                    return text;
+                }
             }
         }
+        catch (Exception e)
+        {
+            // ...
+        }
 
-        throw new ArgumentException(nameof(p));
+        return "";
     }
 }

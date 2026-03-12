@@ -136,6 +136,8 @@ root.SetAction(async res =>
 
         using var linter = await task.Result;
 
+        await Task.Yield();
+
         foreach (var message in linter.Diagnostics)
         {
             if (input.Count == 1  && !res.GetValue(quietOpt))

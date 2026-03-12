@@ -60,6 +60,14 @@ Option<bool> listDiagnosticsOpt = new("--list-diagnostics")
 
 root.Options.Add(listDiagnosticsOpt);
 
+Option<bool> quietOpt = new("--quiet", "-q")
+{
+    Description = "Do not output all diagnostics.",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(quietOpt);
+
 root.SetAction(res =>
 {
     XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
@@ -126,7 +134,7 @@ root.SetAction(res =>
 
             foreach (var message in linter.Diagnostics)
             {
-                if (input.Count == 1)
+                if (input.Count == 1 && !res.GetValue(quietOpt))
                 {
                     Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
 

@@ -68,7 +68,7 @@ Option<bool> quietOpt = new("--quiet", "-q")
 
 root.Options.Add(quietOpt);
 
-root.SetAction(res =>
+root.SetAction(async res =>
 {
     XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
 
@@ -93,29 +93,12 @@ root.SetAction(res =>
     
     List<FileInfo> input = res.GetValue(inputFile)!;
 
-    int diagnosticsTotal = 0;
-
-    foreach (var file in input)
-    {
-        if (Path.GetFileNameWithoutExtension(file.Name).EndsWith("-ANNOTATED") ||
-            Path.GetFileNameWithoutExtension(file.Name).EndsWith("-FIXED"))
-        {
-            Console.WriteLine($"Skipping {file.Name}");
-            continue;
-        }
-        
-        Console.WriteLine($"Processing {file.Name}");
-        // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
-        // file, open it, and then copy it back to the -FIXED if it was changed in any way.
-
-        String temp = Path.GetTempFileName();
-        File.Copy(file.FullName, temp, true);
+    LinterThreadPool pool = new(Environment.ProcessorCount);
 
         string suffix = autofix ? "FIXED" : "ANNOTATED";
         string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";
 
-        using var fs = file.Open(FileMode.Open, FileAccess.Read);
-        using (var linter = new DocumentLinter(fs))
+        using (var linter = new DocumentLinter(file.FullName))
         {
             string? only = res.GetValue(onlyOpt);
             if (only != null)
@@ -124,72 +107,94 @@ root.SetAction(res =>
                 linter.LintIdFilter = lint => set.Contains(lint);
             }
 
-            string? ignore = res.GetValue(ignoreOpt);
-            if (ignore != null)
-            {
-                var set = ignore.Split(",").ToHashSet();
-                linter.LintIdFilter = lint => !set.Contains(lint);
-            }
-
-            linter.RunLints();
-
-            foreach (var message in linter.Diagnostics)
-            {
-                if (input.Count == 1 && !res.GetValue(quietOpt))
-                {
-                    Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
-
-                    if (message.AutoFix != null && autofix)
-                    {
-                        Console.Write(" (autofixed)");
-                    }
-
-                    Console.WriteLine(":");
-
-                    message.Context.WriteToConsole();
-                }
-
-                if (!autofix)
-                {
-                    linter.DocumentAnalysis.WriteComment(message, translations);
-                }
-            }
-
-            bool changed = false;
-            if (!autofix && linter.Diagnostics.Count > 0)
-            {
-                changed = true;
-            }
-            else if (linter.RunAutofixes())
-            {
-                changed = true;
-            }
-
-            if (linter.Diagnostics.Count > 0)
-            {
-                Console.Write($"{linter.Diagnostics.Count} style errors");
-
-                if (autofix)
-                {
-                    Console.Write($" ({linter.Diagnostics.Count(x => x.AutoFix != null)} autofixed)");
-                }
-
-                Console.WriteLine(" :(");
-            }
-            else
-            {
-                Console.WriteLine("No errors detected :)");
-            }
-
-            if (changed)
-            {
-                linter.SaveTo(target);
-                Console.WriteLine("Changes have been saved to " + target);
-            }
-
-            diagnosticsTotal += linter.Diagnostics.Count;
-        }
+    string? ignore = res.GetValue(ignoreOpt);
+    if (ignore != null)
+    {
+        var set = ignore.Split(",").ToHashSet();
+        lintIdFilter = lint => !set.Contains(lint);
     }
+    
+    string suffix = autofix ? "FIXED" : "ANNOTATED";
+    
+    List<Task<int>> tasks = input.Where(x =>
+    {
+        if (Path.GetFileNameWithoutExtension(x.Name).EndsWith("-ANNOTATED") ||
+            Path.GetFileNameWithoutExtension(x.Name).EndsWith("-FIXED"))
+        {
+            Console.WriteLine($"Skipping {x.Name}");
+            return false;
+        }
+
+        return true;
+    })
+    .Select(async x =>
+    {
+        string target = Path.GetFileNameWithoutExtension(x.Name) + $"-{suffix}.docx";
+        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), lintIdFilter, false, null);
+        
+        pool.AddTask(task);
+
+        using var linter = await task.Result;
+
+        foreach (var message in linter.Diagnostics)
+        {
+            if (input.Count == 1  && !res.GetValue(quietOpt))
+            {
+                Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
+
+                if (message.AutoFix != null && autofix)
+                {
+                    Console.Write(" (autofixed)");
+                }
+
+                Console.WriteLine(":");
+
+                message.Context.WriteToConsole();
+            }
+
+            if (!autofix)
+            {
+                linter.DocumentAnalysis.WriteComment(message, translations);
+            }
+        }
+
+        bool changed = false;
+        if (!autofix && linter.Diagnostics.Count > 0)
+        {
+            changed = true;
+        }
+        else if (linter.RunAutofixes())
+        {
+            changed = true;
+        }
+
+        if (linter.Diagnostics.Count > 0)
+        {
+            Console.Write($"{linter.Diagnostics.Count} style errors in {x.Name}");
+
+            if (autofix)
+            {
+                Console.Write($" ({linter.Diagnostics.Count(y => y.AutoFix != null)} autofixed)");
+            }
+
+            Console.WriteLine(" :(");
+        }
+        else
+        {
+            Console.WriteLine($"No errors detected in {x.Name} :)");
+        }
+
+        if (changed)
+        {
+            linter.SaveTo(target);
+            Console.WriteLine("Changes have been saved to " + target);
+        }
+
+        return linter.Diagnostics.Count();
+    })
+    .ToList();
+
+    int diagnosticsTotal = (await Task.WhenAll(tasks)).Sum();
     
     return diagnosticsTotal > 0 ? 1 : 0;
 });

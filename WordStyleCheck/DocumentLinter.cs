@@ -66,12 +66,9 @@ namespace WordStyleCheck
 
         public void SaveTo(string path)
         {
+            SaveTemp();
+            
             if (_tempPath == null) throw new InvalidOperationException("Document was already saved");
-
-            _document!.Save();
-            _document.Dispose();
-            _document = null;
-
             File.Move(_tempPath, path, true);
             _tempPath = null;
         }
@@ -80,7 +77,7 @@ namespace WordStyleCheck
         {
             if (_document == null) return _tempPath!;
 
-            _document.Save();
+            if (!_document.AutoSave) _document.Save();
             _document.Dispose();
             _document = null;
 

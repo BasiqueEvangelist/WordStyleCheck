@@ -12,6 +12,6 @@ public readonly struct LoudStopwatch(string name) : IDisposable
     {
         if (!Enabled) return;
         
-        Console.WriteLine($"{name} took {Stopwatch.GetElapsedTime(_timestamp, Stopwatch.GetTimestamp()).TotalMilliseconds}ms");
+        Console.WriteLine($"[{Thread.CurrentThread.Name!}] {name} took {Stopwatch.GetElapsedTime(_timestamp, Stopwatch.GetTimestamp()).TotalMilliseconds}ms");
     }
 }

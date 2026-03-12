@@ -30,66 +30,80 @@ public class DocumentAnalysisContext
     {
         Document = document;
 
-        if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles != null)
+        using (new LoudStopwatch("Locating styles"))
         {
-            _styles = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
-                .ToDictionary(x => (x.Type!.Value!, x.StyleId!.Value!), x => x);
+            if (Document.MainDocumentPart?.StyleDefinitionsPart?.Styles != null)
+            {
+                _styles = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
+                    .ToDictionary(x => (x.Type!.Value!, x.StyleId!.Value!), x => x);
 
-            DefaultParagraphStyle = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements.OfType<Style>()
-                .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
+                DefaultParagraphStyle = Document.MainDocumentPart.StyleDefinitionsPart.Styles.ChildElements
+                    .OfType<Style>()
+                    .SingleOrDefault(x => x.Type?.Value == StyleValues.Paragraph && (x.Default?.Value ?? false));
+            }
         }
 
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
         
         _fieldStacks = FieldStackTracker.Run(document.MainDocumentPart!.Document!);
 
-        if (Document.MainDocumentPart?.NumberingDefinitionsPart?.Numbering is { } numbering)
-        {
-            foreach (var inst in numbering.ChildElements.OfType<NumberingInstance>())
-            {
-                var tool = new NumberingPropertiesTool(this, inst);
-                _numberings[inst.NumberID!.Value!] = tool;
-            }
-            
+        using (new LoudStopwatch("Generating ParagraphPropertiesTool objects"))
             foreach (var p in AllParagraphs)
             {
-                var pTool = GetTool(p);
-                    
-                if (pTool.NumberingId is {} numId && _numberings.TryGetValue(numId, out var tool))
+                GetTool(p);
+            }
+
+        using (new LoudStopwatch("Assigning numberings"))
+        {
+            if (Document.MainDocumentPart?.NumberingDefinitionsPart?.Numbering is { } numbering)
+            {
+                foreach (var inst in numbering.ChildElements.OfType<NumberingInstance>())
                 {
-                    tool.Paragraphs.Add(p);
-                    pTool.OfNumbering = tool;
+                    var tool = new NumberingPropertiesTool(this, inst);
+                    _numberings[inst.NumberID!.Value!] = tool;
+                }
+
+                foreach (var p in AllParagraphs)
+                {
+                    var pTool = GetTool(p);
+
+                    if (pTool.NumberingId is { } numId && _numberings.TryGetValue(numId, out var tool))
+                    {
+                        tool.Paragraphs.Add(p);
+                        pTool.OfNumbering = tool;
+                    }
                 }
             }
         }
-        
+
         StructuralElement? currentElement = null;
         List<Paragraph> currentSection = [];
         
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-
-            if (tool.StructuralElementHeader != null)
+        using (new LoudStopwatch("Assigning OfStructuralElement and page style sections"))
+            foreach (var p in AllParagraphs)
             {
-                currentElement = tool.StructuralElementHeader;
-            }
+                var tool = GetTool(p);
 
-            tool.OfStructuralElement = currentElement;
-            
-            currentSection.Add(p);
-
-            if (p.ParagraphProperties?.SectionProperties is { } sectPr)
-            {
-                SectionPropertiesTool section = new(this, sectPr)
+                if (tool.StructuralElementHeader != null)
                 {
-                    Paragraphs = currentSection
-                };
-                _sections.Add(section);
+                    currentElement = tool.StructuralElementHeader;
+                }
+
+                tool.OfStructuralElement = currentElement;
                 
-                currentSection = [];
+                currentSection.Add(p);
+
+                if (p.ParagraphProperties?.SectionProperties is { } sectPr)
+                {
+                    SectionPropertiesTool section = new(this, sectPr)
+                    {
+                        Paragraphs = currentSection
+                    };
+                    _sections.Add(section);
+                    
+                    currentSection = [];
+                }
             }
-        }
 
         if (Document.MainDocumentPart!.Document!.Body!.LastChild is SectionProperties lastSectPr)
         {
@@ -117,92 +131,99 @@ public class DocumentAnalysisContext
             alreadyReferenced.Add(targeted);
         }
 
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-
-            if (tool.Class != ParagraphClass.BodyText) continue;
-
-            var caption = CaptionClassifierData.Classify(tool, true);
-            
-            if (!caption.HasValue) continue;
-            
-            if (caption.Value.TargetedElement != null && alreadyReferenced.Contains(caption.Value.TargetedElement))
-                continue;
-
-            tool.CaptionData = caption;
-        }
-
-        HandmadeLists = HandmadeListClassifier.Classify(this);
-
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-            tool.HeadingData = HeadingClassifierData.Classify(tool);
-
-            bool isListing = false;
-            
-            foreach (var run in Utils.DirectRunChildren(p))
+        using (new LoudStopwatch("Second caption classification pass"))
+            foreach (var p in AllParagraphs)
             {
-                RunPropertiesTool runTool = GetTool(run);
-            
-                if (string.IsNullOrWhiteSpace(Utils.CollectText(run))) continue;
+                var tool = GetTool(p);
 
-                if (!Utils.IsMonospaceFont(runTool.AsciiFont ?? "<?>"))
+                if (tool.Class != ParagraphClass.BodyText) continue;
+
+                var caption = CaptionClassifierData.Classify(tool, true);
+                
+                if (!caption.HasValue) continue;
+                
+                if (caption.Value.TargetedElement != null && alreadyReferenced.Contains(caption.Value.TargetedElement))
+                    continue;
+
+                tool.CaptionData = caption;
+            }
+
+        using (new LoudStopwatch("HandmadeListClassifier.Classify"))
+            HandmadeLists = HandmadeListClassifier.Classify(this);
+
+        using (new LoudStopwatch("HeadingClassifierData.Classify and classifying code listings"))
+            foreach (var p in AllParagraphs)
+            {
+                var tool = GetTool(p);
+                tool.HeadingData = HeadingClassifierData.Classify(tool);
+
+                bool isListing = false;
+                
+                foreach (var run in Utils.DirectRunChildren(p))
                 {
-                    isListing = false;
-                    break;
+                    RunPropertiesTool runTool = GetTool(run);
+                
+                    if (string.IsNullOrWhiteSpace(Utils.CollectText(run))) continue;
+
+                    if (!Utils.IsMonospaceFont(runTool.AsciiFont ?? "<?>"))
+                    {
+                        isListing = false;
+                        break;
+                    }
+
+                    isListing = true;
                 }
 
-                isListing = true;
+                tool.ProbablyCodeListing = isListing;
             }
-
-            tool.ProbablyCodeListing = isListing;
-        }
         
         ParagraphPropertiesTool? currentHeading1 = null;
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-
-            if (tool.HeadingData?.Level == 1)
+        using (new LoudStopwatch("Assigning AssociatedHeading1"))
+            foreach (var p in AllParagraphs)
             {
-                currentHeading1 = tool;
+                var tool = GetTool(p);
+
+                if (tool.HeadingData?.Level == 1)
+                {
+                    currentHeading1 = tool;
+                }
+
+                tool.AssociatedHeading1 = currentHeading1;
             }
-
-            tool.AssociatedHeading1 = currentHeading1;
-        }
-
+        
         HashSet<OpenXmlElement> continuationTables = [];
-        foreach (var p in AllParagraphs)
-        {
-            if (GetTool(p) is { CaptionData: { IsContinuation: true, Type: CaptionType.Table, TargetedElement: { } targeted } })
+        using (new LoudStopwatch("Finding Continuation Tables"))
+            foreach (var p in AllParagraphs)
             {
-                continuationTables.Add(targeted);
+                if (GetTool(p) is { CaptionData: { IsContinuation: true, Type: CaptionType.Table, TargetedElement: { } targeted } })
+                {
+                    continuationTables.Add(targeted);
+                }
             }
-        }
 
-        foreach (var p in AllParagraphs)
-        {
-            var tool = GetTool(p);
-
-            if (tool.ContainingTableRow is not { } tr) continue;
-
-            var table = (Table?)tr.Parent;
-
-            if (table == null || continuationTables.Contains(table)) continue;
-
-            int rowIndex = table.ChildElements.ToList().IndexOf(tr);
-
-            if (rowIndex == 0)
+        using (new LoudStopwatch("Assigning ProbableTableColumnHeader"))
+            foreach (var p in AllParagraphs)
             {
-                tool.ProbablyTableColumnHeader = true;
-            }
-        }
+                var tool = GetTool(p);
 
-        BookmarkStarts = Document.MainDocumentPart.Document.Body.Descendants<BookmarkStart>()
-            .DistinctBy(x => x.Name!.Value!)
-            .ToDictionary(x => x.Name!.Value!, x => x);
+                if (tool.ContainingTableRow is not { } tr) continue;
+
+                var table = (Table?)tr.Parent;
+
+                if (table == null || continuationTables.Contains(table)) continue;
+
+                int rowIndex = table.ChildElements.ToList().IndexOf(tr);
+
+                if (rowIndex == 0)
+                {
+                    tool.ProbablyTableColumnHeader = true;
+                }
+            }
+
+        using (new LoudStopwatch("Locating Bookmark Starts"))
+            BookmarkStarts = Document.MainDocumentPart.Document.Body.Descendants<BookmarkStart>()
+                .DistinctBy(x => x.Name!.Value!)
+                .ToDictionary(x => x.Name!.Value!, x => x);
     }
 
     private static readonly List<FieldStackTracker.FieldStackEntry> _emptyList = [];

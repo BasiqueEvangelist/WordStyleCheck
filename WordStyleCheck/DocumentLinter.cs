@@ -31,26 +31,24 @@ namespace WordStyleCheck
             }
 
             _document = WordprocessingDocument.Open(_tempPath, true);
-            StripOldComments.Run(_document);
+
+            using (new LoudStopwatch("Loading document parts"))
+            {
+                _ = _document.MainDocumentPart!.Document;
+                _ = _document.MainDocumentPart!.StyleDefinitionsPart!.Styles;
+                _ = _document.MainDocumentPart!.NumberingDefinitionsPart?.Numbering;
+                _ = _document.MainDocumentPart!.WordprocessingCommentsPart?.Comments;
+            }
+            
+            using (new LoudStopwatch("StripOldComments.Run"))
+                StripOldComments.Run(_document);
+            
             _analysisCtx = new DocumentAnalysisContext(_document);
+            
             _manager = new LintManager();
             _lintCtx = new LintContext(_analysisCtx, false);
         }
         
-        public DocumentLinter(Stream stream)
-        {
-            _tempPath = Path.GetTempFileName();
-
-            using (var wStream = File.OpenWrite(_tempPath))
-                stream.CopyTo(wStream);
-
-            _document = WordprocessingDocument.Open(_tempPath, true);
-            StripOldComments.Run(_document);
-            _analysisCtx = new DocumentAnalysisContext(_document);
-            _manager = new LintManager();
-            _lintCtx = new LintContext(_analysisCtx, false);
-        }
-
         public List<LintMessage> Diagnostics => _lintCtx.Messages;
 
         public Predicate<string> LintIdFilter

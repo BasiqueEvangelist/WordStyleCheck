@@ -1,6 +1,8 @@
 <Solution>
   <Project Path="WordStyleCheck/WordStyleCheck.csproj" />
   <Project Path="WordStyleCheckGui/WordStyleCheckGui.csproj" />
+  <Project Path="WordStyleCheckService.Foreman/WordStyleCheckService.Foreman.csproj" />
+  <Project Path="WordStyleCheckService.Worker/WordStyleCheckService.Worker.csproj" />
   <Project Path="wsc/wsc.csproj" />
   <Project Path="WscDebugTool/WscDebugTool.csproj" />
 </Solution>

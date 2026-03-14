@@ -7,6 +7,25 @@ namespace WordStyleCheck.Lints;
 public class TocReferencesLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NoToc", "ShouldNotBeInToc", "ShouldBeInToc"];
+
+    private bool ShouldBeInToc(ParagraphPropertiesTool tool)
+    {
+        if (tool.OfStructuralElement == StructuralElement.Appendix &&
+            tool.StructuralElementHeader != StructuralElement.Appendix)
+            return false;
+
+        if (tool is { Class: ParagraphClass.Heading, HeadingData.Level: < 4 })
+            return true;
+
+        if (tool is
+            {
+                StructuralElementHeader: StructuralElement.Introduction or StructuralElement.Conclusion
+                or StructuralElement.Bibliography or StructuralElement.Appendix
+            })
+            return true;
+        
+        return false;
+    }
     
     public void Run(LintContext ctx)
     {
@@ -61,20 +80,20 @@ public class TocReferencesLint : ILint
 
             var targetTool = ctx.Document.GetTool(target);
 
-            if (targetTool is not ({Class: ParagraphClass.Heading, HeadingData.Level: < 4} or {StructuralElementHeader: StructuralElement.Introduction or StructuralElement.Conclusion or StructuralElement.Bibliography or StructuralElement.Appendix}) && targetTool.OfStructuralElement != StructuralElement.Appendix)
+            referencedParagraphs.Add(target);
+
+            if (!ShouldBeInToc(targetTool))
             {
                 ctx.AddMessage(new LintMessage("ShouldNotBeInToc", new ParagraphDiagnosticContext(p.Paragraph)));
                 continue;
             }
-
-            referencedParagraphs.Add(target);
         }
 
         foreach (var p in ctx.Document.AllParagraphs)
         {
             var tool = ctx.Document.GetTool(p);
             
-            if (tool is not ({Class: ParagraphClass.Heading, HeadingData.Level: < 4} or {StructuralElementHeader: StructuralElement.Introduction or StructuralElement.Conclusion or StructuralElement.Bibliography or StructuralElement.Appendix})) continue;
+            if (!ShouldBeInToc(tool)) continue;
             
             if (referencedParagraphs.Contains(tool.Paragraph)) continue;
             

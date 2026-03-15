@@ -8,13 +8,13 @@ public class CleanupDbService(Db db) : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var errorExpiredNotTaken = JsonSerializer.Serialize(new {
-            code = "expiredNotTaken",
-            message = "Task was not taken within expiry period"
+            Code = "expiredNotTaken",
+            Message = "Task was not taken within expiry period"
         });
         
         var errorProcessingTimeout = JsonSerializer.Serialize(new {
-            code = "processingTimeout",
-            message = "Task was not processed within timeout"
+            Code = "processingTimeout",
+            Message = "Task was not processed within timeout"
         });
         
         while (!stoppingToken.IsCancellationRequested)

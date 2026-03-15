@@ -10,27 +10,23 @@ namespace WordStyleCheck
 {
     public class DocumentLinter : IDisposable
     {
-        private string? _tempPath;
+        private MemoryStream _stream;
         private WordprocessingDocument? _document;
         private DocumentAnalysisContext _analysisCtx;
         private LintManager _manager;
         private LintContext _lintCtx;
 
-        public DocumentLinter(string path, bool takeOwnership = false)
+        public DocumentLinter(Stream stream)
         {
-            if (takeOwnership)
-            {
-                _tempPath = path;
-            }
+            if (stream is MemoryStream ms)
+                _stream = ms;
             else
             {
-                // the OOXML toolkit we use doesn't seem to support saving to a different file, so we copy the document to a temporary
-                // file, open it, and then copy it back to the -FIXED if it was changed in any way.
-                _tempPath = Path.GetTempFileName();
-                File.Copy(path, _tempPath, true);
+                _stream = new MemoryStream();
+                stream.CopyTo(_stream);
             }
 
-            _document = WordprocessingDocument.Open(_tempPath, true);
+            _document = WordprocessingDocument.Open(_stream, true);
 
             using (new LoudStopwatch("Loading document parts"))
             {
@@ -66,36 +62,39 @@ namespace WordStyleCheck
 
         public void SaveTo(string path)
         {
-            SaveTemp();
+            Save();
             
-            if (_tempPath == null) throw new InvalidOperationException("Document was already saved");
-            File.Move(_tempPath, path, true);
-            _tempPath = null;
+            _stream.Seek(0, SeekOrigin.Begin);
+
+            using var fs = File.OpenWrite(path);
+            _stream.CopyTo(fs);
+        
+            _stream.Seek(0, SeekOrigin.Begin);
         }
         
-        public string SaveTemp()
+        public MemoryStream Save()
         {
-            if (_document == null) return _tempPath!;
+            _stream.Seek(0, SeekOrigin.Begin);
+
+            if (_document == null) return _stream!;
 
             if (!_document.AutoSave) _document.Save();
             _document.Dispose();
             _document = null;
 
-            return _tempPath!;
+            _stream.Seek(0, SeekOrigin.Begin);
+            
+            return _stream!;
         }
 
         public void Dispose()
         {
             _document?.Dispose();
-
-            if (_tempPath != null) File.Delete(_tempPath);
         }
 
         public bool RunAutofixes()
         {
             return _lintCtx.RunAllAutoFixes();
         }
-
-        public bool CanSave => _tempPath != null;
     }
 }

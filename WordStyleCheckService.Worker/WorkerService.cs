@@ -1,17 +1,20 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel.Args;
 using WordStyleCheck;
 
 namespace WordStyleCheckService.Worker;
 
-public class WorkerService(ILogger<WorkerService> logger, Db db, IOptions<Options> options)
+public class WorkerService(ILogger<WorkerService> logger, Db db, IOptionsMonitor<Options> options, IMinioClient s3)
     : BackgroundService
 {
     private static readonly XmlTranslationsFile _translations = XmlTranslationsFile.LoadEmbedded();
 
-    private readonly LinterThreadPool _pool = new(options.Value.PoolSize);
+    private readonly LinterThreadPool _pool = new(options.CurrentValue.PoolSize);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -35,9 +38,9 @@ public class WorkerService(ILogger<WorkerService> logger, Db db, IOptions<Option
             {
                 logger.LogError("Processing task {TaskId} failed", taskInfo.TaskId);
                 var error = new {
-                    code = "exception",
-                    message = "Task failed with an exception",
-                    exception = e.ToString()
+                    Code = "exception",
+                    Message = "Task failed with an exception",
+                    Exception = e.ToString()
                 };
                 await db.ReportTaskFailure(taskInfo.PendingTaskId, JsonSerializer.Serialize(error));
                 logger.LogInformation("Reported task {TaskId} failure", taskInfo.TaskId);
@@ -54,15 +57,31 @@ public class WorkerService(ILogger<WorkerService> logger, Db db, IOptions<Option
         
         TaskInputs inputs = JsonSerializer.Deserialize<TaskInputs>(taskData)!;
 
-        LintTask task = new LintTask(inputs.DownloadUrl, x => true, false, _translations);
+        MemoryStream stream = new MemoryStream();
+        await s3.GetObjectAsync(new GetObjectArgs()
+            .WithBucket(options.CurrentValue.S3IngressBucket)
+            .WithObject(inputs.InputObject)
+            .WithCallbackStream((x, token) => x.CopyToAsync(stream, token)));
+        
+        stream.Seek(0, SeekOrigin.Begin);
+
+        LintTask task = new LintTask(stream, x => true, false, _translations);
         _pool.AddTask(task);
         var linter = await task.Result;
 
-        var file = linter.SaveTemp();
+        var file = linter.Save();
 
+        string objectKey = RandomNumberGenerator.GetHexString(32) + ".docx";
+        await s3.PutObjectAsync(new PutObjectArgs()
+            .WithBucket(options.CurrentValue.S3EgressBucket)
+            .WithObject(objectKey)
+            .WithStreamData(file)
+            .WithObjectSize(file.Length)
+            .WithContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        
         TaskOutputs outputs = new TaskOutputs()
         {
-            DownloadUrl = file
+            OutputObject = objectKey
         };
 
         return JsonSerializer.Serialize(outputs);

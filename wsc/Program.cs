@@ -114,7 +114,8 @@ root.SetAction(res =>
         string suffix = autofix ? "FIXED" : "ANNOTATED";
         string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";
 
-        using (var linter = new DocumentLinter(file.FullName))
+        using var fs = file.Open(FileMode.Open, FileAccess.Read);
+        using (var linter = new DocumentLinter(fs))
         {
             string? only = res.GetValue(onlyOpt);
             if (only != null)

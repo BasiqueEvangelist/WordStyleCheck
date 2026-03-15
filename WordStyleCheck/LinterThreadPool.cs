@@ -40,7 +40,7 @@ public class LinterThreadPool : IDisposable
 
             try
             {
-                var linter = new DocumentLinter(task.Path, task.TakeOwnership);
+                var linter = new DocumentLinter(task.Stream);
                 linter.LintIdFilter = task.LintIdFilter;
                 linter.RunLints();
 
@@ -67,9 +67,9 @@ public class LinterThreadPool : IDisposable
     }
 }
 
-public class LintTask(string path, Predicate<string> lintIdFilter, bool takeOwnership, XmlTranslationsFile? commentsTranslations)
+public class LintTask(Stream stream, Predicate<string> lintIdFilter, bool takeOwnership, XmlTranslationsFile? commentsTranslations)
 {
-    public string Path { get; } = path;
+    public Stream Stream { get; } = stream;
     public bool TakeOwnership { get; } = takeOwnership;
     public Predicate<string> LintIdFilter { get; } = lintIdFilter;
     public XmlTranslationsFile? CommentsTranslations { get; } = commentsTranslations;

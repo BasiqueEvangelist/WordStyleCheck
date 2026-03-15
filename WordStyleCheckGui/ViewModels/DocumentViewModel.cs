@@ -34,7 +34,7 @@ public partial class DocumentViewModel : ViewModelBase
         
         async void RunThing()
         {
-            var task = new LintTask(path, _ => true, false, null);
+            var task = new LintTask(File.OpenRead(path), _ => true, false, null);
             Pool.AddTask(task);
 
             try

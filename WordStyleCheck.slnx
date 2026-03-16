@@ -2,4 +2,5 @@
   <Project Path="WordStyleCheck/WordStyleCheck.csproj" />
   <Project Path="WordStyleCheckGui/WordStyleCheckGui.csproj" />
   <Project Path="wsc/wsc.csproj" />
+  <Project Path="WscDebugTool/WscDebugTool.csproj" />
 </Solution>

@@ -2,7 +2,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
-using Text = DocumentFormat.OpenXml.Drawing.Text;
 
 namespace WordStyleCheck.Lints;
 

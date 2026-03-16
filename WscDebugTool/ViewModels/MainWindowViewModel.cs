@@ -75,6 +75,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Indent = true
         });
         doc.WriteTo(w);
+        w.Flush();
         FileText = formatted.ToString();
 
 

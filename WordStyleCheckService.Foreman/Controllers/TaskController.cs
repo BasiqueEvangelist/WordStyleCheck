@@ -40,6 +40,19 @@ public class TaskController(Db db, IMinioClient s3, IOptionsSnapshot<Options> op
         
         return result.ToString();
     }
+    
+    [HttpPost]
+    [Route("/upload-s3-file")]
+
+    public async Task<string> UploadS3File([FromBody] string objectKey)
+    {
+        var result = await db.EnqueueTask("LintFile", JsonSerializer.Serialize(new TaskInputs()
+        {
+            InputObject = objectKey
+        }));
+        
+        return result.ToString();
+    }
 
     [HttpGet]
     [Route("/task/{id}")]
@@ -56,32 +69,14 @@ public class TaskController(Db db, IMinioClient s3, IOptionsSnapshot<Options> op
             });
         }
 
-        return Ok(info.ResultData);
-    }
-    
-    [HttpGet]
-    [Route("/task/{id}/download")]
-    public async Task<IActionResult> TaskDownload(uint id)
-    {
-        var info = await db.GetTask(id);
-        if (info == null) return NotFound();
-
-        if (info.ResultData == null)
-        {
-            return NotFound();
-        }
-
         var outp = JsonSerializer.Deserialize<TaskOutputs>(info.ResultData)!;
 
         if (outp.OutputObject == null) return NotFound();
 
-        var ms = new MemoryStream();
-        await s3.GetObjectAsync(new GetObjectArgs()
-            .WithBucket(options.Value.S3EgressBucket)
-            .WithObject(outp.OutputObject)
-            .WithCallbackStream((s, token) => s.CopyToAsync(ms, token)));
-        ms.Seek(0, SeekOrigin.Begin);
-
-        return File(ms, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        return Ok(new
+        {
+            Code = "success",
+            OutputUrl = options.Value.S3EgressBucketBaseUrl + outp.OutputObject
+        });
     }
 }

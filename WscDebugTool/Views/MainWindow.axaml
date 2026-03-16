@@ -40,7 +40,7 @@
 		
 		<AvaloniaEdit:TextEditor Name="CodeEditor" Text="Bruh"
                         ShowLineNumbers="True"
-                        FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+                        FontFamily="Fira Code,Cascadia Code,Consolas,Menlo,Monospace"
 						HorizontalScrollBarVisibility="Auto"
                         VerticalScrollBarVisibility="Visible"/>
 	</SplitView>

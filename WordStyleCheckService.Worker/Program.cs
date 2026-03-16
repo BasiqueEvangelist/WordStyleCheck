@@ -7,6 +7,8 @@ using Options = WordStyleCheckService.Worker.Options;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Configuration.AddJsonFile("secrets.json");
+
 builder.Services.Configure<Options>(builder.Configuration);
 builder.Services.AddSingleton<Db>();
 

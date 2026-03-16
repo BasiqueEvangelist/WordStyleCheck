@@ -4,6 +4,8 @@ using WordStyleCheckService.Worker;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("secrets.json");
+
 // Add services to the container.
 
 builder.Services.Configure<Options>(builder.Configuration);

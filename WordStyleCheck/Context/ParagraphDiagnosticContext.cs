@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Context;
@@ -67,5 +68,16 @@ public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool Disabl
         if (prevP.Paragraphs[^1].NextSibling() != Paragraphs[0]) return null;
 
         return new ParagraphDiagnosticContext([..prevP.Paragraphs, ..Paragraphs]);
+    }
+
+    public void Hash(NonCryptographicHashAlgorithm hasher)
+    {
+        hasher.Append(BitConverter.GetBytes(Paragraphs.Count));
+        foreach (var p in Paragraphs)
+        {
+            HashUtils.HashElement(p, hasher);
+        }
+        
+        hasher.Append(BitConverter.GetBytes(DisableMerging));
     }
 }

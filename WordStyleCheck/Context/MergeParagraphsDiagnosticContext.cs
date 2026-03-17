@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Context;
@@ -66,5 +67,11 @@ public record MergeParagraphsDiagnosticContext(Paragraph First, Paragraph Second
         }
         
         
+    }
+
+    public void Hash(NonCryptographicHashAlgorithm hasher)
+    {
+        HashUtils.HashElement(First, hasher);
+        HashUtils.HashElement(Second, hasher);
     }
 }

@@ -5,13 +5,13 @@ namespace WordStyleCheck.Analysis;
 
 public class SectionPropertiesTool
 {
-    private DocumentAnalysisContext _ctx;
+    public DocumentAnalysisContext Context { get; }
     public SectionProperties Properties { get; }
     public List<Paragraph> Paragraphs { get; internal set; } = [];
 
     internal SectionPropertiesTool(DocumentAnalysisContext ctx, SectionProperties properties)
     {
-        _ctx = ctx;
+        Context = ctx;
         Properties = properties;
     }
 

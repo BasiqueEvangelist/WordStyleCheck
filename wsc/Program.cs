@@ -1,9 +1,5 @@
 ﻿using System.CommandLine;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck;
-using WordStyleCheck.Analysis;
-using WordStyleCheck.Lints;
 
 RootCommand root = new("Linter for .docx files");
 
@@ -48,6 +44,7 @@ root.Options.Add(ignoreOpt);
 Argument<List<FileInfo>> inputFile = new("input")
 {
     Description = "File to lint for style issues",
+    Arity = ArgumentArity.OneOrMore
 };
 
 root.Arguments.Add(inputFile);
@@ -67,6 +64,14 @@ Option<bool> quietOpt = new("--quiet", "-q")
 };
 
 root.Options.Add(quietOpt);
+
+Option<bool> debugReportOpt = new("--generate-debug-report", "-d")
+{
+    Description = "Generate debug reports for all files checked",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(debugReportOpt);
 
 root.SetAction(async res =>
 {
@@ -93,7 +98,8 @@ root.SetAction(async res =>
     
     List<FileInfo> input = res.GetValue(inputFile)!;
 
-    LinterThreadPool pool = new(Environment.ProcessorCount);
+    int poolCount = Environment.ProcessorCount;
+    LinterThreadPool pool = new(poolCount);
 
     Predicate<string> lintIdFilter = _ => true;
     
@@ -187,6 +193,25 @@ root.SetAction(async res =>
         {
             linter.SaveTo(target);
             Console.WriteLine("Changes have been saved to " + target);
+        }
+
+        if (res.GetValue(debugReportOpt))
+        {
+            string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
+            await using var file = File.OpenWrite(reportTarget);
+            await using StreamWriter sw = new(file);
+            DebugReportGenerator report = new(sw);
+            
+            report.WriteHeader($"WSC CLI tool, {poolCount} threads running");
+
+            foreach (var diagnostic in linter.Diagnostics)
+            {
+                report.WriteDiagnostic(diagnostic, translations);
+            }
+            
+            sw.Flush();
+            
+            Console.WriteLine("Report has been saved to " + reportTarget);
         }
 
         return linter.Diagnostics.Count();

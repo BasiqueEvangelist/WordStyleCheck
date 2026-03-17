@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Context;
@@ -17,5 +18,10 @@ public record EndOfDocumentDiagnosticContext(Paragraph EndParagraph) : IDiagnost
         {
             Id = commentId
         }));
+    }
+
+    public void Hash(NonCryptographicHashAlgorithm hasher)
+    {
+        
     }
 }

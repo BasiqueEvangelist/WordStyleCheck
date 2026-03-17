@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -102,5 +103,14 @@ public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
         if (nextAfterPrev != Runs[0]) return null;
 
         return new RunDiagnosticContext([..prevR.Runs, ..Runs]);
+    }
+    
+    public void Hash(NonCryptographicHashAlgorithm hasher)
+    {
+        hasher.Append(BitConverter.GetBytes(Runs.Count));
+        foreach (var r in Runs)
+        {
+            HashUtils.HashElement(r, hasher);
+        }
     }
 }

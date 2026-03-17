@@ -1,3 +1,5 @@
+using System.IO.Hashing;
+
 namespace WordStyleCheck.Context;
 
 public interface IDiagnosticContext
@@ -9,6 +11,8 @@ public interface IDiagnosticContext
     void WriteCommentReference(string commentId);
 
     IDiagnosticContext? TryMerge(IDiagnosticContext previous) => null;
+
+    void Hash(NonCryptographicHashAlgorithm hasher);
 }
 
 public record struct DiagnosticContextLine(string Before, string Text, string After);

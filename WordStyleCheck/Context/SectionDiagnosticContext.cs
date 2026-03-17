@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 
@@ -56,5 +57,10 @@ public record SectionDiagnosticContext(SectionPropertiesTool Section) : IDiagnos
         {
             Id = commentId
         }));
+    }
+
+    public void Hash(NonCryptographicHashAlgorithm hasher)
+    {
+        hasher.Append(BitConverter.GetBytes(Section.Context.AllSections.ToList().IndexOf(Section)));
     }
 }

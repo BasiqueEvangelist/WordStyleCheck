@@ -95,17 +95,14 @@ root.SetAction(async res =>
 
     LinterThreadPool pool = new(Environment.ProcessorCount);
 
-        string suffix = autofix ? "FIXED" : "ANNOTATED";
-        string target = Path.GetFileNameWithoutExtension(file.Name) + $"-{suffix}.docx";
-
-        using (var linter = new DocumentLinter(file.FullName))
-        {
-            string? only = res.GetValue(onlyOpt);
-            if (only != null)
-            {
-                var set = only.Split(",").ToHashSet();
-                linter.LintIdFilter = lint => set.Contains(lint);
-            }
+    Predicate<string> lintIdFilter = _ => true;
+    
+    string? only = res.GetValue(onlyOpt);
+    if (only != null)
+    {
+        var set = only.Split(",").ToHashSet();
+        lintIdFilter = lint => set.Contains(lint);
+    }
 
     string? ignore = res.GetValue(ignoreOpt);
     if (ignore != null)

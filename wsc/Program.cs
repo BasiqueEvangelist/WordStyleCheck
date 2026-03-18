@@ -141,6 +141,25 @@ root.SetAction(async res =>
 
         await Task.Yield();
 
+        if (res.GetValue(debugReportOpt))
+        {
+            string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
+            await using var file = File.OpenWrite(reportTarget);
+            await using StreamWriter sw = new(file);
+            DebugReportGenerator report = new(sw);
+
+            report.WriteHeader("WSC CLI tool");
+
+            foreach (var diagnostic in linter.Diagnostics)
+            {
+                report.WriteDiagnostic(diagnostic, translations);
+            }
+
+            sw.Flush();
+
+            Console.WriteLine("Report has been saved to " + reportTarget);
+        }
+
         foreach (var message in linter.Diagnostics)
         {
             if (input.Count == 1  && !res.GetValue(quietOpt))
@@ -193,25 +212,6 @@ root.SetAction(async res =>
         {
             linter.SaveTo(target);
             Console.WriteLine("Changes have been saved to " + target);
-        }
-
-        if (res.GetValue(debugReportOpt))
-        {
-            string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
-            await using var file = File.OpenWrite(reportTarget);
-            await using StreamWriter sw = new(file);
-            DebugReportGenerator report = new(sw);
-            
-            report.WriteHeader("WSC CLI tool");
-
-            foreach (var diagnostic in linter.Diagnostics)
-            {
-                report.WriteDiagnostic(diagnostic, translations);
-            }
-            
-            sw.Flush();
-            
-            Console.WriteLine("Report has been saved to " + reportTarget);
         }
 
         return linter.Diagnostics.Count();

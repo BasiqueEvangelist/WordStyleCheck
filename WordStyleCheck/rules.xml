@@ -147,4 +147,12 @@
     <str key="NeedsPageBreakBeforeHeader">
         Перед заголовками структурных элементов и разделов должен быть разрыв страницы.
     </str>
+
+	<str key="TextNotAutoColor">
+		Цвет текста не должен быть задан.
+	</str>
+
+	<str key="TextHighlighted">
+		Текст не должен быть выделен.
+	</str>
 </dict>

@@ -56,7 +56,15 @@ public record RunPropertiesTool
         x => Utils.ConvertOnOffType(x.Caps),
         x => Utils.ConvertOnOffType(x.Caps)
     ) ?? false;
-    
+
+    public string? Color => FollowPropertyChain(
+        x => x.Color?.Val?.Value,
+        x => x.Color?.Val?.Value,
+        x => x.Color?.Val?.Value
+    );
+
+    public HighlightColorValues Highlight => Run.RunProperties?.Highlight?.Val?.Value ?? HighlightColorValues.None;
+
     public Paragraph ContainingParagraph => _parent.Paragraph;
     
     public string Contents { get; }

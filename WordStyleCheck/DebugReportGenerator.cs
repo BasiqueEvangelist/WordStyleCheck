@@ -15,9 +15,7 @@ public class DebugReportGenerator(TextWriter writer)
 
     public void WriteDiagnostic(LintMessage message, XmlTranslationsFile translations)
     {
-        XxHash128 hasher = new XxHash128();
-        message.Hash(hasher);
-        string code = Convert.ToHexString(hasher.GetCurrentHash());
+        string code = message.GetHash();
         
         writer.WriteLine($"-------- {code} --------");
         

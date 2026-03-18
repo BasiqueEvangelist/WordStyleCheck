@@ -27,4 +27,11 @@ public record LintMessage(
         
         hasher.Append(BitConverter.GetBytes(AutoFix != null));
     }
+
+    public string GetHash()
+    {
+        XxHash128 hasher = new XxHash128();
+        Hash(hasher);
+        return Convert.ToHexString(hasher.GetCurrentHash());
+    }
 }

@@ -73,6 +73,14 @@ Option<bool> debugReportOpt = new("--generate-debug-report", "-d")
 
 root.Options.Add(debugReportOpt);
 
+Option<bool> onlyNewDiagnosticsOpt = new("--only-new-diagnostics")
+{
+    Description = "Use old debug report to only write new diagnostics",
+    DefaultValueFactory = _ => false
+};
+
+root.Options.Add(onlyNewDiagnosticsOpt);
+
 root.SetAction(async res =>
 {
     XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
@@ -134,17 +142,29 @@ root.SetAction(async res =>
     {
         string target = Path.GetFileNameWithoutExtension(x.Name) + $"-{suffix}.docx";
         LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), lintIdFilter, false, null);
-        
+
         pool.AddTask(task);
 
         using var linter = await task.Result;
 
         await Task.Yield();
 
+        string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
+
+        HashSet<string> ids = [];
+
+        if (res.GetValue(onlyNewDiagnosticsOpt) && File.Exists(reportTarget))
+        {
+            ids = File.ReadAllLines(reportTarget)
+                .Select(x => x.Trim())
+                .Where(x => x.StartsWith("--------") && x.EndsWith("--------"))
+                .Select(x => x.Substring(8, x.Length - 16).Trim())
+                .ToHashSet();
+        }
+
         if (res.GetValue(debugReportOpt))
         {
-            string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
-            await using var file = File.OpenWrite(reportTarget);
+            await using var file = File.Open(reportTarget, FileMode.Create, FileAccess.Write, FileShare.Read);
             await using StreamWriter sw = new(file);
             DebugReportGenerator report = new(sw);
 
@@ -160,8 +180,16 @@ root.SetAction(async res =>
             Console.WriteLine("Report has been saved to " + reportTarget);
         }
 
+        bool writtenComments = false;
+
         foreach (var message in linter.Diagnostics)
         {
+            // TODO: add support for writing old comments that have vanished.
+            if (ids.Count > 0 && ids.Contains(message.GetHash()))
+            {
+                continue;
+            }
+
             if (input.Count == 1  && !res.GetValue(quietOpt))
             {
                 Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
@@ -178,14 +206,15 @@ root.SetAction(async res =>
 
             if (!autofix)
             {
+                writtenComments = true;
                 linter.DocumentAnalysis.WriteComment(message, translations);
             }
         }
 
         bool changed = false;
-        if (!autofix && linter.Diagnostics.Count > 0)
+        if (!autofix)
         {
-            changed = true;
+            changed = writtenComments;
         }
         else if (linter.RunAutofixes())
         {

@@ -295,7 +295,7 @@ public class DocumentAnalysisContext
 
     private int _commentId = 0;
     
-    public void WriteComment(LintMessage msg, XmlTranslationsFile translations)
+    public Comment WriteComment(LintMessage msg, XmlTranslationsFile translations)
     {
         string id = (_commentId++).ToString();
 
@@ -323,6 +323,8 @@ public class DocumentAnalysisContext
         c.Append(translation);
 
         commentsPart.Comments.AppendChild(c);
+
+        return c;
     }
 
     public string AllocateHyperlinkRelationship(Uri url)

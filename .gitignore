@@ -49,4 +49,5 @@ Thumbs.db
 *secrets.Production.ini
 
 *.docx
+*-REPORT.txt
 !rules.docx

@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.Globalization;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
@@ -58,8 +59,8 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
                 {
                     Parameters = new()
                     {
-                        ["ExpectedPt"] = (totalTwips / 20.0).ToString(),
-                        ["ActualPt"] = (((tool1.ActualAfterSpacing ?? 0) + (tool2.ActualBeforeSpacing ?? 0)) / 20.0).ToString()
+                        ["ExpectedPt"] = (totalTwips / 20.0).ToString(CultureInfo.InvariantCulture),
+                        ["ActualPt"] = (((tool1.ActualAfterSpacing ?? 0) + (tool2.ActualBeforeSpacing ?? 0)) / 20.0).ToString(CultureInfo.InvariantCulture)
                     }
                 });
             }

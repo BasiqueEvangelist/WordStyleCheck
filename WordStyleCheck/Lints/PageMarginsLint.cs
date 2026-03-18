@@ -30,21 +30,21 @@ public class PageMarginsLint : ILint
                 {
                     Parameters = new()
                     {
-                        ["ExpectedTopCm"] = Utils.TwipsToCm(target.Top).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedBottomCm"] = Utils.TwipsToCm(target.Bottom).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedLeftCm"] = Utils.TwipsToCm(target.Left).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedRightCm"] = Utils.TwipsToCm(target.Right).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedHeaderCm"] = Utils.TwipsToCm(target.Header).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedFooterCm"] = Utils.TwipsToCm(target.Footer).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedGutterCm"] = Utils.TwipsToCm(target.Gutter).ToString(CultureInfo.CurrentCulture),
+                        ["ExpectedTopCm"] = Utils.TwipsToCm(target.Top).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedBottomCm"] = Utils.TwipsToCm(target.Bottom).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedLeftCm"] = Utils.TwipsToCm(target.Left).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedRightCm"] = Utils.TwipsToCm(target.Right).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedHeaderCm"] = Utils.TwipsToCm(target.Header).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedFooterCm"] = Utils.TwipsToCm(target.Footer).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedGutterCm"] = Utils.TwipsToCm(target.Gutter).ToString(CultureInfo.InvariantCulture),
                         
-                        ["ActualTopCm"] = Utils.TwipsToCm(margins.Top).ToString(CultureInfo.CurrentCulture),
-                        ["ActualBottomCm"] = Utils.TwipsToCm(margins.Bottom).ToString(CultureInfo.CurrentCulture),
-                        ["ActualLeftCm"] = Utils.TwipsToCm(margins.Left).ToString(CultureInfo.CurrentCulture),
-                        ["ActualRightCm"] = Utils.TwipsToCm(margins.Right).ToString(CultureInfo.CurrentCulture),
-                        ["ActualHeaderCm"] = Utils.TwipsToCm(margins.Header).ToString(CultureInfo.CurrentCulture),
-                        ["ActualFooterCm"] = Utils.TwipsToCm(margins.Footer).ToString(CultureInfo.CurrentCulture),
-                        ["ActualGutterCm"] = Utils.TwipsToCm(margins.Gutter).ToString(CultureInfo.CurrentCulture),
+                        ["ActualTopCm"] = Utils.TwipsToCm(margins.Top).ToString(CultureInfo.InvariantCulture),
+                        ["ActualBottomCm"] = Utils.TwipsToCm(margins.Bottom).ToString(CultureInfo.InvariantCulture),
+                        ["ActualLeftCm"] = Utils.TwipsToCm(margins.Left).ToString(CultureInfo.InvariantCulture),
+                        ["ActualRightCm"] = Utils.TwipsToCm(margins.Right).ToString(CultureInfo.InvariantCulture),
+                        ["ActualHeaderCm"] = Utils.TwipsToCm(margins.Header).ToString(CultureInfo.InvariantCulture),
+                        ["ActualFooterCm"] = Utils.TwipsToCm(margins.Footer).ToString(CultureInfo.InvariantCulture),
+                        ["ActualGutterCm"] = Utils.TwipsToCm(margins.Gutter).ToString(CultureInfo.InvariantCulture),
                     },
                     AutoFix = () =>
                     {

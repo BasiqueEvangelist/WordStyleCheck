@@ -30,8 +30,8 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
                     {
                         Parameters = new()
                         {
-                            ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.CurrentCulture),
-                            ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.CurrentCulture)
+                            ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.InvariantCulture),
+                            ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.InvariantCulture)
                         },
                         AutoFix = () =>
                         {

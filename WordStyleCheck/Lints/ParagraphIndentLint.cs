@@ -28,8 +28,8 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
                     {
                         Parameters = new()
                         {
-                            ["ExpectedCm"] = Utils.TwipsToCm(firstLine).ToString(CultureInfo.CurrentCulture),
-                            ["ActualCm"] = Utils.TwipsToCm(tool.FirstLineIndent ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedCm"] = Utils.TwipsToCm(firstLine).ToString(CultureInfo.InvariantCulture),
+                            ["ActualCm"] = Utils.TwipsToCm(tool.FirstLineIndent ?? 0).ToString(CultureInfo.InvariantCulture),
                         },
                         AutoFix = () =>
                         {
@@ -78,8 +78,8 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
                     {
                         Parameters = new()
                         {
-                            ["ExpectedCm"] = Utils.TwipsToCm(left).ToString(CultureInfo.CurrentCulture),
-                            ["ActualCm"] = Utils.TwipsToCm(tool.LeftIndent ?? 0).ToString(CultureInfo.CurrentCulture),
+                            ["ExpectedCm"] = Utils.TwipsToCm(left).ToString(CultureInfo.InvariantCulture),
+                            ["ActualCm"] = Utils.TwipsToCm(tool.LeftIndent ?? 0).ToString(CultureInfo.InvariantCulture),
                         },
                         AutoFix = () =>
                         {

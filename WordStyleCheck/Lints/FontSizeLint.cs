@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.Globalization;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
@@ -34,8 +35,8 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
                     {
                         Parameters = new()
                         {
-                            ["ExpectedPt"] = (fontSize / 2).ToString(),
-                            ["ActualPt"] = (tool.FontSize.Value / 2).ToString()
+                            ["ExpectedPt"] = (fontSize / 2).ToString(CultureInfo.InvariantCulture),
+                            ["ActualPt"] = (tool.FontSize.Value / 2).ToString(CultureInfo.InvariantCulture)
                         },
                         AutoFix = () =>
                         {

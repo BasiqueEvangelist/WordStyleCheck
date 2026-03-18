@@ -30,11 +30,11 @@ public class PageSizeLint : ILint
                 {
                     Parameters = new()
                     {
-                        ["ExpectedWidthCm"] = Utils.TwipsToCm(target.Width).ToString(CultureInfo.CurrentCulture),
-                        ["ExpectedHeightCm"] = Utils.TwipsToCm(target.Height).ToString(CultureInfo.CurrentCulture),
+                        ["ExpectedWidthCm"] = Utils.TwipsToCm(target.Width).ToString(CultureInfo.InvariantCulture),
+                        ["ExpectedHeightCm"] = Utils.TwipsToCm(target.Height).ToString(CultureInfo.InvariantCulture),
                         
-                        ["ActualWidthCm"] = Utils.TwipsToCm(size.Width).ToString(CultureInfo.CurrentCulture),
-                        ["ActualHeightCm"] = Utils.TwipsToCm(size.Height).ToString(CultureInfo.CurrentCulture),
+                        ["ActualWidthCm"] = Utils.TwipsToCm(size.Width).ToString(CultureInfo.InvariantCulture),
+                        ["ActualHeightCm"] = Utils.TwipsToCm(size.Height).ToString(CultureInfo.InvariantCulture),
                     },
                     AutoFix = () =>
                     {

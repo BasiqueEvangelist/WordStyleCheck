@@ -202,7 +202,7 @@ root.SetAction(async res =>
             await using StreamWriter sw = new(file);
             DebugReportGenerator report = new(sw);
             
-            report.WriteHeader($"WSC CLI tool, {poolCount} threads running");
+            report.WriteHeader("WSC CLI tool");
 
             foreach (var diagnostic in linter.Diagnostics)
             {

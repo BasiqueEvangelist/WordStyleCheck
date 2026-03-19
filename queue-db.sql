@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS `bl_task`;
-CREATE TABLE `bl_task` (
+CREATE DATABASE IF NOT EXISTS `wordstylecheck`;
+
+CREATE TABLE IF NOT EXISTS `wordstylecheck`.`bl_task` (
     `TaskId` int(11) PRIMARY KEY AUTO_INCREMENT,
     `TaskType` varchar(45) NOT NULL,
     `TaskData` text NOT NULL,
@@ -10,8 +11,7 @@ CREATE TABLE `bl_task` (
     `UpdateTs` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 );
 
-DROP TABLE IF EXISTS `bl_pendingtask`;
-CREATE TABLE `bl_pendingtask` (
+CREATE TABLE IF NOT EXISTS `wordstylecheck`.`bl_pendingtask` (
     `PendingTaskId` int(11) PRIMARY KEY AUTO_INCREMENT,
     `TaskId` int(11) NOT NULL REFERENCES `bl_task`(`TaskId`),
     `ProcessingStatus` tinyint(3) unsigned NOT NULL DEFAULT 1,

@@ -51,3 +51,5 @@ Thumbs.db
 *.docx
 *-REPORT.txt
 !rules.docx
+
+artifacts/

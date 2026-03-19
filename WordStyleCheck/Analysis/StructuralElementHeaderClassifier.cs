@@ -25,7 +25,7 @@ public static class StructuralElementHeaderClassifier
         [StructuralElement.GlossaryAbbreviations] = ["ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ"],
         [StructuralElement.Introduction] = ["ВВЕДЕНИЕ"], 
         [StructuralElement.Conclusion] = ["ЗАКЛЮЧЕНИЕ"],
-        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ"]
+        [StructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ"]
     };
 
     public static string GetProperName(StructuralElement element)

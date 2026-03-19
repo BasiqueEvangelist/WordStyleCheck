@@ -29,7 +29,7 @@ public class TextColorLint : ILint
 
                 RunPropertiesTool tool = ctx.Document.GetTool(r);
 
-                if ((tool.Color ?? "auto") != "auto")
+                if ((tool.Color ?? "auto") is not ("auto" or "000000"))
                 {
                     ctx.AddMessage(new LintMessage("TextNotAutoColor", new RunDiagnosticContext(r))
                     {

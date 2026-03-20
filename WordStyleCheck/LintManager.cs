@@ -75,6 +75,8 @@ public class LintManager
         // new IncorrectOutlineLevelLint(x => x is { Class: ParagraphClass.BodyText }, _ => null, "BodyTextInToC"),
         // new IncorrectOutlineLevelLint(x => x is { HeadingData.Level: < 4 }, x => x.HeadingData!.Level - 1, "IncorrectHeaderOutlineLevel"),
         // new IncorrectOutlineLevelLint(x => x is { HeadingData.Level: 4 }, x => null, "SubPointsInToC"),
+        new HeadingOutlineLevelLint(),
+        new IncorrectHeadingNumberingLint(),
         // TODO: make text font lint configurable.
         // new TextFontLint(),
         new FontSizeLint(x => x is {Class: ParagraphClass.Heading or ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix}, 24, "IncorrectFontSize"),

@@ -155,4 +155,16 @@
 	<str key="TextHighlighted">
 		Текст не должен быть выделен.
 	</str>
+	
+	<str key="NonHeadingWithOutlineLevel">
+		Только заголовки должны иметь уровень заголовка.
+	</str>
+
+	<str key="HeadingWithoutOutlineLevel">
+		Заголовок должен иметь уровень заголовка.
+	</str>
+
+	<str key="IncorrectHeadingNumbering">
+		Разделы, подразделы, пункты и подпункты нумеруются арабскими цифрами иерархической нумерацией. Правильный номер элемента — ${Expected}.
+	</str>
 </dict>

@@ -15,6 +15,7 @@ public class IncorrectHeadingTextLint : ILint
             var tool = ctx.Document.GetTool(p);
             
             if (tool.HeadingData == null) continue;
+            if (tool.HeadingData.IsConclusion) continue;
 
             string text = tool.Contents;
             

@@ -5,6 +5,7 @@ public class HeadingClassifierData
     public required string Number { get; init; }
     public required int Level { get; init; }
     public required string Title { get; init; }
+    public required bool IsConclusion { get; init; }
     
     public static HeadingClassifierData? Classify(ParagraphPropertiesTool p)
     {
@@ -12,12 +13,19 @@ public class HeadingClassifierData
         if (p.IsEmptyOrDrawing) return null;
         if (p.Class is not (ParagraphClass.BodyText or ParagraphClass.Heading)) return null;
         
-        string text = p.Contents;
+        string text = p.Contents.Trim();
 
         if (text.Length < 1) return null;
 
         int numEnd;
         string number;
+        bool isConclusion = false;
+        if (text.StartsWith("Выводы", StringComparison.InvariantCultureIgnoreCase))
+        {
+            isConclusion = true;
+            number = "";
+            numEnd = 0;
+        }
         if (p.OfNumbering is NumberingPropertiesTool numbering)
         {
             numEnd = 0;
@@ -55,7 +63,8 @@ public class HeadingClassifierData
         {
             Number = number,
             Level = level,
-            Title = title
+            Title = title,
+            IsConclusion = isConclusion
         };
     }
 }

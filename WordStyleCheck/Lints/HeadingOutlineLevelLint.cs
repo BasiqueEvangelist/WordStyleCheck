@@ -6,7 +6,7 @@ namespace WordStyleCheck.Lints;
 
 public class HeadingOutlineLevelLint : ILint
 {
-    public IReadOnlyList<string> EmittedDiagnostics => ["NonHeadingWithOutlineLevel", "HeadingWithoutOutlineLevel"];
+    public IReadOnlyList<string> EmittedDiagnostics => ["NonHeadingWithOutlineLevel", "HeadingWithoutOutlineLevel", "IncorrectHeadingOutlineLevel"];
 
     public void Run(LintContext ctx)
     {
@@ -41,6 +41,28 @@ public class HeadingOutlineLevelLint : ILint
                 if (tool.HeadingData.Level >= 4) continue;
                 
                 ctx.AddMessage(new LintMessage("HeadingWithoutOutlineLevel", new ParagraphDiagnosticContext(p)));
+            }
+
+            if (tool is { HeadingData.Level: var level, OutlineLevel: { } outlineLevel } && outlineLevel + 1 != level)
+            {
+                ctx.AddMessage(new LintMessage("IncorrectHeadingOutlineLevel", new ParagraphDiagnosticContext(p))
+                {
+                    Parameters = new()
+                    {
+                        ["Expected"] = level.ToString(),
+                        ["Actual"] = (outlineLevel + 1).ToString()
+                    },
+                    AutoFix = () =>
+                    {
+                        p.ParagraphProperties ??= new ParagraphProperties();
+
+                        if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                        p.ParagraphProperties.OutlineLevel ??= new OutlineLevel();
+                        
+                        p.ParagraphProperties.OutlineLevel.Val = level - 1;
+                    }
+                });
             }
         }
     }

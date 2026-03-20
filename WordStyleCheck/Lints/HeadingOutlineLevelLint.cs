@@ -1,7 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
@@ -18,7 +16,7 @@ public class HeadingOutlineLevelLint : ILint
 
             if (tool.OfStructuralElement == null) continue;
 
-            if (tool.OutlineLevel != null && tool.HeadingData == null)
+            if (tool is { OutlineLevel: not null, HeadingData: null, OfStructuralElement: not (StructuralElement.Introduction or StructuralElement.Conclusion or StructuralElement.Bibliography or StructuralElement.Appendix) })
             {
                 ctx.AddMessage(new LintMessage("NonHeadingWithOutlineLevel", new ParagraphDiagnosticContext(p))
                 {
@@ -38,8 +36,10 @@ public class HeadingOutlineLevelLint : ILint
                 });
             }
 
-            if (tool.HeadingData != null && tool.OutlineLevel == null)
+            if (tool is { HeadingData: not null, OutlineLevel: null })
             {
+                if (tool.HeadingData.Level >= 4) continue;
+                
                 ctx.AddMessage(new LintMessage("HeadingWithoutOutlineLevel", new ParagraphDiagnosticContext(p)));
             }
         }

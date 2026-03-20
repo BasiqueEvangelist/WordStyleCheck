@@ -16,18 +16,18 @@ public class IncorrectHeadingNumberingLint : ILint
         List<int> levels = [];
         foreach (var element in elements)
         {
-            int level = element.HeadingData!.Number.Count('.');
+            int level = element.HeadingData!.Level;
 
-            if (level + 1 > levels.Count)
+            if (level > levels.Count)
             {
-                for (int i = levels.Count; i <= level; i++)
+                for (int i = levels.Count; i < level; i++)
                 {
                     levels.Add(1);
                 }
             }
             else
             {
-                while (level + 1 < levels.Count)
+                while (level < levels.Count)
                     levels.RemoveAt(levels.Count - 1);
 
                 levels[^1] += 1;

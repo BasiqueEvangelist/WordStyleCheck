@@ -41,6 +41,8 @@ public record ParagraphPropertiesTool
             x => x.OutlineLevel?.Val?.Value,
             x => x.OutlineLevel?.Val?.Value
         );
+
+        if (OutlineLevel == 9) OutlineLevel = null;
         
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
 

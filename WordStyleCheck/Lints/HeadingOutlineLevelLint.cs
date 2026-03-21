@@ -43,7 +43,7 @@ public class HeadingOutlineLevelLint : ILint
                 ctx.AddMessage(new LintMessage("HeadingWithoutOutlineLevel", new ParagraphDiagnosticContext(p)));
             }
 
-            if (tool is { HeadingData.Level: var level, OutlineLevel: { } outlineLevel } && outlineLevel + 1 != level)
+            if (tool is { HeadingData.Level: var level, HeadingData.IsConclusion: false, OutlineLevel: { } outlineLevel } && outlineLevel + 1 != level)
             {
                 ctx.AddMessage(new LintMessage("IncorrectHeadingOutlineLevel", new ParagraphDiagnosticContext(p))
                 {

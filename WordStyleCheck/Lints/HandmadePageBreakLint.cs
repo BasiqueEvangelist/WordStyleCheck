@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints
@@ -17,7 +18,7 @@ namespace WordStyleCheck.Lints
 
             for (int i = 0; i < paragraphs.Count; i++)
             {
-                bool isEmpty = ctx.Document.GetTool(paragraphs[i]).IsEmptyOrWhitespace;
+                bool isEmpty = ctx.Document.GetTool(paragraphs[i]) is { IsEmptyOrWhitespace: true, Class: not ParagraphClass.CodeListing};
 
                 if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
                 {

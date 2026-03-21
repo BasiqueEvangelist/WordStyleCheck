@@ -20,13 +20,13 @@ public class HeadingClassifierData
         int numEnd;
         string number;
         bool isConclusion = false;
-        if (text.StartsWith("Выводы", StringComparison.InvariantCultureIgnoreCase))
+        if (text.StartsWith("Выводы", StringComparison.InvariantCultureIgnoreCase) && p.Class == ParagraphClass.Heading)
         {
             isConclusion = true;
             number = "";
             numEnd = 0;
         }
-        if (p.OfNumbering is NumberingPropertiesTool numbering)
+        else if (p.OfNumbering is NumberingPropertiesTool numbering)
         {
             numEnd = 0;
             number = numbering.GetNumber(p.Paragraph).TrimEnd('.');
@@ -43,16 +43,24 @@ public class HeadingClassifierData
             number = text[..numEnd].TrimEnd('.');
         }
 
-        string[] numberSplit = number.Split('.');
+        int level;
+        if (!isConclusion)
+        {
+            string[] numberSplit = number.Split('.');
 
-        if (numberSplit.Any(string.IsNullOrWhiteSpace)) return null;
-        if (numberSplit.Length < 3 && p.Class != ParagraphClass.Heading) return null;
+            if (numberSplit.Any(string.IsNullOrWhiteSpace)) return null;
+            if (numberSplit.Length < 3 && p.Class != ParagraphClass.Heading) return null;
 
-        int level = numberSplit.Length;
+            level = numberSplit.Length;
+        }
+        else
+        {
+            level = -1; // TODO: calculate properly.
+        }
 
         int titleBegin = numEnd;
 
-        while (titleBegin < text.Length && !char.IsLetter(text[titleBegin]))
+        while (titleBegin < text.Length && !(char.IsLetter(text[titleBegin]) || char.IsDigit(text[titleBegin])))
             titleBegin += 1;
 
         if (titleBegin == text.Length) return null;

@@ -14,7 +14,7 @@ public class TocReferencesLint : ILint
             tool.StructuralElementHeader != StructuralElement.Appendix)
             return false;
 
-        if (tool is { Class: ParagraphClass.Heading, HeadingData.Level: < 4 })
+        if (tool is { HeadingData.Level: < 4 } or { HeadingData.IsConclusion: true })
             return true;
 
         if (tool is

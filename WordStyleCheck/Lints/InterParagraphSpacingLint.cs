@@ -53,7 +53,7 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
                 totalTwips = 0;
             }
             
-            if ((tool1.ActualAfterSpacing ?? 0) + (tool2.ActualBeforeSpacing ?? 0) != totalTwips)
+            if (Math.Abs((tool1.ActualAfterSpacing ?? 0) + (tool2.ActualBeforeSpacing ?? 0) - totalTwips) > 5)
             {
                 ctx.AddMessage(new LintMessage(messageId, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
                 {

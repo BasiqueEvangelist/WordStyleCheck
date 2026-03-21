@@ -49,7 +49,7 @@ public class ForcePageBreakBeforeLint(Predicate<ParagraphPropertiesTool> predica
 
                 if (prev is Paragraph prevP)
                 {
-                    foreach (var run in Utils.DirectRunChildren(prevP))
+                    foreach (var run in Enumerable.Reverse(Utils.DirectRunChildren(prevP)))
                     {
                         foreach (var child in run.Reverse())
                         {

@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Packaging;
 using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Lints;

@@ -1,5 +1,4 @@
 using System.Globalization;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;

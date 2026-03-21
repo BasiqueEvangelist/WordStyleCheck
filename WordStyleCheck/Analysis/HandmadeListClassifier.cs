@@ -1,9 +1,8 @@
 using DocumentFormat.OpenXml.Wordprocessing;
-using WordStyleCheck.Lints;
 
 namespace WordStyleCheck.Analysis;
 
-public class HandmadeListClassifier
+public static class HandmadeListClassifier
 {
     public static List<SniffedListData> Classify(DocumentAnalysisContext ctx)
     {

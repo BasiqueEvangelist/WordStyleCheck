@@ -1,42 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WordStyleCheck.Analysis;
+﻿using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 
-namespace WordStyleCheck.Lints
+namespace WordStyleCheck.Lints;
+
+public class HandmadePageBreakLint : ILint
 {
-    public class HandmadePageBreakLint : ILint
+    public IReadOnlyList<string> EmittedDiagnostics { get; } = ["HandmadePageBreak"];
+
+    public void Run(LintContext ctx)
     {
-        public IReadOnlyList<string> EmittedDiagnostics { get; } = ["HandmadePageBreak"];
+        int emptyParagraphsCount = 0;
 
-        public void Run(LintContext ctx)
+        var paragraphs = ctx.Document.AllParagraphs.ToList();
+
+        for (int i = 0; i < paragraphs.Count; i++)
         {
-            int emptyParagraphsCount = 0;
+            bool isEmpty = ctx.Document.GetTool(paragraphs[i]) is { IsEmptyOrWhitespace: true, Class: not ParagraphClass.CodeListing};
 
-            var paragraphs = ctx.Document.AllParagraphs.ToList();
-
-            for (int i = 0; i < paragraphs.Count; i++)
+            if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
             {
-                bool isEmpty = ctx.Document.GetTool(paragraphs[i]) is { IsEmptyOrWhitespace: true, Class: not ParagraphClass.CodeListing};
-
-                if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
+                if (emptyParagraphsCount > 3)
                 {
-                    if (emptyParagraphsCount > 3)
-                    {
-                        var chosen = paragraphs[(i - emptyParagraphsCount)..i].ToList();
+                    var chosen = paragraphs[(i - emptyParagraphsCount)..i].ToList();
 
-                        ctx.AddMessage(new LintMessage("HandmadePageBreak",
-                            new ParagraphDiagnosticContext(chosen, true)));
-                    }
-
-                    emptyParagraphsCount = 0;
+                    ctx.AddMessage(new LintMessage("HandmadePageBreak",
+                        new ParagraphDiagnosticContext(chosen, true)));
                 }
+
+                emptyParagraphsCount = 0;
+            }
                 
-                if (isEmpty)
-                {
-                    emptyParagraphsCount++;
-                }
+            if (isEmpty)
+            {
+                emptyParagraphsCount++;
             }
         }
     }

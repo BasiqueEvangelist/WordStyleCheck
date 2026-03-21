@@ -1,5 +1,5 @@
+using System;
 using Avalonia.Controls;
-using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
 using WscDebugTool.ViewModels;
@@ -8,25 +8,30 @@ namespace WscDebugTool.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(MainWindowViewModel vm)
+    public MainWindow()
     {
         InitializeComponent();
 
-        DataContext = vm;
-        CodeEditor.Text = vm.FileText;
+        var registryOptions = new RegistryOptions(ThemeName.DarkPlus);
+        var textMateInstallation = CodeEditor.InstallTextMate(registryOptions);
+        textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".xml").Id));
+    }
 
-        vm.PropertyChanged += (sender, args) =>
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+
+        if (DataContext is MainWindowViewModel vm)
         {
-            if (args.PropertyName == nameof(MainWindowViewModel.FileText))
+            CodeEditor.Text = vm.FileText;
+
+            vm.PropertyChanged += (_, args) =>
             {
-                CodeEditor.Text = vm.FileText;
-            }
-        };
-
-        var _registryOptions = new RegistryOptions(ThemeName.DarkPlus);
-
-        var _textMateInstallation = CodeEditor.InstallTextMate(_registryOptions);
-
-        _textMateInstallation.SetGrammar(_registryOptions.GetScopeByLanguageId(_registryOptions.GetLanguageByExtension(".xml").Id));
+                if (args.PropertyName == nameof(MainWindowViewModel.FileText))
+                {
+                    CodeEditor.Text = vm.FileText;
+                }
+            };
+        }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Tmds.DBus.Protocol;
+﻿using System.Collections.Generic;
 using WordStyleCheck;
 using WordStyleCheck.Context;
 

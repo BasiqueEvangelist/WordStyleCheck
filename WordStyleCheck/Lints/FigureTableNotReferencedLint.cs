@@ -1,7 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Text.RegularExpressions;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 

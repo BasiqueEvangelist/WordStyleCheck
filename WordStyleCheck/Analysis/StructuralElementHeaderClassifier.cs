@@ -1,5 +1,3 @@
-using DocumentFormat.OpenXml.Wordprocessing;
-
 namespace WordStyleCheck.Analysis;
 
 public enum StructuralElement

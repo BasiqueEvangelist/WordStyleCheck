@@ -1,8 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
-namespace WordStyleCheckGui;
+namespace WordStyleCheckGui.Views;
 
 public partial class DocumentReportWindow : Window
 {

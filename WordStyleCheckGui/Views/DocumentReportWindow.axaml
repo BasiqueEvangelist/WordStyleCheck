@@ -7,7 +7,7 @@
 		Width="640"
 		Height="480"
         mc:Ignorable="d"
-        x:Class="WordStyleCheckGui.DocumentReportWindow"
+        x:Class="WordStyleCheckGui.Views.DocumentReportWindow"
 		x:DataType="vm:DocumentViewModel"
         Title="{Binding FileName}">
 	<ScrollViewer>

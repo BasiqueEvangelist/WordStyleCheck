@@ -1,9 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace WordStyleCheckGui.ViewModels;
 

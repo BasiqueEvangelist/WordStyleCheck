@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck;
 
-public class StripOldComments
+public static class StripOldComments
 {
     public static void Run(WordprocessingDocument document)
     {

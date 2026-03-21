@@ -62,7 +62,7 @@ public class NumberingPropertiesTool : INumbering
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ...
         }

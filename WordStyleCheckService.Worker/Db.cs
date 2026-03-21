@@ -13,17 +13,17 @@ public class Db(IOptionsMonitor<Options> options)
 
     public class DequeuedTaskInfo
     {
-        public uint PendingTaskId { get; set; }
-        public uint TaskId { get; set; }
-        public string TaskType { get; set; }
-        public string TaskData { get; set; }
+        public required uint PendingTaskId { get; set; }
+        public required uint TaskId { get; set; }
+        public required string TaskType { get; set; }
+        public required string TaskData { get; set; }
     }
     
     public class TaskInfo
     {
-        public string TaskType { get; set; }
-        public TaskCompletionStatus CompletionStatus { get; set; }
-        public string? ResultData { get; set; }
+        public required string TaskType { get; set; }
+        public required TaskCompletionStatus CompletionStatus { get; set; }
+        public required string? ResultData { get; set; }
     }
 
     public async Task<TaskInfo?> GetTask(uint taskId)

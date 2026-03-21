@@ -103,9 +103,17 @@
     <str key="IncorrectFigureNumbering">
         Рисунки нумеруются арабскими цифрами сквозной нумерацией. Правильный номер рисунка — ${Expected}.
     </str>
+
+    <str key="FigureNumberingMix">
+        Все рисунки должны быть нумерованы одним видом нумерации. Правильный номер рисунка — ${Expected}.
+    </str>
     
     <str key="IncorrectTableNumbering">
         Таблицы нумеруются арабскими цифрами сквозной нумерацией. Правильный номер таблицы — ${Expected}.
+    </str>
+
+    <str key="TableNumberingMix">
+        Все таблицы должны быть нумерованы одним видом нумерации. Правильный номер таблицы — ${Expected}.
     </str>
     
     <str key="NotEnoughSources">

@@ -3,7 +3,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId) : ILint
+public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId, string mixMessageId) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
@@ -19,6 +19,7 @@ public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId)
             .ToList();
 
         int underHeadingNumber = 0;
+        bool? hierarchicalNumbering = null;
         for (int i = 0; i < elements.Count; i++)
         {
             string correctNumber = (i + 1).ToString();
@@ -29,20 +30,49 @@ public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId)
 
             var actualNumber = elements[i].CaptionData!.Value.Number;
 
-            if (actualNumber == correctNumber)
-            {
-                continue;
-            }
-
             string? correctNumberSection = null;
             if (elements[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber)
             {
                 correctNumberSection = $"{headingNumber}.{underHeadingNumber}";
-
-                if (actualNumber == correctNumberSection)
+            }
+            
+            if (actualNumber == correctNumber)
+            {
+                if (hierarchicalNumbering == true)
                 {
+                    ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
+                    {
+                        Parameters = new()
+                        {
+                            ["Expected"] = correctNumberSection!,
+                            ["Actual"] = actualNumber
+                        }
+                    });
+                    continue;                    
+                }
+                
+                hierarchicalNumbering = false;
+                continue;
+            }
+            
+            if (actualNumber == correctNumberSection)
+            {
+                if (hierarchicalNumbering == false)
+                {
+                    ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
+                    {
+                        Parameters = new()
+                        {
+                            ["Expected"] = correctNumber,
+                            ["Actual"] = actualNumber
+                        }
+                    });
                     continue;
                 }
+
+                hierarchicalNumbering = true;
+                
+                continue;
             }
 
             var actual = elements[i].CaptionData!.Value.Number;

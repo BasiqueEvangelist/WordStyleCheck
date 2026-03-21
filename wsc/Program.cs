@@ -164,20 +164,25 @@ root.SetAction(async res =>
 
         if (res.GetValue(debugReportOpt))
         {
-            await using var file = File.Open(reportTarget, FileMode.Create, FileAccess.Write, FileShare.Read);
-            await using StreamWriter sw = new(file);
-            DebugReportGenerator report = new(sw);
-
-            report.WriteHeader("WSC CLI tool");
-
-            foreach (var diagnostic in linter.Diagnostics)
+            string reportTmp = Path.GetTempFileName();
+            await using (var file = File.Open(reportTmp, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
-                report.WriteDiagnostic(diagnostic, translations);
+                await using StreamWriter sw = new(file);
+                DebugReportGenerator report = new(sw);
+
+                report.WriteHeader("WSC CLI tool");
+
+                foreach (var diagnostic in linter.Diagnostics)
+                {
+                    report.WriteDiagnostic(diagnostic, translations);
+                }
+
+                sw.Flush();
+
+                Console.WriteLine("Report has been saved to " + reportTarget);
             }
-
-            sw.Flush();
-
-            Console.WriteLine("Report has been saved to " + reportTarget);
+            
+            File.Move(reportTmp, reportTarget, true);
         }
 
         bool writtenComments = false;

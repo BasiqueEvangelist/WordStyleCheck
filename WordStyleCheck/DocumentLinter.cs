@@ -62,8 +62,12 @@ public class DocumentLinter : IDisposable
             
         _stream.Seek(0, SeekOrigin.Begin);
 
-        using var fs = File.OpenWrite(path);
-        _stream.CopyTo(fs);
+        string tmp = Path.GetTempFileName();
+        using (var fs = File.OpenWrite(tmp))
+        {
+            _stream.CopyTo(fs);
+        }
+        File.Move(tmp, path, true);
         
         _stream.Seek(0, SeekOrigin.Begin);
     }

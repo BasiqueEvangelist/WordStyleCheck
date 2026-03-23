@@ -187,14 +187,13 @@ root.SetAction(async res =>
 
         bool writtenComments = false;
 
-        foreach (var message in linter.Diagnostics)
-        {
+        var actualDiagnostics = linter.Diagnostics
             // TODO: add support for writing old comments that have vanished.
-            if (ids.Count > 0 && ids.Contains(message.GetHash()))
-            {
-                continue;
-            }
-
+            .Where(y => ids.Count <= 0 || !ids.Contains(y.GetHash()))
+            .ToList();
+        
+        foreach (var message in actualDiagnostics)
+        {
             if (input.Count == 1  && !res.GetValue(quietOpt))
             {
                 Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
@@ -226,20 +225,28 @@ root.SetAction(async res =>
             changed = true;
         }
 
-        if (linter.Diagnostics.Count > 0)
+        if (ids.Count > 0)
         {
-            Console.Write($"{linter.Diagnostics.Count} style errors in {x.Name}");
-
-            if (autofix)
-            {
-                Console.Write($" ({linter.Diagnostics.Count(y => y.AutoFix != null)} autofixed)");
-            }
-
-            Console.WriteLine(" :(");
+            if (actualDiagnostics.Count > 0)
+                Console.WriteLine($"{actualDiagnostics.Count} new style errors in {x.Name}");
         }
         else
         {
-            Console.WriteLine($"No errors detected in {x.Name} :)");
+            if (linter.Diagnostics.Count > 0)
+            {
+                Console.Write($"{linter.Diagnostics.Count} style errors in {x.Name}");
+
+                if (autofix)
+                {
+                    Console.Write($" ({linter.Diagnostics.Count(y => y.AutoFix != null)} autofixed)");
+                }
+
+                Console.WriteLine(" :(");
+            }
+            else
+            {
+                Console.WriteLine($"No errors detected in {x.Name} :)");
+            }
         }
 
         if (changed)
@@ -248,7 +255,7 @@ root.SetAction(async res =>
             Console.WriteLine("Changes have been saved to " + target);
         }
 
-        return linter.Diagnostics.Count();
+        return linter.Diagnostics.Count;
     })
     .ToList();
 

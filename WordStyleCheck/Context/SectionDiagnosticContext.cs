@@ -6,27 +6,39 @@ namespace WordStyleCheck.Context;
 
 public record SectionDiagnosticContext(SectionPropertiesTool Section) : IDiagnosticContext
 {
-    public List<DiagnosticContextLine> Lines => Section.Paragraphs.Select(x =>
+    public List<DiagnosticContextLine> Lines
     {
-        var text = Utils.CollectParagraphText(x, 25);
+        get
+        {
+            DiagnosticContextLine ParagraphToLine(Paragraph paragraph)
+            {
+                var text = Utils.CollectParagraphText(paragraph, 25);
 
-        return new DiagnosticContextLine("", text.Text, text.More ? "…" : "");
-    }).ToList();
+                return new DiagnosticContextLine("", text.Text, text.More ? "…" : "");
+            }
+
+            if (Section.Paragraphs.Count <= 6)
+                return Section.Paragraphs.Select(ParagraphToLine).ToList();
+            else
+                return Section.Paragraphs.Take(3).Select(ParagraphToLine)
+                    .Append(new DiagnosticContextLine("…", "", ""))
+                    .Concat(Section.Paragraphs.TakeLast(3).Select(ParagraphToLine))
+                    .ToList();
+        }
+    }
 
     public void WriteToConsole()
     {
         // TODO: write proper context.
-        foreach (var p in Section.Paragraphs)
+        foreach (var line in Lines)
         {
-            var text = Utils.CollectParagraphText(p, 25);
-
             Console.Write(" |  ");
             
+            Console.Write(line.Before);
             if (!Console.IsOutputRedirected) Console.Write("\x1B[4m");
-            Console.Write(text.Text);
+            Console.Write(line.Text);
             if (!Console.IsOutputRedirected) Console.Write("\x1B[0m");
-            
-            if (text.More) Console.Write("…");
+            Console.Write(line.After);
             
             Console.WriteLine();
         }

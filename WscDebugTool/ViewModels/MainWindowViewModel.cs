@@ -37,9 +37,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
-            FileTypeFilter = [new("Файлы Microsoft Word") {
-                Patterns = ["*.docx"],
-                MimeTypes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+            FileTypeFilter = [new("ZIP archives") {
+                Patterns = ["*.zip", "*.docx", "*.odt"],
             }]
         });
 

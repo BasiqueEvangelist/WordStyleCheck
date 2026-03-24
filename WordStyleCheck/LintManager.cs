@@ -17,7 +17,7 @@ public class LintManager
         new ForcePageBreakBeforeLint(x => x is {Class: ParagraphClass.Heading, HeadingData.Level: 1} or {Class: ParagraphClass.StructuralElementHeader}, "NeedsPageBreakBeforeHeader"),
         new ForceJustificationLint(x => x is {Class: ParagraphClass.StructuralElementHeader}, [JustificationValues.Center], "StructuralElementHeaderNotCentered"),
         new ForceJustificationLint(x => x is {CaptionData.Type: CaptionType.Table}, [JustificationValues.Left, JustificationValues.Both], "TableCaptionNotLeftAligned"),
-        new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix, OfNumbering: null}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
+        new ParagraphIndentLint(x => x is {Class: ParagraphClass.BodyText, OfStructuralElement: not StructuralElement.Appendix, OfNumbering: null, PossiblyPartOfList: false}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 0}, 709, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
         new ParagraphIndentLint(x => x is {Class: ParagraphClass.Heading, OutlineLevel: 2}, -851, 1560, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),

@@ -43,6 +43,7 @@ public record ParagraphPropertiesTool
         if (OutlineLevel == 9) OutlineLevel = null;
         
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
+        PossiblyPartOfList = _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "List");
 
         if (!IsTableOfContents && ContainingTableCell == null)
         {
@@ -189,6 +190,8 @@ public record ParagraphPropertiesTool
     ) ?? 0;
     
     public INumbering? OfNumbering { get; internal set; }
+    
+    public bool PossiblyPartOfList { get; }
 
     public StructuralElement? StructuralElementHeader { get; }
     

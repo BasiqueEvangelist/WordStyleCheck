@@ -63,6 +63,9 @@ public record RunPropertiesTool
     public HighlightColorValues Highlight => Run.RunProperties?.Highlight?.Val?.Value ?? HighlightColorValues.None;
 
     public Paragraph ContainingParagraph => _parent.Paragraph;
+
+    public bool IsHyperlink => Utils.AscendToAnscestor<Hyperlink>(Run) != null ||
+                               _ctx.GetContextFor(Run).Any(x => x.InstrText?.Contains("\\h") ?? false);
     
     public string Contents { get; }
 

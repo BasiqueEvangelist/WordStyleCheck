@@ -20,14 +20,13 @@ public class TextColorLint : ILint
 
             if (pTool.Class == ParagraphClass.InsideDrawing) continue;
 
-            // TODO: handle hyperlinks properly
-            if (p.Descendants<Hyperlink>().Any()) continue;
-
             foreach (var r in Utils.DirectRunChildren(p))
             {
                 if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
 
                 RunPropertiesTool tool = ctx.Document.GetTool(r);
+                
+                if (tool.IsHyperlink) continue;
 
                 if ((tool.Color ?? "auto") is not ("auto" or "000000"))
                 {

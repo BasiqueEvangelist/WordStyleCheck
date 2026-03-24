@@ -45,7 +45,7 @@ public class DocumentAnalysisContext
 
         AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
         
-        _fieldStacks = FieldStackTracker.Run(document.MainDocumentPart!.Document!);
+        _fieldStacks = FieldStackTracker.RunTracker(document.MainDocumentPart!.Document!);
 
         using (new LoudStopwatch("Generating ParagraphPropertiesTool objects"))
             foreach (var p in AllParagraphs)

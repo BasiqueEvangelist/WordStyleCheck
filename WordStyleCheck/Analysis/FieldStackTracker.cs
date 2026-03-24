@@ -5,7 +5,7 @@ namespace WordStyleCheck.Analysis;
 
 public static class FieldStackTracker
 {
-    public static Dictionary<OpenXmlElement, List<FieldStackEntry>> Run(Document doc)
+    public static Dictionary<OpenXmlElement, List<FieldStackEntry>> RunTracker(Document doc)
     {
         Dictionary<OpenXmlElement, List<FieldStackEntry>> dict = [];
 
@@ -13,12 +13,12 @@ public static class FieldStackTracker
 
         List<FieldStackEntry> stack = [];
 
-        Run(stack, dict, doc.Body);
+        RunTracker(stack, dict, doc.Body);
 
         return dict;
     }
 
-    private static void Run(List<FieldStackEntry> stack, Dictionary<OpenXmlElement, List<FieldStackEntry>> dict, OpenXmlElement element)
+    private static void RunTracker(List<FieldStackEntry> stack, Dictionary<OpenXmlElement, List<FieldStackEntry>> dict, OpenXmlElement element)
     {
         if (element is FieldChar fldChar)
         {
@@ -35,17 +35,17 @@ public static class FieldStackTracker
             stack[^1].InstrText = instrText.Text;
         }
 
-        if (stack.Count > 0 && element is Paragraph)
+        if (stack.Count > 0 && element is Paragraph or Run)
         {
             dict.Add(element, [..stack]);
         }
 
         foreach (var child in element.ChildElements)
         {
-            Run(stack, dict, child);
+            RunTracker(stack, dict, child);
         }
         
-        if (stack.Count > 0 && element is Paragraph)
+        if (stack.Count > 0 && element is Paragraph or Run)
         {
             var mapping = dict.GetValueOrDefault(element);
 

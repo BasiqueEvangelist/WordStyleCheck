@@ -39,7 +39,7 @@ public readonly record struct PageMargins(int Top, int Bottom, int Left, int Rig
     {
         return Math.Abs(Top - other.Top) < 5 && Math.Abs(Bottom - other.Bottom) < 5 &&
                Math.Abs(Left - other.Left) < 5 && Math.Abs(Right - other.Right) < 5 &&
-               Math.Abs(Header - other.Header) < 5 && Math.Abs(Footer - other.Footer) < 5 &&
+               // Math.Abs(Header - other.Header) < 5 && Math.Abs(Footer - other.Footer) < 5 &&
                Math.Abs(Gutter - other.Gutter) < 5;
     }
     

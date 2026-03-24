@@ -9,13 +9,16 @@ public class FigureTableNotReferencedLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } =
     [
-        "FigureBeforeFirstReference", "FigureNotReferenced", "TableBeforeFirstReference", "TableNotReferenced"
+        "FigureBeforeFirstReference", "FigureNotReferenced",
+        "TableBeforeFirstReference", "TableNotReferenced",
+        "ListingBeforeFirstReference", "ListingNotReferenced"
     ];
     
     public void Run(LintContext ctx)
     {
         Dictionary<string, Paragraph> referencedFigureNumbers = [];
         Dictionary<string, Paragraph> referencedTableNumbers = [];
+        Dictionary<string, Paragraph> referencedListingNumbers = [];
 
         foreach (var other in ctx.Document.AllParagraphs)
         {
@@ -125,9 +128,14 @@ public class FigureTableNotReferencedLint : ILint
                 if (word.ToLower() is "рис." or "рисунок" or "рисунки" or "рисунке" or "рисунком" or "рисунках")
                 {
                     ConsumeReferences(referencedFigureNumbers);
-                } else if (word.ToLower() is "табл." or "таблица" or "таблицы" or "таблице" or "таблицу")
+                } 
+                else if (word.ToLower() is "табл." or "таблица" or "таблицы" or "таблице" or "таблицу")
                 {
                     ConsumeReferences(referencedTableNumbers);
+                }
+                else if (word.ToLower() is "листинг" or "листинги" or "листенге" or "листингах")
+                {
+                    ConsumeReferences(referencedListingNumbers);
                 }
 
                 if (string.IsNullOrWhiteSpace(word)) i += 1;
@@ -138,9 +146,10 @@ public class FigureTableNotReferencedLint : ILint
         {
             var tool = ctx.Document.GetTool(p);
 
-            if ((tool.CaptionData?.Type) == CaptionType.Figure)
+            void EmitDiagnosticsIfNeeded(Dictionary<string, Paragraph> referencedNumbers, string beforeFirstRefId,
+                string notRefId)
             {
-                if (referencedFigureNumbers.TryGetValue(tool.CaptionData.Value.Number, out var firstMention))
+                if (referencedNumbers.TryGetValue(tool.CaptionData!.Value.Number, out var firstMention))
                 {
                     var fToplevel = FindTopLevel(p);
                     var mToplevel = FindTopLevel(firstMention);
@@ -152,35 +161,26 @@ public class FigureTableNotReferencedLint : ILint
 
                     if (fIdx < mIdx)
                     {
-                        ctx.AddMessage(new LintMessage("FigureBeforeFirstReference", new ParagraphDiagnosticContext(p)));
+                        ctx.AddMessage(new LintMessage(beforeFirstRefId, new ParagraphDiagnosticContext(p)));
                     }
                 }
                 else
                 {
-                    ctx.AddMessage(new LintMessage("FigureNotReferenced", new ParagraphDiagnosticContext(p)));
+                    ctx.AddMessage(new LintMessage(notRefId, new ParagraphDiagnosticContext(p)));
                 }
+            }
+            
+            if ((tool.CaptionData?.Type) == CaptionType.Figure)
+            {
+                EmitDiagnosticsIfNeeded(referencedFigureNumbers, "FigureBeforeFirstReference", "FigureNotReferenced");
             }
             else if (tool is { CaptionData: { Type: CaptionType.Table, IsContinuation: false } })
             {
-                if (referencedTableNumbers.TryGetValue(tool.CaptionData.Value.Number, out var firstMention))
-                {
-                    var fToplevel = FindTopLevel(p);
-                    var mToplevel = FindTopLevel(firstMention);
-
-                    var bodyList = fToplevel.Parent!.ChildElements.ToList();
-
-                    var fIdx = bodyList.IndexOf(fToplevel);
-                    var mIdx = bodyList.IndexOf(mToplevel);
-
-                    if (fIdx < mIdx)
-                    {
-                        ctx.AddMessage(new LintMessage("TableBeforeFirstReference", new ParagraphDiagnosticContext(p)));
-                    }
-                }
-                else
-                {
-                    ctx.AddMessage(new LintMessage("TableNotReferenced", new ParagraphDiagnosticContext(p)));
-                }
+                EmitDiagnosticsIfNeeded(referencedTableNumbers, "TableBeforeFirstReference", "TableNotReferenced");
+            }
+            else if (tool is { CaptionData.Type: CaptionType.Listing })
+            {
+                EmitDiagnosticsIfNeeded(referencedListingNumbers, "ListingBeforeFirstReference", "ListingNotReferenced");
             }
         }
     }

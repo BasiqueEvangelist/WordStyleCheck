@@ -28,7 +28,15 @@ public struct CaptionClassifierData
         
         if (!secondPass)
         {
-            if (HasFigure(p.Paragraph))
+            if (p.Contents.Trim().StartsWith("листинг", StringComparison.InvariantCultureIgnoreCase)
+                && ((p.Paragraph.PreviousSibling() is Paragraph prev1 && HasFigure(prev1)) ||
+                    p.Paragraph.PreviousSibling() is Table))
+            {
+                type = CaptionType.Listing;
+                targeted = p.Paragraph.PreviousSibling();
+                isBelow = true;
+            }
+            else if (HasFigure(p.Paragraph))
             {
                 type = CaptionType.Figure;
                 targeted = null;
@@ -110,6 +118,7 @@ public struct CaptionClassifierData
                 isContinuation = true;        
                 break;
             case CaptionType.Figure when !firstPart.Equals("рисунок", StringComparison.InvariantCultureIgnoreCase):
+            case CaptionType.Listing when !firstPart.Equals("листинг", StringComparison.InvariantCultureIgnoreCase):
             case CaptionType.Table  when !firstPart.Equals("таблица", StringComparison.InvariantCultureIgnoreCase):
                 return null;
         }
@@ -167,6 +176,7 @@ public struct CaptionClassifierData
         string correct = (Type, IsContinuation) switch
         {
             (CaptionType.Figure, _) => "Рисунок ",
+            (CaptionType.Listing, _) => "Листинг ",
             (CaptionType.Table, false) => "Таблица ",
             (CaptionType.Table, true) => "Продолжение таблицы ",
             _ => throw new ArgumentOutOfRangeException()
@@ -186,6 +196,7 @@ public struct CaptionClassifierData
 public enum CaptionType
 {
     Figure,
+    Listing,
     Table,
 }
 

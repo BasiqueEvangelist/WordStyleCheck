@@ -47,6 +47,10 @@
     <str key="IncorrectFigureCaptionPosition">
         Подпись к рисунку должна быть под рисунком.
     </str>
+
+    <str key="IncorrectListingCaptionPosition">
+        Подпись к листингу должна быть под листингом.
+    </str>
     
     <str key="IncorrectCaptionText">
         Правильное оформление подписи — «${Expected}».
@@ -66,6 +70,14 @@
     
     <str key="TableBeforeFirstReference">
         Таблица должна быть расположена <b>после</b> своего первого упоминания.
+    </str>
+
+    <str key="ListingNotReferenced">
+        Листинг не был упомянут в тексте.
+    </str>
+
+    <str key="ListingBeforeFirstReference">
+        Листинг должен быть расположен <b>после</b> своего первого упоминания.
     </str>
     
     <str key="TextFontIncorrect">
@@ -114,6 +126,14 @@
 
     <str key="TableNumberingMix">
         Все таблицы должны быть нумерованы одним видом нумерации. Правильный номер таблицы — ${Expected}.
+    </str>
+
+    <str key="IncorrectListingNumbering">
+        Листинги нумеруются арабскими цифрами сквозной нумерацией. Правильный номер листинга — ${Expected}.
+    </str>
+
+    <str key="ListingNumberingMix">
+        Все листинги должны быть нумерованы одним видом нумерации. Правильный номер листинга — ${Expected}.
     </str>
     
     <str key="NotEnoughSources">

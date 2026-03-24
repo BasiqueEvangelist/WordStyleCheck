@@ -212,6 +212,7 @@ public record ParagraphPropertiesTool
     {
         get
         {
+            if (ProbablyCodeListing) return ParagraphClass.CodeListing;
             if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
             if (IsTableOfContents) return ParagraphClass.TableOfContents;
             if (CaptionData != null) return ParagraphClass.Caption;
@@ -220,7 +221,6 @@ public record ParagraphPropertiesTool
             if (ProbablyTableColumnHeader) return ParagraphClass.TableColumnHeader;
             if (ContainingTableCell != null) return ParagraphClass.TableContent;
             if (ProbablyHeading || HeadingData != null) return ParagraphClass.Heading;
-            if (ProbablyCodeListing) return ParagraphClass.CodeListing;
 
             return ParagraphClass.BodyText;
         }

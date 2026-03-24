@@ -42,7 +42,8 @@
                         ShowLineNumbers="True"
                         FontFamily="Fira Code,Cascadia Code,Consolas,Menlo,Monospace"
 						HorizontalScrollBarVisibility="Auto"
-                        VerticalScrollBarVisibility="Visible"/>
+                        VerticalScrollBarVisibility="Visible"
+                        IsReadOnly="True"/>
 	</SplitView>
 
 </Window>

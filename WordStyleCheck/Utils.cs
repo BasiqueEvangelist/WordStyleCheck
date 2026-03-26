@@ -54,9 +54,12 @@ public class Utils
     {
         StringBuilder text = new();
 
-        foreach (var t in r.ChildElements.OfType<Text>())
+        foreach (var c in r.ChildElements)
         {
-            text.Append(t.Text);
+            if (c is Text t)
+                text.Append(t.Text);
+            else if (c is TabChar)
+                text.Append("\t");
         }
 
         return text.ToString();

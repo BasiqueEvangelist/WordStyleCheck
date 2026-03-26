@@ -3,7 +3,6 @@
         xmlns:vm="using:WscDebugTool.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="WscDebugTool.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -27,7 +26,7 @@
 				<ScrollViewer IsVisible="{Binding ArchiveReady}">
 					<ItemsControl ItemsSource="{Binding Files}">
 						<ItemsControl.ItemTemplate>
-							<DataTemplate DataType="vm:XmlFileViewModel">
+							<DataTemplate DataType="vm:FileEntryViewModel">
 								<Button Command="{Binding OpenFileCommand}">
 									<TextBlock Text="{Binding Name}" />
 								</Button>
@@ -38,12 +37,7 @@
 			</Panel>
 		</SplitView.Pane>
 		
-		<AvaloniaEdit:TextEditor Name="CodeEditor" Text="Bruh"
-                        ShowLineNumbers="True"
-                        FontFamily="Fira Code,Cascadia Code,Consolas,Menlo,Monospace"
-						HorizontalScrollBarVisibility="Auto"
-                        VerticalScrollBarVisibility="Visible"
-                        IsReadOnly="True"/>
+		<ContentControl Content="{Binding CurrentFile}" />
 	</SplitView>
 
 </Window>

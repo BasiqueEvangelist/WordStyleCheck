@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml.Packaging;
+using WordStyleCheck.Analysis;
 
 namespace WscDebugTool.ViewModels;
 
@@ -22,13 +25,14 @@ public partial class MainWindowViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(Files))]
     private ZipArchive? archive;
 
+    private DocumentAnalysisContext? document;
+
     public bool ShouldShowPickerButton => Archive == null;
     public bool ArchiveReady => Archive != null;
 
-    public List<XmlFileViewModel> Files => Archive == null ? [] : Archive.Entries.Select(x => new XmlFileViewModel(x, this)).ToList();
+    public List<FileEntryViewModel> Files => Archive == null ? [] : Archive.Entries.Select(x => new FileEntryViewModel(x, this)).ToList();
 
-    [ObservableProperty]
-    private string fileText = "Select a file";
+    [ObservableProperty] private IFileViewModel? _currentFile;
     
     [RelayCommand]
     private async Task OpenZipFile()
@@ -44,37 +48,36 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files == null || files.Count < 1) return;
 
+        document = null;
+
         Archive = await ZipArchive.CreateAsync(await files[0].OpenReadAsync(), ZipArchiveMode.Read, false, null);
+
+        if (files[0].Name.EndsWith(".docx"))
+        {
+            document = new DocumentAnalysisContext(WordprocessingDocument.Open(files[0].TryGetLocalPath()!, false));
+        } 
     }
 
-    public async Task OpenFile(ZipArchiveEntry entry)
+    public void OpenFile(ZipArchiveEntry entry)
     {
-        MemoryStream ms = new();
-
-        await using (var stream = await entry.OpenAsync())
+        if (document != null)
         {
-            await stream.CopyToAsync(ms);
+            var mainPartPath = document.Document.MainDocumentPart!.Uri.ToString().TrimStart('/');
+
+            if (mainPartPath == entry.FullName)
+            {
+                CurrentFile = new DocumentFileViewModel(entry, document);
+                return;
+            }
         }
 
-        ms.Seek(0, SeekOrigin.Begin);
-
-        string text;
-        using (StreamReader reader = new StreamReader(ms,
-                                              detectEncodingFromByteOrderMarks: true))
+        if (entry.Name.EndsWith(".xml") || entry.Name.EndsWith(".rels"))
         {
-            text = reader.ReadToEnd();
+            CurrentFile = new XmlFileViewModel(entry);
+        } 
+        else if (entry.Name.EndsWith(".png") || entry.Name.EndsWith(".jpg") || entry.Name.EndsWith(".jpeg"))
+        {
+            CurrentFile = new ImageFileViewModel(entry);
         }
-
-        XDocument doc = XDocument.Parse(text);
-        StringBuilder formatted = new();
-        XmlWriter w = XmlWriter.Create(formatted, new XmlWriterSettings
-        {
-            Indent = true
-        });
-        doc.WriteTo(w);
-        w.Flush();
-        FileText = formatted.ToString();
-
-
     }
 }

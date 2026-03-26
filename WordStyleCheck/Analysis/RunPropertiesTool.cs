@@ -15,14 +15,7 @@ public record RunPropertiesTool
         _parent = parent;
         this.Run = Run;
         
-        StringBuilder contents = new();
-
-        foreach (var t in Run.ChildElements.OfType<Text>())
-        {
-            contents.Append(t.Text);
-        }
-
-        Contents = contents.ToString();
+        Contents = Utils.CollectText(Run);
 
         if (Caps)
         {
@@ -46,6 +39,12 @@ public record RunPropertiesTool
         x => Utils.ConvertOnOffType(x.Bold),
         x => Utils.ConvertOnOffType(x.Bold),
         x => Utils.ConvertOnOffType(x.Bold)
+    ) ?? false;
+    
+    public bool Italic => FollowPropertyChain(
+        x => Utils.ConvertOnOffType(x.Italic),
+        x => Utils.ConvertOnOffType(x.Italic),
+        x => Utils.ConvertOnOffType(x.Italic)
     ) ?? false;
     
     public bool Caps => FollowPropertyChain(

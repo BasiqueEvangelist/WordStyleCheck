@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:WscDebugTool.ViewModels"
+             xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WscDebugTool.Views.DocumentFileView"
+             x:DataType="vm:DocumentFileViewModel">
+    <SplitView IsPaneOpen="True"
+               DisplayMode="Inline"
+               PanePlacement="Right"
+               OpenPaneLength="700">
+        <SplitView.Pane>
+            <ScrollViewer>
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Paragraphs}" />
+                </StackPanel>
+            </ScrollViewer>
+        </SplitView.Pane>
+        
+        <avaloniaEdit:TextEditor Name="CodeEditor" Text="Bruh"
+                                 ShowLineNumbers="True"
+                                 FontFamily="Fira Code,Cascadia Code,Consolas,Menlo,Monospace"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 VerticalScrollBarVisibility="Visible"
+                                 IsReadOnly="True"/>
+    </SplitView>
+</UserControl>

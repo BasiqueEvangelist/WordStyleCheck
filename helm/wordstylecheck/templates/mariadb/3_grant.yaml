@@ -1,0 +1,14 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: {{ include "wordstylecheck.fullname" . }}-db
+spec:
+  mariaDbRef:
+    name: {{ include "wordstylecheck.fullname" . }}-db
+  privileges:
+    - "ALL PRIVILEGES"
+  database: "wordstylecheck"
+  table: "*"
+  username: wordstylecheck
+  grantOption: true
+  host: "%"

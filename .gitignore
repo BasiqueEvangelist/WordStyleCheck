@@ -55,3 +55,6 @@ Thumbs.db
 artifacts/
 
 .env
+
+mariadb-secrets.yml
+values.override.yaml

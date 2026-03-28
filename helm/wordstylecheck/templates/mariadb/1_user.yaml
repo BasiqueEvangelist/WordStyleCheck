@@ -1,0 +1,12 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+  name: {{ include "wordstylecheck.fullname" . }}-db
+spec:
+  mariaDbRef:
+    name: {{ include "wordstylecheck.fullname" . }}-db
+  name: wordstylecheck
+  passwordSecretKeyRef:
+    name: {{.Values.mariadbPassword.secretName}}
+    key: {{.Values.mariadbPassword.secretKey}}
+  host: "%"

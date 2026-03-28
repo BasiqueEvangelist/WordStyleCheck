@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wordstylecheck.fullname" . }}-foreman
+  labels:
+    {{- include "wordstylecheck.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "wordstylecheck.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: foreman
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "wordstylecheck.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: foreman
+    spec:
+      initContainers:
+        - name: init-mariadb
+          image: busybox:1.28
+          command: [ 'sh', '-c', "until nc -z {{ include "wordstylecheck.fullname" . }}-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local 3306; do echo waiting for mariadb; sleep 2; done" ]
+      containers:
+        - name: {{ .Chart.Name }}-foreman
+          image: "{{ .Values.foremanImage.repository }}:{{ .Values.foremanImage.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.foremanImage.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.mariadbPassword.secretName}}
+                  key: {{.Values.mariadbPassword.secretKey}}
+            - name: ConnectionString
+              value: "Server={{ include "wordstylecheck.fullname" . }}-db;Database=wordstylecheck;Uid=wordstylecheck;Pwd=super-secure-wordstylecheck-password;AllowUserVariables=true"
+            - name: S3EndpointUrl
+              value: {{.Values.s3.endpoint}}
+            - name: S3Region
+              value: {{.Values.s3.region}}
+            - name: S3IngressBucket
+              value: {{.Values.s3.ingressBucket}}
+            - name: S3EgressBucket
+              value: {{.Values.s3.egressBucket}}
+            - name: S3EgressBucketBaseUrl
+              value: {{.Values.s3.egressBucketBaseUrl}}
+            - name: S3AccessKeyId
+              value: {{.Values.s3.foremanKeyId}}
+            - name: S3SecretAccessKey
+              value: {{.Values.s3.foremanKeySecret}}
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "80"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wordstylecheck.fullname" . }}-worker
+  labels:
+    {{- include "wordstylecheck.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.workerReplicaCount }}
+  selector:
+    matchLabels:
+      {{- include "wordstylecheck.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "wordstylecheck.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: worker
+    spec:
+      initContainers:
+        - name: init-mariadb
+          image: busybox:1.28
+          command: [ 'sh', '-c', "until nc -z {{ include "wordstylecheck.fullname" . }}-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local 3306; do echo waiting for mariadb; sleep 2; done" ]
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          image: "{{ .Values.workerImage.repository }}:{{ .Values.workerImage.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.workerImage.pullPolicy }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.mariadbPassword.secretName}}
+                  key: {{.Values.mariadbPassword.secretKey}}
+            - name: ConnectionString
+              value: "Server={{ include "wordstylecheck.fullname" . }}-db;Database=wordstylecheck;Uid=wordstylecheck;Pwd=super-secure-wordstylecheck-password;AllowUserVariables=true"
+            - name: S3EndpointUrl
+              value: {{.Values.s3.endpoint}}
+            - name: S3Region
+              value: {{.Values.s3.region}}
+            - name: S3IngressBucket
+              value: {{.Values.s3.ingressBucket}}
+            - name: S3EgressBucket
+              value: {{.Values.s3.egressBucket}}
+            - name: S3EgressBucketBaseUrl
+              value: {{.Values.s3.egressBucketBaseUrl}}
+            - name: S3AccessKeyId
+              value: {{.Values.s3.workerKeyId}}
+            - name: S3SecretAccessKey
+              value: {{.Values.s3.workerKeySecret}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

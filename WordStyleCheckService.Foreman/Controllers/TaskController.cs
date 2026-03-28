@@ -12,6 +12,16 @@ namespace WordStyleCheckService.Foreman.Controllers;
 [ApiController]
 public class TaskController(Db db, IMinioClient s3, IOptionsSnapshot<Options> options) : ControllerBase
 {
+    [HttpGet]
+    [Route("/")]
+    public IActionResult Info()
+    {
+        return Ok(new
+        {
+            Name = "WordStyleCheckService.Foreman"
+        });
+    }
+    
     [HttpPost]
     [Route("/upload-file")]
     // [RequestSizeLimit(512 * 1024 * 1024)]

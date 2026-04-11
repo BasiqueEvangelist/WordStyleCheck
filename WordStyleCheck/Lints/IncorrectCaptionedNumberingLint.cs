@@ -81,7 +81,7 @@ public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId,
             {
                 Parameters = new()
                 {
-                    ["Expected"] = actual.Contains(".") && correctNumberSection != null ? correctNumberSection : correctNumber,
+                    ["Expected"] = (hierarchicalNumbering ?? actual.Contains(".")) && correctNumberSection != null ? correctNumberSection : correctNumber,
                     ["Actual"] = actual
                 }
             });

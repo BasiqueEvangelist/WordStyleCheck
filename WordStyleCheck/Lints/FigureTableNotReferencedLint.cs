@@ -50,7 +50,11 @@ public class FigureTableNotReferencedLint : ILint
                 if (char.IsLetter(text[i]))
                 {
                     i++;
-                    if (i >= text.Length || text[i] != '.') return null;
+                    if (i >= text.Length || text[i] != '.')
+                    {
+                        i--;
+                        return null;
+                    }
                     i++;
                 }
                 

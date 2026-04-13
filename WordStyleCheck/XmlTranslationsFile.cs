@@ -70,7 +70,10 @@ public class XmlTranslationsFile
             return [new Paragraph(new Run(new Text(dumped)))];
         }
 
-        Text currentText = new Text("");
+        Text currentText = new Text("")
+        {
+            Space = SpaceProcessingModeValues.Preserve
+        };
         Run currentRun = new Run(currentText);
         Hyperlink? currentLink = null;
         Paragraph currentParagraph = new Paragraph(currentRun);
@@ -114,7 +117,10 @@ public class XmlTranslationsFile
                         {
                             needReset = true;
 
-                            currentText = new Text("");
+                            currentText = new Text("")
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
                             currentRun = new Run(new RunProperties(), currentText);
 
                             currentRun.RunProperties!.Bold = new Bold();
@@ -127,7 +133,10 @@ public class XmlTranslationsFile
 
                         if (needReset)
                         {
-                            currentText = new Text("");
+                            currentText = new Text("")
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
                             currentRun = new Run(new RunProperties(), currentText);
 
                             if (bold) currentRun.RunProperties!.Bold = new Bold();
@@ -142,7 +151,10 @@ public class XmlTranslationsFile
                         {
                             needReset = true;
 
-                            currentText = new Text("");
+                            currentText = new Text("")
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
                             currentRun = new Run(new RunProperties(), currentText);
 
                             if (bold) currentRun.RunProperties!.Bold = new Bold();
@@ -155,7 +167,10 @@ public class XmlTranslationsFile
 
                         if (needReset)
                         {
-                            currentText = new Text("");
+                            currentText = new Text("")
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
                             currentRun = new Run(new RunProperties(), currentText);
 
                             if (bold) currentRun.RunProperties!.Bold = new Bold();
@@ -172,7 +187,10 @@ public class XmlTranslationsFile
                         {
                             needReset = true;
 
-                            currentText = new Text("");
+                            currentText = new Text("")
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
                             currentRun = new Run(new RunProperties(), currentText);
                             if (bold) currentRun.RunProperties!.Bold = new Bold();
                             currentRun.RunProperties!.Italic = new Italic();
@@ -206,7 +224,10 @@ public class XmlTranslationsFile
                     }
                     else if (subEl.Name == "br")
                     {
-                        currentText = new Text("");
+                        currentText = new Text("")
+                        {
+                            Space = SpaceProcessingModeValues.Preserve
+                        };
                         currentRun = new Run(currentText);
                         currentParagraph = new Paragraph(currentRun);
 

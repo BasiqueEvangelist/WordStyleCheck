@@ -45,7 +45,7 @@ public record ParagraphPropertiesTool
         ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
         PossiblyPartOfList = _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "List");
 
-        if (!IsTableOfContents && ContainingTableCell == null)
+        if (!IsTableOfContents && ContainingTableCell == null && NumberingId == null)
         {
             StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Contents);
             CaptionData = CaptionClassifierData.Classify(this, false);

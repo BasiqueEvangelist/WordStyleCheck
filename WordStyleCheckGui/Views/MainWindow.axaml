@@ -29,7 +29,7 @@
 									    <!-- <Button Margin="0 0 5 0">Save text report</Button> -->
 										<Button Margin="0 0 5 0" Command="{Binding OpenWindowCommand}">Рассмотреть ошибки</Button>
 									    <Button Margin="0 0 5 0" Command="{Binding SaveAnnotatedCommand}">Сохранить с пометками</Button>
-									    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Сохранить с исправлениями [ЭКСПЕРИМЕНТ]</Button>
+									    <Button Margin="0 0 5 0" Command="{Binding SaveAutofixedCommand}">Сохранить с исправлениями</Button>
 								    </StackPanel>
 								</StackPanel>
 

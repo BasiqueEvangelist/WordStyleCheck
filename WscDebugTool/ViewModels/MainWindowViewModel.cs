@@ -14,6 +14,7 @@ using System.Xml;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using WordStyleCheck.Analysis;
+using WordStyleCheck.Gost7_32;
 
 namespace WscDebugTool.ViewModels;
 
@@ -54,7 +55,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files[0].Name.EndsWith(".docx"))
         {
-            document = new DocumentAnalysisContext(WordprocessingDocument.Open(files[0].TryGetLocalPath()!, false));
+            document = new DocumentAnalysisContext(WordprocessingDocument.Open(files[0].TryGetLocalPath()!, false), new Gost7_32Profile().Classifiers);
         } 
     }
 

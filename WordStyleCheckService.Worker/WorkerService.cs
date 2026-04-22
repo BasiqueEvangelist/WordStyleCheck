@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using WordStyleCheck;
+using WordStyleCheck.Gost7_32;
 
 namespace WordStyleCheckService.Worker;
 
@@ -65,7 +66,7 @@ public class WorkerService(ILogger<WorkerService> logger, Db db, IOptionsMonitor
         
         stream.Seek(0, SeekOrigin.Begin);
 
-        LintTask task = new LintTask(stream, x => true, false, _translations);
+        LintTask task = new LintTask(stream, new Gost7_32Profile(), x => true, false, _translations);
         _pool.AddTask(task);
         var linter = await task.Result;
 

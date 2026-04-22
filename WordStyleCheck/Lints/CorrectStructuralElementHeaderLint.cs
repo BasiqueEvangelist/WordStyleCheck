@@ -1,6 +1,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
+using WordStyleCheck.Gost7_32;
 
 namespace WordStyleCheck.Lints;
 
@@ -18,7 +19,7 @@ public class CorrectStructuralElementHeaderLint : ILint
             if (tool.StructuralElementHeader == StructuralElement.Appendix) continue;
 
             var text = tool.Contents.Trim();
-            var proper = StructuralElementHeaderClassifier.GetProperName(tool.StructuralElementHeader.Value);
+            var proper = GostStructuralElementClassifier.GetProperName(tool.StructuralElementHeader.Value);
 
             if (text != proper)
             {

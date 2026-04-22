@@ -47,7 +47,6 @@ public record ParagraphPropertiesTool
 
         if (!IsTableOfContents && ContainingTableCell == null && NumberingId == null)
         {
-            StructuralElementHeader = StructuralElementHeaderClassifier.Classify(Contents);
             CaptionData = CaptionClassifierData.Classify(this, false);
         }
 
@@ -193,8 +192,8 @@ public record ParagraphPropertiesTool
     
     public bool PossiblyPartOfList { get; }
 
-    public StructuralElement? StructuralElementHeader { get; }
-    
+    public StructuralElement? StructuralElementHeader { get; set; }
+
     public StructuralElement? OfStructuralElement { get; internal set; }
     
     public ParagraphPropertiesTool? AssociatedHeading1 { get; internal set; }

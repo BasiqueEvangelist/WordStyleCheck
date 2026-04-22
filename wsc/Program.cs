@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using WordStyleCheck;
+using WordStyleCheck.Gost7_32;
 
 RootCommand root = new("Linter for .docx files");
 
@@ -87,7 +88,7 @@ root.SetAction(async res =>
 
     if (res.GetValue(listDiagnosticsOpt))
     {
-        LintManager manager = new LintManager();
+        LintManager manager = new LintManager(new Gost7_32Profile());
 
         foreach (var diagnostic in manager.AllPossibleDiagnostics)
         {
@@ -141,7 +142,7 @@ root.SetAction(async res =>
     .Select(async x =>
     {
         string target = Path.GetFileNameWithoutExtension(x.Name) + $"-{suffix}.docx";
-        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), lintIdFilter, false, null);
+        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), new Gost7_32Profile(), lintIdFilter, false, null);
 
         pool.AddTask(task);
 

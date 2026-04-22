@@ -26,7 +26,7 @@ public class DocumentAnalysisContext
     
     public Dictionary<string, BookmarkStart> BookmarkStarts { get; }
 
-    public DocumentAnalysisContext(WordprocessingDocument document)
+    public DocumentAnalysisContext(WordprocessingDocument document, List<IClassifier> classifiers)
     {
         Document = document;
 
@@ -177,20 +177,6 @@ public class DocumentAnalysisContext
                 tool.ProbablyCodeListing = isListing;
             }
         
-        ParagraphPropertiesTool? currentHeading1 = null;
-        using (new LoudStopwatch("Assigning AssociatedHeading1"))
-            foreach (var p in AllParagraphs)
-            {
-                var tool = GetTool(p);
-
-                if (tool.HeadingData?.Level == 1)
-                {
-                    currentHeading1 = tool;
-                }
-
-                tool.AssociatedHeading1 = currentHeading1;
-            }
-        
         HashSet<OpenXmlElement> continuationTables = [];
         using (new LoudStopwatch("Finding Continuation Tables"))
             foreach (var p in AllParagraphs)
@@ -224,6 +210,11 @@ public class DocumentAnalysisContext
             BookmarkStarts = Document.MainDocumentPart.Document.Body.Descendants<BookmarkStart>()
                 .DistinctBy(x => x.Name!.Value!)
                 .ToDictionary(x => x.Name!.Value!, x => x);
+
+        foreach (var classifier in classifiers)
+        {
+            classifier.Classify(this);
+        }
     }
 
     private static readonly List<FieldStackTracker.FieldStackEntry> _emptyList = [];

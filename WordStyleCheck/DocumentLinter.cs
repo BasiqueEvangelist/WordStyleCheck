@@ -12,7 +12,7 @@ public class DocumentLinter : IDisposable
     private LintManager _manager;
     private LintContext _lintCtx;
 
-    public DocumentLinter(Stream stream)
+    public DocumentLinter(Stream stream, IProfile profile)
     {
         if (stream is MemoryStream ms)
             _stream = ms;
@@ -35,9 +35,9 @@ public class DocumentLinter : IDisposable
         using (new LoudStopwatch("StripOldComments.Run"))
             StripOldComments.Run(_document);
             
-        _analysisCtx = new DocumentAnalysisContext(_document);
+        _analysisCtx = new DocumentAnalysisContext(_document, profile.Classifiers);
             
-        _manager = new LintManager();
+        _manager = new LintManager(profile);
         _lintCtx = new LintContext(_analysisCtx, false);
     }
         

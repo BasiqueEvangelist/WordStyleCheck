@@ -4,28 +4,9 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class TocReferencesLint : ILint
+public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NoToc", "ShouldNotBeInToc", "ShouldBeInToc"];
-
-    private bool ShouldBeInToc(ParagraphPropertiesTool tool)
-    {
-        if (tool.OfStructuralElement == StructuralElement.Appendix &&
-            tool.StructuralElementHeader != StructuralElement.Appendix)
-            return false;
-
-        if (tool is { HeadingData.Level: < 4 } or { HeadingData.IsConclusion: true })
-            return true;
-
-        if (tool is
-            {
-                StructuralElementHeader: StructuralElement.Introduction or StructuralElement.Conclusion
-                or StructuralElement.Bibliography or StructuralElement.Appendix
-            })
-            return true;
-        
-        return false;
-    }
     
     public void Run(LintContext ctx)
     {
@@ -82,7 +63,7 @@ public class TocReferencesLint : ILint
 
             referencedParagraphs.Add(target);
 
-            if (!ShouldBeInToc(targetTool))
+            if (!shouldBeInToc(targetTool))
             {
                 ctx.AddMessage(new LintMessage("ShouldNotBeInToc", new ParagraphDiagnosticContext(p.Paragraph)));
                 continue;
@@ -93,7 +74,7 @@ public class TocReferencesLint : ILint
         {
             var tool = ctx.Document.GetTool(p);
             
-            if (!ShouldBeInToc(tool)) continue;
+            if (!shouldBeInToc(tool)) continue;
             
             if (referencedParagraphs.Contains(tool.Paragraph)) continue;
             

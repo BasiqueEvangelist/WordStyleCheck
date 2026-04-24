@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class BibliographySourceNotReferencedLint : ILint
+public class BibliographySourceNotReferencedLint(Predicate<ParagraphPropertiesTool> isInBibliography) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["BibliographySourceNotReferenced"];
 
@@ -92,7 +92,7 @@ public class BibliographySourceNotReferencedLint : ILint
         {
             var tool = ctx.Document.GetTool(p);
             
-            if (tool.OfStructuralElement != StructuralElement.Bibliography) continue;
+            if (!isInBibliography(tool)) continue;
             if (!(tool.OfNumbering is {} numbering)) continue;
 
             int index = numbering.Paragraphs.IndexOf(p) + 1;

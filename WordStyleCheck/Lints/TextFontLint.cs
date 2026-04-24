@@ -17,10 +17,10 @@ public class TextFontLint : ILint
             if (pTool.IsEmptyOrDrawing) continue;
             
             // We don't force a specific font for code listings, since nobody knows what font they should actually use.
-            if (pTool.Class == ParagraphClass.CodeListing) continue;
+            if (pTool.ProbablyCodeListing) continue;
 
             // Drawings can have their own stuff. We don't really care.
-            if (pTool.Class == ParagraphClass.InsideDrawing) continue;
+            if (pTool.ContainingTextBox != null) continue;
 
             foreach (var r in Utils.DirectRunChildren(p))
             {

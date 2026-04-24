@@ -1,6 +1,6 @@
 ﻿using System.CommandLine;
 using WordStyleCheck;
-using WordStyleCheck.Gost7_32;
+using WordStyleCheck.Profiles;
 
 RootCommand root = new("Linter for .docx files");
 
@@ -82,13 +82,22 @@ Option<bool> onlyNewDiagnosticsOpt = new("--only-new-diagnostics")
 
 root.Options.Add(onlyNewDiagnosticsOpt);
 
+Option<string> profileOpt = new("--profile")
+{
+    Description = "Use this profile",
+    DefaultValueFactory = _ => "gost-7.32"
+};
+
+root.Options.Add(profileOpt);
+
 root.SetAction(async res =>
 {
     XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
+    IProfile profile = ProfileStore.GetProfile(res.GetValue(profileOpt)!)!;
 
     if (res.GetValue(listDiagnosticsOpt))
     {
-        LintManager manager = new LintManager(new Gost7_32Profile());
+        LintManager manager = new LintManager(profile);
 
         foreach (var diagnostic in manager.AllPossibleDiagnostics)
         {
@@ -142,7 +151,7 @@ root.SetAction(async res =>
     .Select(async x =>
     {
         string target = Path.GetFileNameWithoutExtension(x.Name) + $"-{suffix}.docx";
-        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), new Gost7_32Profile(), lintIdFilter, false, null);
+        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), profile, lintIdFilter, false, null);
 
         pool.AddTask(task);
 

@@ -3,7 +3,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId, string mixMessageId) : ILint
+public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> predicate, CaptionType type, string messageId, string mixMessageId) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
@@ -14,8 +14,7 @@ public class IncorrectCaptionedNumberingLint(CaptionType type, string messageId,
             .Where(x => x is
             {
                 CaptionData: { IsContinuation: false },
-                OfStructuralElement: not StructuralElement.Appendix // TODO: handle this for figures in appendices too
-            } && x.CaptionData.Value.Type == type)
+            } && x.CaptionData.Value.Type == type && predicate(x))
             .ToList();
 
         int underHeadingNumber = 0;

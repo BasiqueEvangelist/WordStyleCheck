@@ -16,9 +16,9 @@ public class TextColorLint : ILint
 
             if (pTool.IsEmptyOrDrawing) continue;
 
-            if (pTool.Class == ParagraphClass.CodeListing) continue;
+            if (pTool.ProbablyCodeListing) continue;
 
-            if (pTool.Class == ParagraphClass.InsideDrawing) continue;
+            if (pTool.ContainingTextBox != null) continue;
 
             foreach (var r in Utils.DirectRunChildren(p))
             {

@@ -16,7 +16,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
             
             if (tool.IsEmptyOrDrawing) continue;
-            if (tool.IsOutsideOfText) continue;
+            if (tool.IsIgnored) continue;
             if (!predicate(tool)) continue; 
             
             if (Math.Abs((tool.FirstLineIndent ?? 0) - firstLine) >= 5)
@@ -66,7 +66,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
 
             if (tool.IsEmptyOrDrawing) continue;
-            if (tool.IsOutsideOfText) continue;
+            if (tool.IsIgnored) continue;
             if (!predicate(tool)) continue;
             
             if (Math.Abs((tool.LeftIndent ?? 0) - left) >= 5)

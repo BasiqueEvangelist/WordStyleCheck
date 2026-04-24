@@ -12,7 +12,8 @@ public static class HandmadeListClassifier
         {
             var tool = ctx.GetTool(p);
             
-            if (tool.Class != ParagraphClass.BodyText) continue;
+            // if (tool.Class != ParagraphClass.BodyText) continue;
+            if (tool.ProbablyCodeListing || tool.IsTableOfContents || tool.OutlineLevel != null || tool.HeadingData != null) continue;
             
             string text = tool.Contents.Trim();
 

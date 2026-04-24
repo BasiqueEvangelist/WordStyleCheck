@@ -1,7 +1,7 @@
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
 
-namespace WordStyleCheck;
+namespace WordStyleCheck.Profiles;
 
 public interface IProfile
 {

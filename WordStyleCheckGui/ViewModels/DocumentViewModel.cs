@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WordStyleCheck;
-using WordStyleCheck.Gost7_32;
+using WordStyleCheck.Profiles.Gost7_32;
 using WordStyleCheckGui.Views;
 
 namespace WordStyleCheckGui.ViewModels;

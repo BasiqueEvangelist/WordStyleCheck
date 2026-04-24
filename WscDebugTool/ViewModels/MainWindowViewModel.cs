@@ -14,7 +14,7 @@ using System.Xml;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using WordStyleCheck.Analysis;
-using WordStyleCheck.Gost7_32;
+using WordStyleCheck.Profiles.Gost7_32;
 
 namespace WscDebugTool.ViewModels;
 

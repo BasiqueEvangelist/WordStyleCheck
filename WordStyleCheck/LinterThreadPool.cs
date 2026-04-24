@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using WordStyleCheck.Profiles;
 
 namespace WordStyleCheck;
 

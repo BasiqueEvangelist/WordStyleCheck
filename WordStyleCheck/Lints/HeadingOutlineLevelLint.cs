@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class HeadingOutlineLevelLint : ILint
+public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requiresOutlineLevel) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics => ["NonHeadingWithOutlineLevel", "HeadingWithoutOutlineLevel", "IncorrectHeadingOutlineLevel"];
 
@@ -14,9 +14,9 @@ public class HeadingOutlineLevelLint : ILint
         {
             var tool = ctx.Document.GetTool(p);
 
-            if (tool.OfStructuralElement == null) continue;
+            if (tool.IsIgnored) continue;
 
-            if (tool is { OutlineLevel: not null, HeadingData: null, OfStructuralElement: not (StructuralElement.Introduction or StructuralElement.Conclusion or StructuralElement.Bibliography or StructuralElement.Appendix) })
+            if (tool is { OutlineLevel: not null } && !requiresOutlineLevel(tool))
             {
                 ctx.AddMessage(new LintMessage("NonHeadingWithOutlineLevel", new ParagraphDiagnosticContext(p))
                 {

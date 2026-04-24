@@ -9,9 +9,9 @@ public class HeadingClassifierData
     
     public static HeadingClassifierData? Classify(ParagraphPropertiesTool p)
     {
-        if (p.OfNumbering != null && p.Class != ParagraphClass.Heading) return null;
+        if (p is { OfNumbering: not null, ProbablyHeading: false }) return null;
         if (p.IsEmptyOrDrawing) return null;
-        if (p.Class is not (ParagraphClass.BodyText or ParagraphClass.Heading)) return null;
+        if (p.ProbablyCodeListing || p.IsTableOfContents || p.ContainingTableCell != null || p.ContainingTextBox != null || p.EquationData != null) return null;
         
         string text = p.Contents.Trim();
 
@@ -20,7 +20,7 @@ public class HeadingClassifierData
         int numEnd;
         string number;
         bool isConclusion = false;
-        if (text.StartsWith("Выводы", StringComparison.InvariantCultureIgnoreCase) && p.Class == ParagraphClass.Heading)
+        if (text.StartsWith("Выводы", StringComparison.InvariantCultureIgnoreCase) && p.ProbablyHeading)
         {
             isConclusion = true;
             number = "";
@@ -49,7 +49,7 @@ public class HeadingClassifierData
             string[] numberSplit = number.Split('.');
 
             if (numberSplit.Any(string.IsNullOrWhiteSpace)) return null;
-            if (numberSplit.Length < 3 && p.Class != ParagraphClass.Heading) return null;
+            if (numberSplit.Length < 3 && !p.ProbablyHeading) return null;
 
             level = numberSplit.Length;
         }

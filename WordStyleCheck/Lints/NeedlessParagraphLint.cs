@@ -5,7 +5,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class NeedlessParagraphLint : ILint
+public class NeedlessParagraphLint(Predicate<ParagraphPropertiesTool> isCandidate) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NeedlessParagraphBreak"];
     
@@ -25,16 +25,10 @@ public class NeedlessParagraphLint : ILint
             ParagraphPropertiesTool curTool = ctx.Document.GetTool(paragraphs[i]);
             
             if (curTool.IsEmptyOrDrawing) continue;
-            if (prevTool.IsOutsideOfText || curTool.IsOutsideOfText) continue;
+            if (prevTool.IsIgnored || curTool.IsIgnored) continue;
 
             if (prevTool.OutlineLevel != null || curTool.OutlineLevel != null) continue;
-            if (prevTool.Class != ParagraphClass.BodyText
-             || curTool.Class != ParagraphClass.BodyText)
-                continue;
-            
-            if (prevTool.OfStructuralElement == StructuralElement.Appendix 
-             || curTool.OfStructuralElement == StructuralElement.Appendix)
-                continue;
+            if (!isCandidate(prevTool) || !isCandidate(curTool)) continue;
             
             if (prevTool.OfNumbering != null || curTool.OfNumbering != null) continue;
 

@@ -76,7 +76,6 @@ public class DocumentAnalysisContext
             }
         }
 
-        StructuralElement? currentElement = null;
         List<Paragraph> currentSection = [];
         
         using (new LoudStopwatch("Assigning OfStructuralElement and page style sections"))
@@ -84,13 +83,6 @@ public class DocumentAnalysisContext
             {
                 var tool = GetTool(p);
 
-                if (tool.StructuralElementHeader != null)
-                {
-                    currentElement = tool.StructuralElementHeader;
-                }
-
-                tool.OfStructuralElement = currentElement;
-                
                 currentSection.Add(p);
 
                 if (p.ParagraphProperties?.SectionProperties is { } sectPr)
@@ -136,7 +128,7 @@ public class DocumentAnalysisContext
             {
                 var tool = GetTool(p);
 
-                if (tool.Class != ParagraphClass.BodyText) continue;
+                if (tool.CaptionData != null) continue;
 
                 var caption = CaptionClassifierData.Classify(tool, true);
                 
@@ -147,9 +139,6 @@ public class DocumentAnalysisContext
 
                 tool.CaptionData = caption;
             }
-
-        using (new LoudStopwatch("HandmadeListClassifier.Classify"))
-            HandmadeLists = HandmadeListClassifier.Classify(this);
 
         using (new LoudStopwatch("HeadingClassifierData.Classify and classifying code listings"))
             foreach (var p in AllParagraphs)
@@ -176,6 +165,9 @@ public class DocumentAnalysisContext
 
                 tool.ProbablyCodeListing = isListing;
             }
+        
+        using (new LoudStopwatch("HandmadeListClassifier.Classify"))
+            HandmadeLists = HandmadeListClassifier.Classify(this);
         
         HashSet<OpenXmlElement> continuationTables = [];
         using (new LoudStopwatch("Finding Continuation Tables"))

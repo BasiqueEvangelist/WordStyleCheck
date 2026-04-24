@@ -3,24 +3,24 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Analysis;
 
-public record ParagraphPropertiesTool
+public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
 {
     private readonly DocumentAnalysisContext _ctx;
     public Paragraph Paragraph { get; }
 
-    internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph Paragraph)
+    internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph paragraph)
     {
         _ctx = ctx;
-        this.Paragraph = Paragraph;
+        Paragraph = paragraph;
 
         StringBuilder contents = new();
-        foreach (var r in Utils.DirectRunChildren(Paragraph))
+        foreach (var r in Utils.DirectRunChildren(paragraph))
         {
             contents.Append(ctx.GetTool(r, this).Contents);
         }
         Contents = Utils.StripJunk(contents.ToString());
        
-        string? styleId = Paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
+        string? styleId = paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
         
         Style = new Func<Style?>(() =>
         {
@@ -50,13 +50,10 @@ public record ParagraphPropertiesTool
             CaptionData = CaptionClassifierData.Classify(this, false);
         }
 
-        if (Class == ParagraphClass.BodyText)
-        {
-            EquationData = EquationClassifierData.Classify(this);
-        }
+        EquationData = EquationClassifierData.Classify(this);
         
-        IsEmptyOrDrawing = !Utils.DirectRunChildren(Paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
-        IsEmptyOrWhitespace = IsEmptyOrDrawing && !Paragraph.Descendants().Any(x => x is Drawing);
+        IsEmptyOrDrawing = !Utils.DirectRunChildren(paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
+        IsEmptyOrWhitespace = IsEmptyOrDrawing && !paragraph.Descendants().Any(x => x is Drawing);
     }
     
     public string Contents { get; }
@@ -176,12 +173,22 @@ public record ParagraphPropertiesTool
 
     public bool ProbablyTableColumnHeader { get; internal set; }
 
-    public int? NumberingId => FollowPropertyChain(
-        x => x.NumberingProperties?.NumberingId?.Val?.Value,
-        x => x.NumberingProperties?.NumberingId?.Val?.Value,
-        x => x.NumberingProperties?.NumberingId?.Val?.Value
-    );
-    
+    public int? NumberingId
+    {
+        get
+        {
+            int? val = FollowPropertyChain(
+                x => x.NumberingProperties?.NumberingId?.Val?.Value,
+                x => x.NumberingProperties?.NumberingId?.Val?.Value,
+                x => x.NumberingProperties?.NumberingId?.Val?.Value
+            );
+
+            if (val == 0) val = null;
+
+            return val;
+        }
+    }
+
     public int NumberingLevel => FollowPropertyChain(
         x => x.NumberingProperties?.NumberingLevelReference?.Val?.Value,
         x => x.NumberingProperties?.NumberingLevelReference?.Val?.Value,
@@ -192,10 +199,6 @@ public record ParagraphPropertiesTool
     
     public bool PossiblyPartOfList { get; }
 
-    public StructuralElement? StructuralElementHeader { get; set; }
-
-    public StructuralElement? OfStructuralElement { get; internal set; }
-    
     public ParagraphPropertiesTool? AssociatedHeading1 { get; internal set; }
     
     public CaptionClassifierData? CaptionData { get; internal set; }
@@ -208,26 +211,8 @@ public record ParagraphPropertiesTool
     
     public bool IsEmptyOrDrawing { get; }
 
-    public bool IsOutsideOfText => AssociatedHeading1 == null && OfStructuralElement == null;
+    public bool IsIgnored { get; set; }
     
-    public ParagraphClass Class
-    {
-        get
-        {
-            if (ProbablyCodeListing) return ParagraphClass.CodeListing;
-            if (StructuralElementHeader != null) return ParagraphClass.StructuralElementHeader;
-            if (IsTableOfContents) return ParagraphClass.TableOfContents;
-            if (CaptionData != null) return ParagraphClass.Caption;
-            if (EquationData != null) return ParagraphClass.DisplayEquation;
-            if (ContainingTextBox != null) return ParagraphClass.InsideDrawing;
-            if (ProbablyTableColumnHeader) return ParagraphClass.TableColumnHeader;
-            if (ContainingTableCell != null) return ParagraphClass.TableContent;
-            if (ProbablyHeading || HeadingData != null) return ParagraphClass.Heading;
-
-            return ParagraphClass.BodyText;
-        }
-    }
-
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)
@@ -254,18 +239,4 @@ public record ParagraphPropertiesTool
 
         return default;
     }
-}
-
-public enum ParagraphClass
-{
-    BodyText,
-    StructuralElementHeader,
-    Heading,
-    TableColumnHeader,
-    TableContent,
-    Caption,
-    TableOfContents,
-    CodeListing,
-    InsideDrawing,
-    DisplayEquation
 }

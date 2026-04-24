@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using WordStyleCheck;
-using WordStyleCheck.Gost7_32;
+using WordStyleCheck.Profiles.Gost7_32;
 
 namespace WordStyleCheckService.Worker;
 

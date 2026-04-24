@@ -15,7 +15,7 @@ public class HandmadePageBreakLint : ILint
 
         for (int i = 0; i < paragraphs.Count; i++)
         {
-            bool isEmpty = ctx.Document.GetTool(paragraphs[i]) is { IsEmptyOrWhitespace: true, Class: not ParagraphClass.CodeListing};
+            bool isEmpty = ctx.Document.GetTool(paragraphs[i]) is { IsEmptyOrWhitespace: true, ProbablyCodeListing: false};
 
             if (!isEmpty || emptyParagraphsCount > 0 && paragraphs[i - 1].NextSibling() != paragraphs[i])
             {

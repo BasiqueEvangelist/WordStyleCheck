@@ -1,9 +1,9 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
-using WordStyleCheck.Gost7_32;
+using WordStyleCheck.Lints;
 
-namespace WordStyleCheck.Lints;
+namespace WordStyleCheck.Profiles.Gost7_32;
 
 public class CorrectStructuralElementHeaderLint : ILint
 {
@@ -13,13 +13,13 @@ public class CorrectStructuralElementHeaderLint : ILint
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {
-            var tool = ctx.Document.GetTool(p);
+            var data = ctx.Document.GetTool(p).GetFeature(GostParagraphData.Key)!;
 
-            if (tool.StructuralElementHeader == null) continue;
-            if (tool.StructuralElementHeader == StructuralElement.Appendix) continue;
+            if (data.StructuralElementHeader == null) continue;
+            if (data.StructuralElementHeader == GostStructuralElement.Appendix) continue;
 
-            var text = tool.Contents.Trim();
-            var proper = GostStructuralElementClassifier.GetProperName(tool.StructuralElementHeader.Value);
+            var text = data.Inner.Contents.Trim();
+            var proper = GostStructuralElementClassifier.GetProperName(data.StructuralElementHeader.Value);
 
             if (text != proper)
             {

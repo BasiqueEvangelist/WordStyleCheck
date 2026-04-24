@@ -1,6 +1,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
+using WordStyleCheck.Profiles;
 
 namespace WordStyleCheck;
 

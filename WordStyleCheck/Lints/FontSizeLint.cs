@@ -5,7 +5,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, string messageId) : ILint
+public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, bool force, string messageId) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
@@ -16,7 +16,7 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
             ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
          
             if (pTool.IsEmptyOrDrawing) continue;
-            if (pTool.IsOutsideOfText) continue;
+            if (pTool.IsIgnored) continue;
             
             if (!predicate(pTool))
             {
@@ -29,7 +29,7 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
                 
                 RunPropertiesTool tool = ctx.Document.GetTool(r);
 
-                if (tool.FontSize != null && tool.FontSize < fontSize)
+                if (tool.FontSize != null && (force ? tool.FontSize != fontSize : tool.FontSize < fontSize))
                 {
                     ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
                     {

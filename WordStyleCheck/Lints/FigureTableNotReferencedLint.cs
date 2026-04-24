@@ -24,7 +24,7 @@ public class FigureTableNotReferencedLint : ILint
         {
             var oTool = ctx.Document.GetTool(other);
             
-            if (oTool.Class == ParagraphClass.Caption) continue;
+            if (oTool.CaptionData != null) continue;
 
             var text = oTool.Contents;
 

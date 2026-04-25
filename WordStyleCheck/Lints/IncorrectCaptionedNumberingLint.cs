@@ -3,7 +3,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> predicate, CaptionType type, string messageId, string mixMessageId) : ILint
+public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> predicate, CaptionType type, string messageId, string? mixMessageId, bool allowHierarchical = true) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
@@ -30,7 +30,7 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
             var actualNumber = elements[i].CaptionData!.Value.Number;
 
             string? correctNumberSection = null;
-            if (elements[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber)
+            if (elements[i].AssociatedHeading1?.HeadingData?.Number is {} headingNumber && allowHierarchical)
             {
                 correctNumberSection = $"{headingNumber}.{underHeadingNumber}";
             }
@@ -39,14 +39,15 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
             {
                 if (hierarchicalNumbering == true)
                 {
-                    ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
-                    {
-                        Parameters = new()
+                    if (mixMessageId != null)
+                        ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
                         {
-                            ["Expected"] = correctNumberSection!,
-                            ["Actual"] = actualNumber
-                        }
-                    });
+                            Parameters = new()
+                            {
+                                ["Expected"] = correctNumberSection!,
+                                ["Actual"] = actualNumber
+                            }
+                        });
                     continue;                    
                 }
                 
@@ -58,14 +59,15 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
             {
                 if (hierarchicalNumbering == false)
                 {
-                    ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
-                    {
-                        Parameters = new()
+                    if (mixMessageId != null)
+                        ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
                         {
-                            ["Expected"] = correctNumber,
-                            ["Actual"] = actualNumber
-                        }
-                    });
+                            Parameters = new()
+                            {
+                                ["Expected"] = correctNumber,
+                                ["Actual"] = actualNumber
+                            }
+                        });
                     continue;
                 }
 

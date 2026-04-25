@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dict>
+    <str key="NoUdc">
+        Не найдено УДК.
+    </str>
+    
+    <str key="NoAuthors">
+        Не найдены сведения об авторах.
+    </str>
+
+    <str key="NoThesisTitle">
+        Не найдено название тезиса.
+    </str>
+
+    <str key="NoBibliography">
+        Не найден список использованных источников.
+    </str>
+    
+    <str key="NoCopyright">
+        Не найдены сведения об авторском праве.
+    </str>
+    
+    <str key="IncorrectPageSize">
+        Размер страницы должнен быть A4. (${ExpectedWidthCm}см × ${ExpectedHeightCm}см ≠ ${ActualWidthCm}см × ${ActualHeightCm}см)
+    </str>
+
+    <str key="IncorrectPageMargins">
+        Размеры полей страницы должны быть следующими: левое — ${ExpectedLeftCm}см, правое — ${ExpectedRightCm}см, верхнее — ${ExpectedTopCm}см, нижнее — ${ExpectedBottomCm}см.
+    </str>
+    
+    <str key="TextFontIncorrect">
+        Текст должен быть написан в фонте ${Expected}, не ${Actual}.
+    </str>
+    
+    <str key="IncorrectBodyTextFontSize">
+        Размер шрифта текста работы должен быть ${ExpectedPt}пт.
+    </str>
+
+    <str key="IncorrectThesisTitleFontSize">
+        Размер шрифта названия тезиса должен быть ${ExpectedPt}пт.
+    </str>
+    
+    <str key="FigureCaptionNotItalic">
+        Подрисуночная подпись должна быть выделена курсивом. 
+    </str>
+
+    <str key="IncorrectCaptionFontSize">
+        Размер шрифта подрисуночной подписи должен быть ${ExpectedPt}пт.
+    </str>
+    
+    <str key="BodyTextNotJustified">
+        Текст работы должен быть выровнен по ширине.
+    </str>
+
+    <str key="FigureCaptionNotCentered">
+        Подрисуночная подпись должна быть выровнена по центру.
+    </str>
+
+    <str key="TableCaptionNotRightAligned">
+        Подпись к таблице должна выровнена по правому краю.
+    </str>
+
+    <str key="IncorrectBodyTextFirstLineIndent">
+        В тексте работы должен быть абзацный отступ ${ExpectedCm}см.
+    </str>
+
+    <str key="IncorrectBodyTextLeftIndent">
+        В тексте работы не должен быть отступ слева.
+    </str>
+    
+    <str key="TableContentNotCentered">
+        Содержимое таблицы должно быть выровнено по центру.
+    </str>
+
+    <str key="IncorrectFigureNumbering">
+        Рисунки нумеруются арабскими цифрами сквозной нумерацией. Правильный номер рисунка — ${Expected}.
+    </str>
+
+    <str key="IncorrectTableNumbering">
+        Таблицы нумеруются арабскими цифрами сквозной нумерацией. Правильный номер таблицы — ${Expected}.
+    </str>
+
+    <str key="IncorrectListingNumbering">
+        Листинги нумеруются арабскими цифрами сквозной нумерацией. Правильный номер листинга — ${Expected}.
+    </str>
+    
+    <str key="ThesisTitleMustBeCaps">
+        Название тезиса должно быть набрано строчными буквами.
+    </str>
+
+    <str key="IncorrectBodyTextLineSpacing">
+        Должен быть межстрочный интервал 1,2.
+    </str>
+
+    <str key="BibliographySourceNotReferenced">
+        Указываемый источник не был использован в тексте.
+    </str>
+</dict>

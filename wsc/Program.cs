@@ -92,8 +92,9 @@ root.Options.Add(profileOpt);
 
 root.SetAction(async res =>
 {
-    XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded();
-    IProfile profile = ProfileStore.GetProfile(res.GetValue(profileOpt)!)!;
+    string profileName = res.GetValue(profileOpt)!;
+    XmlTranslationsFile translations = XmlTranslationsFile.LoadEmbedded(profileName);
+    IProfile profile = ProfileStore.GetProfile(profileName)!;
 
     if (res.GetValue(listDiagnosticsOpt))
     {

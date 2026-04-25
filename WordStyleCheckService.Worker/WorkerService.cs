@@ -13,7 +13,7 @@ namespace WordStyleCheckService.Worker;
 public class WorkerService(ILogger<WorkerService> logger, Db db, IOptionsMonitor<Options> options, IMinioClient s3)
     : BackgroundService
 {
-    private static readonly XmlTranslationsFile _translations = XmlTranslationsFile.LoadEmbedded();
+    private static readonly XmlTranslationsFile _translations = XmlTranslationsFile.LoadEmbedded("gost-7.32");
 
     private readonly LinterThreadPool _pool = new(options.CurrentValue.PoolSize);
 

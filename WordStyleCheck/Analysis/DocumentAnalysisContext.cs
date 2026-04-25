@@ -205,7 +205,14 @@ public class DocumentAnalysisContext
 
         foreach (var classifier in classifiers)
         {
-            classifier.Classify(this);
+            try
+            { 
+                classifier.Classify(this);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Encountered exception while running {classifier.GetType().Name}: {e}");
+            }
         }
     }
 

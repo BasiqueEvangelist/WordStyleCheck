@@ -33,6 +33,12 @@ public class TextFontLint : ILint
                 
                 if (Utils.IsMonospaceFont(tool.AsciiFont)) continue;
 
+                if (tool.AsciiFont.Contains("Math"))
+                {
+                    // Don't want to deal with this right now.
+                    continue;
+                }
+
                 if (tool.AsciiFont != "Times New Roman")
                 {
                     ctx.AddMessage(new LintMessage("TextFontIncorrect", new RunDiagnosticContext(r))

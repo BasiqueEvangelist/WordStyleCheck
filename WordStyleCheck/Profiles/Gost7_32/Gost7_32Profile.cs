@@ -15,7 +15,7 @@ public class Gost7_32Profile : IProfile
     public List<ILint> Lints { get; } = 
     [
         new PageSizeLint(),
-        new PageMarginsLint(),
+        new PageMarginsLint(new PageMargins(1134, 1134, 1701, 851, 709, 709, 0)),
         new TocReferencesLint(ShouldBeInToc),
         new HandmadeListLint(),
         new HandmadePageBreakLint(),

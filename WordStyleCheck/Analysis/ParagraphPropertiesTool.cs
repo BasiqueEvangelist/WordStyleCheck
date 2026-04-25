@@ -57,6 +57,8 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
     }
     
     public string Contents { get; }
+
+    public List<RunPropertiesTool> Runs => Utils.DirectRunChildren(Paragraph).Select(x => _ctx.GetTool(x, this)).ToList();
     
     public int? FirstLineIndent
     {

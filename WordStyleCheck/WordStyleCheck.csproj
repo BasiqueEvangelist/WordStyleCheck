@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="rules.xml" />
+        <EmbeddedResource Include="rules-conference.xml" />
+        <EmbeddedResource Include="rules-gost-7.32.xml" />
     </ItemGroup>
 </Project>

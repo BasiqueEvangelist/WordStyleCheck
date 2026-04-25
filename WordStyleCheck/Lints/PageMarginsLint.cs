@@ -5,7 +5,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class PageMarginsLint : ILint
+public class PageMarginsLint(PageMargins target) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectPageMargins"];
 
@@ -21,8 +21,6 @@ public class PageMarginsLint : ILint
 
             if (section.Orientation == PageOrientationValues.Landscape)
                 margins = margins.Rotate();
-
-            var target = new PageMargins(1134, 1134, 1701, 851, 709, 709, 0);
             
             if (!margins.CloseTo(target))
             {

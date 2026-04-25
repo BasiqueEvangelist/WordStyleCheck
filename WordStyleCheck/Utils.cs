@@ -6,6 +6,16 @@ namespace WordStyleCheck;
 
 public class Utils
 {
+    public static readonly List<string> BibliographyHeaderNames = [
+        "СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ",
+        "СПИСОК ЛИТЕРАТУРЫ",
+        "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ",
+        "СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ",
+        "СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ",
+        "ЛИТЕРАТУРА",
+        "ИСТОЧНИКИ"
+    ];
+    
     public static string ToPlainText(List<OpenXmlElement> elements)
     {
         // TODO: StringBuilder.

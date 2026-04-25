@@ -5,7 +5,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class PageSizeLint : ILint
+public class PageSizeLint(bool allowLandscape = true) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectPageSize"];
 
@@ -19,7 +19,7 @@ public class PageSizeLint : ILint
             
             Size size = section.PageSize.Value;
 
-            if (section.Orientation == PageOrientationValues.Landscape)
+            if (section.Orientation == PageOrientationValues.Landscape && allowLandscape)
                 size = new Size(size.Height, size.Width);
 
             Size target = new(11906, 16838);

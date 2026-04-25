@@ -15,6 +15,8 @@ public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate
             var tool = ctx.Document.GetTool(p);
             
             if (!predicate(tool)) continue;
+            
+            if (tool.IsIgnored || tool.IsEmptyOrDrawing) continue;
 
             if (!justification.Contains(tool.Justification ?? JustificationValues.Left))
             {

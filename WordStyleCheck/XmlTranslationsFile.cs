@@ -15,10 +15,10 @@ public class XmlTranslationsFile
         _translations = translations;
     }
 
-    public static XmlTranslationsFile LoadEmbedded()
+    public static XmlTranslationsFile LoadEmbedded(string profile)
     {
         XDocument doc = XDocument.Load(Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream("WordStyleCheck.rules.xml")!, LoadOptions.None);
+            .GetManifestResourceStream($"WordStyleCheck.rules-{profile}.xml")!, LoadOptions.None);
         return LoadFrom(doc);
     }
 

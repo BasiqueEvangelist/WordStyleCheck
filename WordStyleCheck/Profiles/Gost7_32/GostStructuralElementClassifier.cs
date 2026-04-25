@@ -25,7 +25,7 @@ public class GostStructuralElementClassifier : IClassifier
         [GostStructuralElement.GlossaryAbbreviations] = ["ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ"],
         [GostStructuralElement.Introduction] = ["ВВЕДЕНИЕ"], 
         [GostStructuralElement.Conclusion] = ["ЗАКЛЮЧЕНИЕ"],
-        [GostStructuralElement.Bibliography] = ["СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", "СПИСОК ЛИТЕРАТУРЫ", "СПИСОК ИСТОЧНИКОВ И ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ", "СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ"]
+        [GostStructuralElement.Bibliography] = Utils.BibliographyHeaderNames
     };
 
     public static string GetProperName(GostStructuralElement element)

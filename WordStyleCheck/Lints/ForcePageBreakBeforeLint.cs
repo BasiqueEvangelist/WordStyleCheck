@@ -77,7 +77,7 @@ public class ForcePageBreakBeforeLint(Predicate<ParagraphPropertiesTool> predica
             outer2:
             if (found || prev == null) continue;
             
-            ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(p)));
+            ctx.AddMessage(new LintDiagnostic(messageId, new ParagraphDiagnosticContext(p)));
         }
     }
 }

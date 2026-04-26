@@ -41,7 +41,7 @@ public class TextFontLint : ILint
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintMessage("TextFontIncorrect", new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic("TextFontIncorrect", new RunDiagnosticContext(r))
                     {
                         Parameters = new() {
                             ["Expected"] = "Times New Roman",

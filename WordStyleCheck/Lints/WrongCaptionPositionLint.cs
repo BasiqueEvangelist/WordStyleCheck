@@ -17,7 +17,7 @@ public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelo
             
             if (tool.CaptionData.Value.IsBelow == shouldBeBelow) continue;
             
-            ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(p))
+            ctx.AddMessage(new LintDiagnostic(messageId, new ParagraphDiagnosticContext(p))
             {
                 AutoFix = tool.CaptionData.Value.TargetedElement != null ? () =>
                 {

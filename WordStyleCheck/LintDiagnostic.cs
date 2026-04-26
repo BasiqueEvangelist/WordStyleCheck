@@ -4,7 +4,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck;
 
-public record LintMessage(
+public record LintDiagnostic(
     string Id,
     IDiagnosticContext Context,
     Dictionary<string, string>? Parameters = null,

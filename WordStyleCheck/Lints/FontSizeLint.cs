@@ -31,7 +31,7 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
 
                 if (tool.FontSize != null && (force ? tool.FontSize != fontSize : tool.FontSize < fontSize))
                 {
-                    ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic(messageId, new RunDiagnosticContext(r))
                     {
                         Parameters = new()
                         {

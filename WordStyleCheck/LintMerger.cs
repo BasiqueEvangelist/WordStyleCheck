@@ -2,7 +2,7 @@ namespace WordStyleCheck;
 
 public static class LintMerger
 {
-    public static void Run(List<LintMessage> messages)
+    public static void Run(List<LintDiagnostic> messages)
     {
         // TODO: make this not rely on lints being order in execution order.
         for (int i = 1; i < messages.Count; i++)
@@ -19,7 +19,7 @@ public static class LintMerger
             var prevAutofix = messages[i - 1].AutoFix;
             var curAutofix = messages[i].AutoFix;
             
-            messages[i - 1] = new LintMessage(
+            messages[i - 1] = new LintDiagnostic(
                 messages[i].Id,
                 newContext,
                 messages[i].Parameters,

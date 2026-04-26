@@ -10,7 +10,7 @@ public class HandmadeListLint : ILint
     {
         foreach (var list in ctx.Document.HandmadeLists)
         {
-            ctx.AddMessage(new LintMessage("HandmadeList", new ParagraphDiagnosticContext(list.Paragraphs)));
+            ctx.AddMessage(new LintDiagnostic("HandmadeList", new ParagraphDiagnosticContext(list.Paragraphs)));
         }
     }
     

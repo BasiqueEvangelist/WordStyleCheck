@@ -40,7 +40,7 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
                 if (hierarchicalNumbering == true)
                 {
                     if (mixMessageId != null)
-                        ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
+                        ctx.AddMessage(new LintDiagnostic(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
                         {
                             Parameters = new()
                             {
@@ -60,7 +60,7 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
                 if (hierarchicalNumbering == false)
                 {
                     if (mixMessageId != null)
-                        ctx.AddMessage(new LintMessage(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
+                        ctx.AddMessage(new LintDiagnostic(mixMessageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
                         {
                             Parameters = new()
                             {
@@ -78,7 +78,7 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
 
             var actual = elements[i].CaptionData!.Value.Number;
 
-            ctx.AddMessage(new LintMessage(messageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
+            ctx.AddMessage(new LintDiagnostic(messageId, new ParagraphDiagnosticContext(elements[i].Paragraph))
             {
                 Parameters = new()
                 {

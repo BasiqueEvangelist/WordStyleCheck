@@ -30,7 +30,7 @@ public class ForceItalicLint(bool italic, Predicate<ParagraphPropertiesTool> pre
 
                 if (tool.Italic != italic)
                 {
-                    ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic(messageId, new RunDiagnosticContext(r))
                     {
                         AutoFix = () =>
                         {

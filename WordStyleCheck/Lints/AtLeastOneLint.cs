@@ -13,7 +13,7 @@ public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string
 
         if (any) return;
         
-        ctx.AddMessage(new LintMessage(
+        ctx.AddMessage(new LintDiagnostic(
             messageId,
             atEnd 
                 ? new EndOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.Last())

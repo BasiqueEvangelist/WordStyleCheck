@@ -10,10 +10,10 @@ namespace WordStyleCheckGui.ViewModels
 
         public List<DiagnosticContextLine> Context { get; }
 
-        public DiagnosticViewModel(XmlTranslationsFile translations, LintMessage message)
+        public DiagnosticViewModel(XmlTranslationsFile translations, LintDiagnostic diagnostic)
         {
-            TranslatedDescription = Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null));
-            Context = message.Context.Lines;
+            TranslatedDescription = Utils.ToPlainText(translations.Translate(diagnostic.Id, diagnostic.Parameters ?? new(), null));
+            Context = diagnostic.Context.Lines;
         }
     }
 }

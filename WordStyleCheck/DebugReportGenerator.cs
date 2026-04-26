@@ -13,18 +13,18 @@ public class DebugReportGenerator(TextWriter writer)
         writer.WriteLine();
     }
 
-    public void WriteDiagnostic(LintMessage message, XmlTranslationsFile translations)
+    public void WriteDiagnostic(LintDiagnostic diagnostic, XmlTranslationsFile translations)
     {
-        string code = message.GetHash();
+        string code = diagnostic.GetHash();
         
         writer.WriteLine($"-------- {code} --------");
         
-        StringBuilder dumped = new StringBuilder(message.Id);
+        StringBuilder dumped = new StringBuilder(diagnostic.Id);
 
-        if (message.Parameters is { Count: > 0 })
+        if (diagnostic.Parameters is { Count: > 0 })
         {
             dumped.Append(" {");
-            dumped.AppendJoin(", ", message.Parameters.Select(x => $"{x.Key} = '{x.Value}'"));
+            dumped.AppendJoin(", ", diagnostic.Parameters.Select(x => $"{x.Key} = '{x.Value}'"));
             dumped.Append("}");
         }
 
@@ -32,11 +32,11 @@ public class DebugReportGenerator(TextWriter writer)
         
         writer.WriteLine();
         
-        writer.WriteLine(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
+        writer.WriteLine(Utils.ToPlainText(translations.Translate(diagnostic.Id, diagnostic.Parameters ?? new(), null)));
         
         writer.WriteLine();
 
-        foreach (var line in message.Context.Lines)
+        foreach (var line in diagnostic.Context.Lines)
         {
             writer.WriteLine("Context:");
             writer.WriteLine("  Before: " + line.Before);

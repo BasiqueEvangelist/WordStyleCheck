@@ -165,12 +165,12 @@ public class FigureTableNotReferencedLint : ILint
 
                     if (fIdx < mIdx)
                     {
-                        ctx.AddMessage(new LintMessage(beforeFirstRefId, new ParagraphDiagnosticContext(p)));
+                        ctx.AddMessage(new LintDiagnostic(beforeFirstRefId, new ParagraphDiagnosticContext(p)));
                     }
                 }
                 else
                 {
-                    ctx.AddMessage(new LintMessage(notRefId, new ParagraphDiagnosticContext(p)));
+                    ctx.AddMessage(new LintDiagnostic(notRefId, new ParagraphDiagnosticContext(p)));
                 }
             }
             

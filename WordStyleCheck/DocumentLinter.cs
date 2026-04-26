@@ -42,7 +42,7 @@ public class DocumentLinter : IDisposable
         _lintCtx = new LintContext(_analysisCtx, false);
     }
         
-    public List<LintMessage> Diagnostics => _lintCtx.Messages;
+    public List<LintDiagnostic> Diagnostics => _lintCtx.Messages;
 
     public Predicate<string> LintIdFilter
     {

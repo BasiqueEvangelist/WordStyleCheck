@@ -285,7 +285,7 @@ public class DocumentAnalysisContext
 
     private int _commentId = 0;
     
-    public Comment WriteComment(LintMessage msg, XmlTranslationsFile translations)
+    public Comment WriteComment(LintDiagnostic msg, XmlTranslationsFile translations)
     {
         string id = (_commentId++).ToString();
 

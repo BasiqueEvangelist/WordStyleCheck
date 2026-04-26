@@ -24,7 +24,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
             
             if (tool.LineSpacing != lineSpacing)
             {
-                ctx.AddMessage(new LintMessage(
+                ctx.AddMessage(new LintDiagnostic(
                     messageId,
                     new ParagraphDiagnosticContext(p))
                     {

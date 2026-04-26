@@ -27,7 +27,7 @@ public class IncorrectHeadingTextLint : ILint
 
             if (text != correct)
             {
-                ctx.AddMessage(new LintMessage("IncorrectHeadingText", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingText", new ParagraphDiagnosticContext(p))
                 {
                     Parameters = new()
                     {

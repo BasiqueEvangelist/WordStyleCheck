@@ -23,7 +23,7 @@ public class CorrectStructuralElementHeaderLint : ILint
 
             if (text != proper)
             {
-                ctx.AddMessage(new LintMessage("StructuralElementHeaderContentsIncorrect", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic("StructuralElementHeaderContentsIncorrect", new ParagraphDiagnosticContext(p))
                 {
                     Parameters = new()
                     {

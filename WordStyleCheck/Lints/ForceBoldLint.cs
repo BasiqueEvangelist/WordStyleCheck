@@ -30,7 +30,7 @@ public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predica
 
                 if (tool.Bold != bold)
                 {
-                    ctx.AddMessage(new LintMessage(messageId, new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic(messageId, new RunDiagnosticContext(r))
                     {
                         AutoFix = () =>
                         {

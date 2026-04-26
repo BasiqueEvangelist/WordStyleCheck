@@ -20,7 +20,7 @@ public class IncorrectCaptionTextLint : ILint
 
             if (text != correct)
             {
-                ctx.AddMessage(new LintMessage("IncorrectCaptionText", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic("IncorrectCaptionText", new ParagraphDiagnosticContext(p))
                 {
                     Parameters = new()
                     {

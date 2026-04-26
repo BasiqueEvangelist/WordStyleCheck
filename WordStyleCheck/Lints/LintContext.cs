@@ -7,15 +7,15 @@ public class LintContext(DocumentAnalysisContext document, bool generateRevision
     public DocumentAnalysisContext Document { get; } = document;
     public bool GenerateRevisions { get; } = generateRevisions;
 
-    public List<LintMessage> Messages { get; } = [];
+    public List<LintDiagnostic> Messages { get; } = [];
 
     public Predicate<string> LintIdFilter { get; set; } = _ => true;
     
-    public void AddMessage(LintMessage message)
+    public void AddMessage(LintDiagnostic diagnostic)
     {
-        if (!LintIdFilter(message.Id)) return;
+        if (!LintIdFilter(diagnostic.Id)) return;
         
-        Messages.Add(message);
+        Messages.Add(diagnostic);
     }
 
     public bool RunAllAutoFixes()

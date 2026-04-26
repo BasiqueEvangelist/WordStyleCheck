@@ -1,5 +1,6 @@
 using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
@@ -32,7 +33,7 @@ public record ParagraphDiagnosticContext(List<Paragraph> Paragraphs, bool Disabl
         }
     }
 
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
         if (Paragraphs[0].ParagraphProperties is { } props)
         {

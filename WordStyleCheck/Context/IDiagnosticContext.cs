@@ -1,4 +1,5 @@
 using System.IO.Hashing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
@@ -8,7 +9,7 @@ public interface IDiagnosticContext
 
     void WriteToConsole();
 
-    void WriteCommentReference(string commentId);
+    void WriteCommentReference(string commentId, DocumentAnalysisContext ctx);
 
     IDiagnosticContext? TryMerge(IDiagnosticContext previous) => null;
 

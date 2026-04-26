@@ -2,6 +2,7 @@ using System.IO.Hashing;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
@@ -54,7 +55,7 @@ public record RunDiagnosticContext(List<Run> Runs) : IDiagnosticContext
         Console.WriteLine();
     }
 
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
         Runs[0].InsertBeforeSelf(new CommentRangeStart()
         {

@@ -294,7 +294,7 @@ public class DocumentAnalysisContext
             id = (_commentId++).ToString();
         }
         
-        msg.Context.WriteCommentReference(id);
+        msg.Context.WriteCommentReference(id, this);
 
         var commentsPart = Document.MainDocumentPart!.WordprocessingCommentsPart ??
             Document.MainDocumentPart!.AddNewPart<WordprocessingCommentsPart>();

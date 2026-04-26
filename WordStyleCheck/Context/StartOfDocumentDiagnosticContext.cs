@@ -1,9 +1,10 @@
 using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
-public record StartOfDocumentDiagnosticContext(Paragraph StartParagraph) : IDiagnosticContext
+public record StartOfDocumentDiagnosticContext : IDiagnosticContext
 {
     public List<DiagnosticContextLine> Lines => [];
 
@@ -12,17 +13,19 @@ public record StartOfDocumentDiagnosticContext(Paragraph StartParagraph) : IDiag
         
     }
 
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
         var run = new Run(new CommentReference()
         {
             Id = commentId
         });
 
-        if (StartParagraph.ParagraphProperties != null)
-            StartParagraph.ParagraphProperties.InsertAfterSelf(run);
+        var start = ctx.AllParagraphs.First();
+
+        if (start.ParagraphProperties != null)
+            start.ParagraphProperties.InsertAfterSelf(run);
         else
-            StartParagraph.PrependChild(run);
+            start.PrependChild(run);
     }
 
     public void Hash(NonCryptographicHashAlgorithm hasher)

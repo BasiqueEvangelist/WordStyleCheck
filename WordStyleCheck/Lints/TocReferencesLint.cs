@@ -15,7 +15,7 @@ public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc)
 
         if (tocParagraphs.Count == 0)
         {
-            ctx.AddMessage(new LintDiagnostic("NoToc", DiagnosticType.ContentError, new StartOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.First())));
+            ctx.AddMessage(new LintDiagnostic("NoToc", DiagnosticType.ContentError, new StartOfDocumentDiagnosticContext()));
             
             return;
         }

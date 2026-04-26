@@ -44,7 +44,7 @@ public record SectionDiagnosticContext(SectionPropertiesTool Section) : IDiagnos
         }
     }
 
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
         if (Section.Paragraphs[0].ParagraphProperties is { } props)
         {

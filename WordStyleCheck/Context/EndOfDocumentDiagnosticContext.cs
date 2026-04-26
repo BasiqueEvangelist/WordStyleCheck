@@ -1,9 +1,10 @@
 using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
-public record EndOfDocumentDiagnosticContext(Paragraph EndParagraph) : IDiagnosticContext
+public record EndOfDocumentDiagnosticContext : IDiagnosticContext
 {
     public List<DiagnosticContextLine> Lines => [];
 
@@ -12,9 +13,9 @@ public record EndOfDocumentDiagnosticContext(Paragraph EndParagraph) : IDiagnost
         
     }
 
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
-        EndParagraph.Append(new Run(new CommentReference()
+        ctx.AllParagraphs.Last().Append(new Run(new CommentReference()
         {
             Id = commentId
         }));

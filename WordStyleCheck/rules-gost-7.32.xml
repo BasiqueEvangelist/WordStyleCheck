@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dict>
+    <str key="LintError">
+        Ошибка при применении правила ${LintName}.<br /><br />${Exception}
+    </str>
+    
     <str key="IncorrectPageSize">
         Размер страницы должнен быть A4. (${ExpectedWidthCm}см × ${ExpectedHeightCm}см ≠ ${ActualWidthCm}см × ${ActualHeightCm}см)
     </str>

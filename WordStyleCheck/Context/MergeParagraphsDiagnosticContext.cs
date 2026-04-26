@@ -1,5 +1,6 @@
 using System.IO.Hashing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using WordStyleCheck.Analysis;
 
 namespace WordStyleCheck.Context;
 
@@ -36,7 +37,7 @@ public record MergeParagraphsDiagnosticContext(Paragraph First, Paragraph Second
         Console.WriteLine();
     }
     
-    public void WriteCommentReference(string commentId)
+    public void WriteCommentReference(string commentId, DocumentAnalysisContext ctx)
     {
         First.Append(new CommentRangeEnd()
         {

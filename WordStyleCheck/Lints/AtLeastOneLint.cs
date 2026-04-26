@@ -17,7 +17,7 @@ public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string
             messageId,
             type,
             atEnd 
-                ? new EndOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.Last())
-                : new StartOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.First())));
+                ? new EndOfDocumentDiagnosticContext()
+                : new StartOfDocumentDiagnosticContext()));
     }
 }

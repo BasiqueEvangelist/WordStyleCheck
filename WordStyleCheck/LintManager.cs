@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
+using WordStyleCheck.Context;
 using WordStyleCheck.Lints;
 using WordStyleCheck.Profiles;
 
@@ -16,7 +17,9 @@ public class LintManager(IProfile profile)
             if (!lint.EmittedDiagnostics.Any(ctx.LintIdFilter.Invoke))
                 continue;
             
-            using (new LoudStopwatch(lint.GetType().Name))
+            string name = lint.GetType().Name;
+            
+            using (new LoudStopwatch(name))
             {
                 try
                 {
@@ -24,7 +27,17 @@ public class LintManager(IProfile profile)
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Encountered exception while running {lint.GetType().Name}: {e}");
+                    Console.WriteLine($"Encountered exception while running {name}: {e}");
+                    ctx.AddMessage(new LintDiagnostic(
+                        "LintError",
+                        DiagnosticType.Fatal,
+                        new StartOfDocumentDiagnosticContext(),
+                        new()
+                        {
+                            ["LintName"] = name,
+                            ["Exception"] = e.ToString()
+                        }
+                    ));
                 }
             }
         }

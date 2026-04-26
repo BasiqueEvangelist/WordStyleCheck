@@ -7,7 +7,7 @@ public class HandmadePageBreakLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["HandmadePageBreak"];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         int emptyParagraphsCount = 0;
 

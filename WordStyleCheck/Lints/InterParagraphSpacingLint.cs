@@ -10,7 +10,7 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         var paragraphs = ctx.Document.Document.MainDocumentPart!.Document!.Body!.ChildElements.OfType<Paragraph>().ToList();
 

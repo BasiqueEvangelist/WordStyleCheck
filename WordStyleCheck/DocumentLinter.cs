@@ -1,17 +1,17 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using WordStyleCheck.Analysis;
+using WordStyleCheck.Context;
 using WordStyleCheck.Lints;
 using WordStyleCheck.Profiles;
 
 namespace WordStyleCheck;
 
-public class DocumentLinter : IDisposable
+public class DocumentLinter : IDisposable, ILintContext
 {
     private MemoryStream _stream;
     private WordprocessingDocument? _document;
     private DocumentAnalysisContext _analysisCtx;
-    private LintManager _manager;
-    private LintContext _lintCtx;
+    private IProfile _profile;
 
     public DocumentLinter(Stream stream, IProfile profile)
     {
@@ -38,23 +38,58 @@ public class DocumentLinter : IDisposable
             
         _analysisCtx = new DocumentAnalysisContext(_document, profile.Classifiers);
             
-        _manager = new LintManager(profile);
-        _lintCtx = new LintContext(_analysisCtx, false);
+        _profile = profile;
     }
-        
-    public List<LintDiagnostic> Diagnostics => _lintCtx.Messages;
 
-    public Predicate<string> LintIdFilter
+    public List<LintDiagnostic> Diagnostics { get; } = [];
+
+    public Predicate<string> LintIdFilter { get; set; } = _ => true;
+
+    public bool GenerateRevisions => false;
+
+    void ILintContext.AddMessage(LintDiagnostic diagnostic)
     {
-        get => _lintCtx.LintIdFilter;
-        set => _lintCtx.LintIdFilter = value;
+        if (!LintIdFilter(diagnostic.Id)) return;
+        
+        Diagnostics.Add(diagnostic);
     }
 
-    public DocumentAnalysisContext DocumentAnalysis => _analysisCtx;
+    DocumentAnalysisContext ILintContext.Document => _analysisCtx;
 
     public void RunLints()
     {
-        _manager.Run(_lintCtx);
+        foreach (var lint in _profile.Lints)
+        {
+            if (!lint.EmittedDiagnostics.Any(LintIdFilter.Invoke))
+                continue;
+            
+            string name = lint.GetType().Name;
+            
+            using (new LoudStopwatch(name))
+            {
+                try
+                {
+                    lint.Run(this);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Encountered exception while running {name}: {e}");
+                    ((ILintContext) this).AddMessage(new LintDiagnostic(
+                        "LintError",
+                        DiagnosticType.Fatal,
+                        new StartOfDocumentDiagnosticContext(),
+                        new()
+                        {
+                            ["LintName"] = name,
+                            ["Exception"] = e.ToString()
+                        }
+                    ));
+                }
+            }
+        }
+        
+        using (new LoudStopwatch("LintMerger.Run")) 
+            LintMerger.Run(Diagnostics);
     }
 
     public void SaveTo(string path)
@@ -93,8 +128,30 @@ public class DocumentLinter : IDisposable
         _document?.Dispose();
     }
 
-    public bool RunAutofixes()
+    public bool ApplyDiagnostics(List<LintDiagnostic> diagnostics, XmlTranslationsFile? translations,
+        bool runAutofixes = false)
     {
-        return _lintCtx.RunAllAutoFixes();
+        bool changed = false;
+        
+        foreach (var message in diagnostics)
+        {
+            if (message.AutoFix != null && runAutofixes)
+            {
+                message.AutoFix();
+                changed = true;
+            }
+            else if (translations != null)
+            {
+                _analysisCtx.WriteComment(message, translations);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+    
+    public bool ApplyDiagnostics(XmlTranslationsFile? translations, bool runAutofixes = false)
+    {
+        return ApplyDiagnostics(Diagnostics, translations, runAutofixes);
     }
 }

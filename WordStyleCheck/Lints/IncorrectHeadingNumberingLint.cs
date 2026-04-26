@@ -6,7 +6,7 @@ public class IncorrectHeadingNumberingLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics => ["IncorrectHeadingNumbering"];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         var elements = ctx.Document.AllParagraphs
             .Select(ctx.Document.GetTool)

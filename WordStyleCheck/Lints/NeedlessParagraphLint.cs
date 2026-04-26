@@ -9,7 +9,7 @@ public class NeedlessParagraphLint(Predicate<ParagraphPropertiesTool> isCandidat
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NeedlessParagraphBreak"];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         var body = ctx.Document.Document.MainDocumentPart?.Document?.Body;
 

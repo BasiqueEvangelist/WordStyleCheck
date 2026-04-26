@@ -8,7 +8,7 @@ public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc)
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["NoToc", "ShouldNotBeInToc", "ShouldBeInToc"];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         var tocParagraphs = ctx.Document.AllParagraphs.Select(ctx.Document.GetTool).Where(x => x.IsTableOfContents)
             .ToList();

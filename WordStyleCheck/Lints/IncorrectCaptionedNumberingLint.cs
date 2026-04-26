@@ -7,7 +7,7 @@ public class IncorrectCaptionedNumberingLint(Predicate<ParagraphPropertiesTool> 
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         var elements = ctx.Document.AllParagraphs
             .Select(x => ctx.Document.GetTool(x))

@@ -8,7 +8,7 @@ public class BibliographySourceNotReferencedLint(Predicate<ParagraphPropertiesTo
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["BibliographySourceNotReferenced"];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         HashSet<int> referenced = [];
         

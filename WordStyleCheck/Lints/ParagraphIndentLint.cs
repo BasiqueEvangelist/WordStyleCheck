@@ -9,7 +9,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [firstLineId, leftId];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {

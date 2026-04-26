@@ -9,7 +9,7 @@ public class PageSizeLint(bool allowLandscape = true) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectPageSize"];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var section in ctx.Document.AllSections)
         {

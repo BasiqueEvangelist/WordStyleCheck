@@ -8,7 +8,7 @@ public class TextFontLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["TextFontIncorrect"];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {

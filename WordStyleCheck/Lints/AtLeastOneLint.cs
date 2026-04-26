@@ -7,7 +7,7 @@ public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         bool any = ctx.Document.AllParagraphs.Select(ctx.Document.GetTool).Any(predicate.Invoke);
 

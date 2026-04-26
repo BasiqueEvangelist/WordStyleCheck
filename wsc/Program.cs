@@ -98,9 +98,7 @@ root.SetAction(async res =>
 
     if (res.GetValue(listDiagnosticsOpt))
     {
-        LintManager manager = new LintManager(profile);
-
-        foreach (var diagnostic in manager.AllPossibleDiagnostics)
+        foreach (var diagnostic in profile.Lints.SelectMany(x => x.EmittedDiagnostics).Distinct())
         {
             Console.WriteLine($"{diagnostic}:");
             Console.WriteLine(Utils.ToPlainText(translations.Translate(diagnostic, new(), null)));
@@ -196,8 +194,6 @@ root.SetAction(async res =>
             File.Move(reportTmp, reportTarget, true);
         }
 
-        bool writtenComments = false;
-
         var actualDiagnostics = linter.Diagnostics
             // TODO: add support for writing old comments that have vanished.
             .Where(y => ids.Count <= 0 || !ids.Contains(y.GetHash()))
@@ -218,23 +214,9 @@ root.SetAction(async res =>
 
                 message.Context.WriteToConsole();
             }
-
-            if (!autofix)
-            {
-                writtenComments = true;
-                linter.DocumentAnalysis.WriteComment(message, translations);
-            }
         }
 
-        bool changed = false;
-        if (!autofix)
-        {
-            changed = writtenComments;
-        }
-        else if (linter.RunAutofixes())
-        {
-            changed = true;
-        }
+        bool changed = linter.ApplyDiagnostics(actualDiagnostics, translations, autofix);
 
         if (ids.Count > 0)
         {

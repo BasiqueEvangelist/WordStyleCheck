@@ -14,7 +14,7 @@ public class FigureTableNotReferencedLint : ILint
         "ListingBeforeFirstReference", "ListingNotReferenced"
     ];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         Dictionary<string, Paragraph> referencedFigureNumbers = [];
         Dictionary<string, Paragraph> referencedTableNumbers = [];

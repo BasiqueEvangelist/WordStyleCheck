@@ -95,10 +95,7 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        foreach (var message in _linter!.Diagnostics)
-        {
-            _linter.DocumentAnalysis.WriteComment(message, Translations);
-        }
+        _linter!.ApplyDiagnostics(Translations);
 
         _linter.SaveTo(file.TryGetLocalPath()!);
 
@@ -122,7 +119,7 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        _linter!.RunAutofixes();
+        _linter!.ApplyDiagnostics(Translations, true);
 
         _linter.SaveTo(file.TryGetLocalPath()!);
         CanSave = false;

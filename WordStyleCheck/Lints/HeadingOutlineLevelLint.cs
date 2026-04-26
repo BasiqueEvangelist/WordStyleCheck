@@ -8,7 +8,7 @@ public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requires
 {
     public IReadOnlyList<string> EmittedDiagnostics => ["NonHeadingWithOutlineLevel", "HeadingWithoutOutlineLevel", "IncorrectHeadingOutlineLevel"];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {

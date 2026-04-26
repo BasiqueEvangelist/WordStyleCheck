@@ -9,7 +9,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {

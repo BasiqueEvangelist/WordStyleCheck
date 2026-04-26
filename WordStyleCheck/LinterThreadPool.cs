@@ -47,10 +47,7 @@ public class LinterThreadPool : IDisposable
 
                 if (task.CommentsTranslations != null)
                 {
-                    foreach (var message in linter.Diagnostics)
-                    {
-                        linter.DocumentAnalysis.WriteComment(message, task.CommentsTranslations);
-                    }
+                    linter.ApplyDiagnostics(task.CommentsTranslations);
                 }
 
                 task._resultSrc.SetResult(linter);

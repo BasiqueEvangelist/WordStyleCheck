@@ -6,7 +6,7 @@ public class HandmadeListLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["HandmadeList"];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var list in ctx.Document.HandmadeLists)
         {

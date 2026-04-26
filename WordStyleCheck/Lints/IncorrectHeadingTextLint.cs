@@ -8,7 +8,7 @@ public class IncorrectHeadingTextLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = ["IncorrectHeadingText"];
     
-    public void Run(LintContext ctx)
+    public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
         {

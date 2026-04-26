@@ -23,7 +23,7 @@ public class HandmadePageBreakLint : ILint
                 {
                     var chosen = paragraphs[(i - emptyParagraphsCount)..i].ToList();
 
-                    ctx.AddMessage(new LintDiagnostic("HandmadePageBreak",
+                    ctx.AddMessage(new LintDiagnostic("HandmadePageBreak", DiagnosticType.FormattingError,
                         new ParagraphDiagnosticContext(chosen, true)));
                 }
 

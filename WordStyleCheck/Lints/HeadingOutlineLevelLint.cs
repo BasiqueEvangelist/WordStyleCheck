@@ -18,7 +18,7 @@ public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requires
 
             if (tool is { OutlineLevel: not null } && !requiresOutlineLevel(tool))
             {
-                ctx.AddMessage(new LintDiagnostic("NonHeadingWithOutlineLevel", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic("NonHeadingWithOutlineLevel", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
                 {
                     AutoFix = () =>
                     {
@@ -40,12 +40,12 @@ public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requires
             {
                 if (tool.HeadingData.Level >= 4) continue;
                 
-                ctx.AddMessage(new LintDiagnostic("HeadingWithoutOutlineLevel", new ParagraphDiagnosticContext(p)));
+                ctx.AddMessage(new LintDiagnostic("HeadingWithoutOutlineLevel", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p)));
             }
 
             if (tool is { HeadingData.Level: var level, HeadingData.IsConclusion: false, OutlineLevel: { } outlineLevel } && outlineLevel + 1 != level)
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingOutlineLevel", new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingOutlineLevel", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
                 {
                     Parameters = new()
                     {

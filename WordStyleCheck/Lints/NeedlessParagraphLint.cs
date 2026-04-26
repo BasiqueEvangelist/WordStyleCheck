@@ -45,7 +45,7 @@ public class NeedlessParagraphLint(Predicate<ParagraphPropertiesTool> isCandidat
             var p = paragraphs[i];
             var prev = paragraphs[i - 1];
             
-            ctx.AddMessage(new LintDiagnostic("NeedlessParagraphBreak", new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
+            ctx.AddMessage(new LintDiagnostic("NeedlessParagraphBreak", DiagnosticType.FormattingError, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
             {
                 AutoFix = () =>
                 {

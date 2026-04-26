@@ -26,6 +26,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
             {
                 ctx.AddMessage(new LintDiagnostic(
                     messageId,
+                    DiagnosticType.FormattingError,
                     new ParagraphDiagnosticContext(p))
                     {
                         Parameters = new()

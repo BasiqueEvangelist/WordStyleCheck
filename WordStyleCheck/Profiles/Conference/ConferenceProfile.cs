@@ -14,11 +14,11 @@ public class ConferenceProfile : IProfile
 
     public List<ILint> Lints { get; } =
     [
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.UniversalDecimalClassifier), "NoUdc", false),
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.AuthorDetails), "NoAuthors", false),
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), "NoThesisTitle", false),
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.BibliographyHeader), "NoBibliography", true),
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Copyright), "NoCopyright", true),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.UniversalDecimalClassifier), "NoUdc", DiagnosticType.ContentError, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.AuthorDetails), "NoAuthors", DiagnosticType.ContentError, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), "NoThesisTitle", DiagnosticType.CouldNotParse, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.BibliographyHeader), "NoBibliography", DiagnosticType.ContentError, true),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Copyright), "NoCopyright", DiagnosticType.ContentError, true),
         
         new PageSizeLint(false),
         new TextFontLint(),

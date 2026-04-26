@@ -23,6 +23,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             {
                 ctx.AddMessage(new LintDiagnostic(
                     firstLineId,
+                    DiagnosticType.FormattingError,
                     new ParagraphDiagnosticContext(p))
                     {
                         Parameters = new()
@@ -73,6 +74,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             {
                 ctx.AddMessage(new LintDiagnostic(
                         leftId,
+                        DiagnosticType.FormattingError,
                         new ParagraphDiagnosticContext(p))
                     {
                         Parameters = new()

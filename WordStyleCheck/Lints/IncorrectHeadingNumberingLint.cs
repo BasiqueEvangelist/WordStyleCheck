@@ -37,7 +37,8 @@ public class IncorrectHeadingNumberingLint : ILint
 
             if (number != element.HeadingData.Number)
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingNumbering", new ParagraphDiagnosticContext(element.Paragraph))
+                // TODO: figure out whether this is a content or formatting error.
+                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingNumbering", DiagnosticType.ContentError, new ParagraphDiagnosticContext(element.Paragraph))
                 {
                     Parameters = new()
                     {

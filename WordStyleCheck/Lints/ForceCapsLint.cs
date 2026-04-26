@@ -24,7 +24,7 @@ public class ForceCapsLint(Predicate<ParagraphPropertiesTool> predicate, string 
             
             if (pTool.Contents.ToUpperInvariant() == pTool.Contents) continue;
             
-            ctx.AddMessage(new LintDiagnostic(messageId, new ParagraphDiagnosticContext(p), AutoFix: () =>
+            ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p), AutoFix: () =>
             {
                 foreach (var run in Utils.DirectRunChildren(p))
                 {

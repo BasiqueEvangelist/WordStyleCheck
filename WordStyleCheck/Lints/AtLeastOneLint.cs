@@ -3,7 +3,7 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string messageId, bool atEnd) : ILint
+public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string messageId, DiagnosticType type, bool atEnd) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
@@ -15,6 +15,7 @@ public class AtLeastOneLint(Predicate<ParagraphPropertiesTool> predicate, string
         
         ctx.AddMessage(new LintDiagnostic(
             messageId,
+            type,
             atEnd 
                 ? new EndOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.Last())
                 : new StartOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.First())));

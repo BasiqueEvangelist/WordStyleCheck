@@ -15,7 +15,7 @@ public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc)
 
         if (tocParagraphs.Count == 0)
         {
-            ctx.AddMessage(new LintDiagnostic("NoToc", new StartOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.First())));
+            ctx.AddMessage(new LintDiagnostic("NoToc", DiagnosticType.ContentError, new StartOfDocumentDiagnosticContext(ctx.Document.AllParagraphs.First())));
             
             return;
         }
@@ -65,7 +65,7 @@ public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc)
 
             if (!shouldBeInToc(targetTool))
             {
-                ctx.AddMessage(new LintDiagnostic("ShouldNotBeInToc", new ParagraphDiagnosticContext(p.Paragraph)));
+                ctx.AddMessage(new LintDiagnostic("ShouldNotBeInToc", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p.Paragraph)));
                 continue;
             }
         }
@@ -78,7 +78,7 @@ public class TocReferencesLint(Predicate<ParagraphPropertiesTool> shouldBeInToc)
             
             if (referencedParagraphs.Contains(tool.Paragraph)) continue;
             
-            ctx.AddMessage(new LintDiagnostic("ShouldBeInToc", new ParagraphDiagnosticContext(p)));
+            ctx.AddMessage(new LintDiagnostic("ShouldBeInToc", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p)));
 
         }
     }

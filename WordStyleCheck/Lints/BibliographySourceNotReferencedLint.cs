@@ -99,7 +99,7 @@ public class BibliographySourceNotReferencedLint(Predicate<ParagraphPropertiesTo
             
             if (referenced.Contains(index)) continue;
             
-            ctx.AddMessage(new LintDiagnostic("BibliographySourceNotReferenced", new ParagraphDiagnosticContext([p], true)));
+            ctx.AddMessage(new LintDiagnostic("BibliographySourceNotReferenced", DiagnosticType.ContentError, new ParagraphDiagnosticContext([p], true)));
         }
     }
 }

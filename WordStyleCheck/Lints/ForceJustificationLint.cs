@@ -20,7 +20,7 @@ public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate
 
             if (!justification.Contains(tool.Justification ?? JustificationValues.Left))
             {
-                ctx.AddMessage(new LintDiagnostic(messageId, new ParagraphDiagnosticContext(p))
+                ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
                 {
                     AutoFix = () =>
                     {

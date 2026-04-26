@@ -26,7 +26,7 @@ public class PageSizeLint(bool allowLandscape = true) : ILint
 
             if (Math.Abs(size.Width - target.Width) > 5 || Math.Abs(size.Height - target.Height) > 5)
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectPageSize", new SectionDiagnosticContext(section))
+                ctx.AddMessage(new LintDiagnostic("IncorrectPageSize", DiagnosticType.FormattingError, new SectionDiagnosticContext(section))
                 {
                     Parameters = new()
                     {

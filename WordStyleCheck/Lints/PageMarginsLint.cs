@@ -24,7 +24,7 @@ public class PageMarginsLint(PageMargins target) : ILint
             
             if (!margins.CloseTo(target))
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectPageMargins", new SectionDiagnosticContext(section))
+                ctx.AddMessage(new LintDiagnostic("IncorrectPageMargins", DiagnosticType.FormattingError, new SectionDiagnosticContext(section))
                 {
                     Parameters = new()
                     {

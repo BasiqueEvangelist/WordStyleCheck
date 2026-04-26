@@ -6,6 +6,7 @@ namespace WordStyleCheck;
 
 public record LintDiagnostic(
     string Id,
+    DiagnosticType Type,
     IDiagnosticContext Context,
     Dictionary<string, string>? Parameters = null,
     Action? AutoFix = null
@@ -14,6 +15,7 @@ public record LintDiagnostic(
     public void Hash(NonCryptographicHashAlgorithm hasher)
     {
         hasher.Append(Encoding.UTF8.GetBytes(Id));
+        hasher.Append(BitConverter.GetBytes((int) Type));
         Context.Hash(hasher);
 
         if (Parameters != null)
@@ -34,4 +36,37 @@ public record LintDiagnostic(
         Hash(hasher);
         return Convert.ToHexString(hasher.GetCurrentHash());
     }
+}
+
+public enum DiagnosticType
+{
+    /// <summary>
+    /// Lint or classifier failed. Guru meditation.
+    /// </summary>
+    Fatal,
+    
+    /// <summary>
+    /// Invalid .docx file.
+    /// </summary>
+    CouldNotOpen,
+    
+    /// <summary>
+    /// Invalid document structure.
+    /// </summary>
+    CouldNotParse,
+    
+    /// <summary>
+    /// Basic formatting error, that can (usually) be easily automatically fixed. 
+    /// </summary>
+    FormattingError,
+    
+    /// <summary>
+    /// Error in the content of the document. Cannot be automatically fixed.
+    /// </summary>
+    ContentError,
+    
+    /// <summary>
+    /// Error in document content that can result from the document being incomplete.
+    /// </summary>
+    IncompleteContentError,
 }

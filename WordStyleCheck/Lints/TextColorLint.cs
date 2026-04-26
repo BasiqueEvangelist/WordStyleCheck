@@ -30,7 +30,7 @@ public class TextColorLint : ILint
 
                 if ((tool.Color ?? "auto") is not ("auto" or "000000"))
                 {
-                    ctx.AddMessage(new LintDiagnostic("TextNotAutoColor", new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic("TextNotAutoColor", DiagnosticType.FormattingError, new RunDiagnosticContext(r))
                     {
                         AutoFix = () =>
                         {
@@ -47,7 +47,7 @@ public class TextColorLint : ILint
 
                 if (tool.Highlight != HighlightColorValues.None)
                 {
-                    ctx.AddMessage(new LintDiagnostic("TextHighlighted", new RunDiagnosticContext(r))
+                    ctx.AddMessage(new LintDiagnostic("TextHighlighted", DiagnosticType.FormattingError, new RunDiagnosticContext(r))
                     {
                         AutoFix = () =>
                         {

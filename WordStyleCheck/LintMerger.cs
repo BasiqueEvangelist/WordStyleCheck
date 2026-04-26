@@ -8,6 +8,7 @@ public static class LintMerger
         for (int i = 1; i < messages.Count; i++)
         {
             if (messages[i - 1].Id != messages[i].Id) continue;
+            if (messages[i - 1].Type != messages[i].Type) continue;
             // TODO: make this more efficient.
             if ((messages[i - 1].Parameters == null) != (messages[i].Parameters == null)) continue;
             if (messages[i - 1].Parameters != null && messages[i - 1].Parameters!.Except(messages[i].Parameters!).Any()) continue;
@@ -21,6 +22,7 @@ public static class LintMerger
             
             messages[i - 1] = new LintDiagnostic(
                 messages[i].Id,
+                messages[i].Type,
                 newContext,
                 messages[i].Parameters,
                 prevAutofix != null || curAutofix != null 

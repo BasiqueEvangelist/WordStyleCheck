@@ -30,19 +30,21 @@ public class ForceBoldLint(bool bold, Predicate<ParagraphPropertiesTool> predica
 
                 if (tool.Bold != bold)
                 {
-                    ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        AutoFix = () =>
-                        {
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            
-                            if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+                        ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r)));
+                    }
+                    else
+                    {
+                        ctx.MarkAutoFixed();
 
-                            if (r.RunProperties.Bold == null) r.RunProperties.Bold = new Bold();
-                            
-                            r.RunProperties.Bold.Val = bold;
-                        }
-                    });
+                        r.RunProperties ??= new RunProperties();
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+
+                        r.RunProperties.Bold ??= new Bold();
+                        r.RunProperties.Bold.Val = bold;
+                    }
                 }
             }
         }

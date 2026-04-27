@@ -30,33 +30,41 @@ public class TextColorLint : ILint
 
                 if ((tool.Color ?? "auto") is not ("auto" or "000000"))
                 {
-                    ctx.AddMessage(new LintDiagnostic("TextNotAutoColor", DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        AutoFix = () =>
-                        {
-                            // TODO: generate revisions
+                        ctx.AddMessage(new LintDiagnostic("TextNotAutoColor", DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r)));
+                    }
+                    else
+                    {
+                        ctx.MarkAutoFixed();
 
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            r.RunProperties.Color = new Color()
-                            {
-                                Val = "auto"
-                            };
-                        }
-                    });
+                        r.RunProperties ??= new RunProperties();
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+                        
+                        r.RunProperties.Color = new Color()
+                        {
+                            Val = "auto"
+                        };
+                    }
                 }
 
                 if (tool.Highlight != HighlightColorValues.None)
                 {
-                    ctx.AddMessage(new LintDiagnostic("TextHighlighted", DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        AutoFix = () =>
-                        {
-                            // TODO: generate revisions
+                        ctx.AddMessage(new LintDiagnostic("TextHighlighted", DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r)));
+                    }
+                    else
+                    {
+                        ctx.MarkAutoFixed();
 
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            r.RunProperties.Highlight = null;
-                        }
-                    });
+                        r.RunProperties ??= new RunProperties();
+                        Utils.SnapshotRunProperties(r.RunProperties);
+                        
+                        r.RunProperties.Highlight = null;
+                    }
                 }
             }
         }

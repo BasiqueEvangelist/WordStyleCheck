@@ -18,22 +18,21 @@ public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requires
 
             if (tool is { OutlineLevel: not null } && !requiresOutlineLevel(tool))
             {
-                ctx.AddMessage(new LintDiagnostic("NonHeadingWithOutlineLevel", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                if (!ctx.AutomaticallyFix)
                 {
-                    AutoFix = () =>
-                    {
-                        if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
+                    ctx.AddMessage(new LintDiagnostic("NonHeadingWithOutlineLevel", DiagnosticType.FormattingError,
+                        new ParagraphDiagnosticContext(p)));
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
 
-                        if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+                    p.ParagraphProperties ??= new ParagraphProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
 
-                        p.ParagraphProperties.OutlineLevel?.Remove();
-
-                        p.ParagraphProperties.OutlineLevel = new OutlineLevel()
-                        {
-                            Val = 9
-                        };
-                    }
-                });
+                    p.ParagraphProperties.OutlineLevel ??= new OutlineLevel();
+                    p.ParagraphProperties.OutlineLevel.Val = 9;
+                }
             }
 
             if (tool is { HeadingData: not null, OutlineLevel: null })
@@ -45,24 +44,28 @@ public class HeadingOutlineLevelLint(Predicate<ParagraphPropertiesTool> requires
 
             if (tool is { HeadingData.Level: var level, HeadingData.IsConclusion: false, OutlineLevel: { } outlineLevel } && outlineLevel + 1 != level)
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectHeadingOutlineLevel", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                if (!ctx.AutomaticallyFix)
                 {
-                    Parameters = new()
+                    ctx.AddMessage(new LintDiagnostic("IncorrectHeadingOutlineLevel", DiagnosticType.FormattingError,
+                        new ParagraphDiagnosticContext(p))
                     {
-                        ["Expected"] = level.ToString(),
-                        ["Actual"] = (outlineLevel + 1).ToString()
-                    },
-                    AutoFix = () =>
-                    {
-                        p.ParagraphProperties ??= new ParagraphProperties();
+                        Parameters = new()
+                        {
+                            ["Expected"] = level.ToString(),
+                            ["Actual"] = (outlineLevel + 1).ToString()
+                        }
+                    });
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
 
-                        if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+                    p.ParagraphProperties ??= new ParagraphProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
 
-                        p.ParagraphProperties.OutlineLevel ??= new OutlineLevel();
-                        
-                        p.ParagraphProperties.OutlineLevel.Val = level - 1;
-                    }
-                });
+                    p.ParagraphProperties.OutlineLevel ??= new OutlineLevel();
+                    p.ParagraphProperties.OutlineLevel.Val = level - 1;
+                }
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
-using WordStyleCheck.Lints;
 using WordStyleCheck.Profiles;
 
 namespace WordStyleCheck;
@@ -12,6 +11,8 @@ public class DocumentLinter : IDisposable, ILintContext
     private WordprocessingDocument? _document;
     private DocumentAnalysisContext _analysisCtx;
     private IProfile _profile;
+
+    private bool _autoFix;
 
     public DocumentLinter(Stream stream, IProfile profile)
     {
@@ -45,19 +46,31 @@ public class DocumentLinter : IDisposable, ILintContext
 
     public Predicate<string> LintIdFilter { get; set; } = _ => true;
 
-    public bool GenerateRevisions => false;
+    public bool AutoFixed { get; private set; }
+
+    bool ILintContext.GenerateRevisions => false;
+
+    bool ILintContext.AutomaticallyFix => _autoFix;
 
     void ILintContext.AddMessage(LintDiagnostic diagnostic)
     {
+        if (_autoFix) return;
         if (!LintIdFilter(diagnostic.Id)) return;
         
         Diagnostics.Add(diagnostic);
     }
 
+    void ILintContext.MarkAutoFixed()
+    {
+        AutoFixed = true;
+    }
+
     DocumentAnalysisContext ILintContext.Document => _analysisCtx;
 
-    public void RunLints()
+    public void RunLints(bool autoFix)
     {
+        _autoFix = autoFix;
+        
         foreach (var lint in _profile.Lints)
         {
             if (!lint.EmittedDiagnostics.Any(LintIdFilter.Invoke))
@@ -87,9 +100,14 @@ public class DocumentLinter : IDisposable, ILintContext
                 }
             }
         }
-        
-        using (new LoudStopwatch("LintMerger.Run")) 
-            LintMerger.Run(Diagnostics);
+
+        if (!autoFix)
+        {
+            using (new LoudStopwatch("LintMerger.Run"))
+                LintMerger.Run(Diagnostics);
+        }
+
+        _autoFix = false;
     }
 
     public void SaveTo(string path)
@@ -128,30 +146,27 @@ public class DocumentLinter : IDisposable, ILintContext
         _document?.Dispose();
     }
 
-    public bool ApplyDiagnostics(List<LintDiagnostic> diagnostics, XmlTranslationsFile? translations,
-        bool runAutofixes = false)
+    public bool ApplyDiagnostics(List<LintDiagnostic> diagnostics, XmlTranslationsFile translations)
     {
         bool changed = false;
         
         foreach (var message in diagnostics)
         {
-            if (message.AutoFix != null && runAutofixes)
-            {
-                message.AutoFix();
-                changed = true;
-            }
-            else if (translations != null)
-            {
-                _analysisCtx.WriteComment(message, translations);
-                changed = true;
-            }
+            _analysisCtx.WriteComment(message, translations);
+            changed = true;
         }
 
         return changed;
     }
     
-    public bool ApplyDiagnostics(XmlTranslationsFile? translations, bool runAutofixes = false)
+    public bool ApplyDiagnostics(XmlTranslationsFile translations)
     {
-        return ApplyDiagnostics(Diagnostics, translations, runAutofixes);
+        return ApplyDiagnostics(Diagnostics, translations);
+    }
+
+    public void ClearDiagnostics()
+    {
+        Diagnostics.Clear();
+        AutoFixed = false;
     }
 }

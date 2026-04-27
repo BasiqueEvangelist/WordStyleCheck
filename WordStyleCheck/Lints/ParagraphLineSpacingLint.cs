@@ -24,29 +24,31 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
             
             if (tool.LineSpacing != lineSpacing)
             {
-                ctx.AddMessage(new LintDiagnostic(
-                    messageId,
-                    DiagnosticType.FormattingError,
-                    new ParagraphDiagnosticContext(p))
-                    {
-                        Parameters = new()
+                if (!ctx.AutomaticallyFix)
+                {
+                    ctx.AddMessage(new LintDiagnostic(
+                            messageId,
+                            DiagnosticType.FormattingError,
+                            new ParagraphDiagnosticContext(p))
                         {
-                            ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.InvariantCulture),
-                            ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.InvariantCulture)
-                        },
-                        AutoFix = () =>
-                        {
-                            if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
-                    
-                            if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
-
-                            if (p.ParagraphProperties.SpacingBetweenLines == null)
-                                p.ParagraphProperties.SpacingBetweenLines = new SpacingBetweenLines();
-
-                            p.ParagraphProperties.SpacingBetweenLines.Line = "360";
+                            Parameters = new()
+                            {
+                                ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.InvariantCulture),
+                                ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.InvariantCulture)
+                            }
                         }
-                    }
-                );
+                    );
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
+
+                    p.ParagraphProperties ??= new ParagraphProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                    p.ParagraphProperties.SpacingBetweenLines ??= new SpacingBetweenLines();
+                    p.ParagraphProperties.SpacingBetweenLines.Line = lineSpacing.ToString();
+                }
             }
         }
     }

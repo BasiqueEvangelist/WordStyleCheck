@@ -43,7 +43,7 @@ public class LinterThreadPool : IDisposable
             {
                 var linter = new DocumentLinter(task.Stream, task.Profile);
                 linter.LintIdFilter = task.LintIdFilter;
-                linter.RunLints();
+                linter.RunLints(task.AutoFix);
 
                 if (task.CommentsTranslations != null)
                 {
@@ -65,11 +65,16 @@ public class LinterThreadPool : IDisposable
     }
 }
 
-public class LintTask(Stream stream, IProfile profile, Predicate<string> lintIdFilter, bool takeOwnership, XmlTranslationsFile? commentsTranslations)
+public class LintTask(
+    Stream stream,
+    IProfile profile,
+    Predicate<string> lintIdFilter,
+    XmlTranslationsFile? commentsTranslations,
+    bool autoFix = false)
 {
     public Stream Stream { get; } = stream;
     public IProfile Profile { get; } = profile;
-    public bool TakeOwnership { get; } = takeOwnership;
+    public bool AutoFix { get; } = autoFix;
     public Predicate<string> LintIdFilter { get; } = lintIdFilter;
     public XmlTranslationsFile? CommentsTranslations { get; } = commentsTranslations;
 

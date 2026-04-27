@@ -66,7 +66,7 @@ public class WorkerService(ILogger<WorkerService> logger, Db db, IOptionsMonitor
         
         stream.Seek(0, SeekOrigin.Begin);
 
-        LintTask task = new LintTask(stream, new Gost7_32Profile(), x => true, false, _translations);
+        LintTask task = new LintTask(stream, new Gost7_32Profile(), x => true, _translations, false);
         _pool.AddTask(task);
         var linter = await task.Result;
 

@@ -44,66 +44,70 @@ public class NeedlessParagraphLint(Predicate<ParagraphPropertiesTool> isCandidat
             
             var p = paragraphs[i];
             var prev = paragraphs[i - 1];
-            
-            ctx.AddMessage(new LintDiagnostic("NeedlessParagraphBreak", DiagnosticType.FormattingError, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
+
+            if (!ctx.AutomaticallyFix)
             {
-                AutoFix = () =>
+                ctx.AddMessage(new LintDiagnostic("NeedlessParagraphBreak", DiagnosticType.FormattingError,
+                    new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i])));
+            }
+            else
+            {
+                ctx.MarkAutoFixed();
+
+                if (!char.IsWhiteSpace(prevParagraphText[^1]) && !char.IsWhiteSpace(paraText[0]))
                 {
-                    if (!char.IsWhiteSpace(prevParagraphText[^1]) && !char.IsWhiteSpace(paraText[0]))
+                    Run r = new Run();
+                    r.Append(new Text(" ")
                     {
-                        Run r = new Run();
-                        r.Append(new Text(" ")
-                        {
-                            Space = SpaceProcessingModeValues.Preserve
-                        });
-
-                        if (ctx.GenerateRevisions)
-                        {
-                            InsertedRun ir = new InsertedRun();
-                            Utils.StampTrackChange(ir);
-                            ir.Append(r);
-
-                            if (p.ParagraphProperties != null)
-                                p.InsertAfter(ir, p.ParagraphProperties);
-                            else
-                                p.PrependChild(ir);
-                        }
-                        else
-                        {
-                            if (p.ParagraphProperties != null)
-                                p.InsertAfter(r, p.ParagraphProperties);
-                            else
-                                p.PrependChild(r);
-                        }
-                    }
-                    
+                        Space = SpaceProcessingModeValues.Preserve
+                    });
 
                     if (ctx.GenerateRevisions)
                     {
-                        if (prev.ParagraphProperties == null)
-                            prev.ParagraphProperties = new ParagraphProperties();
+                        InsertedRun ir = new InsertedRun();
+                        Utils.StampTrackChange(ir);
+                        ir.Append(r);
 
-                        if (prev.ParagraphProperties.ParagraphMarkRunProperties == null)
-                            prev.ParagraphProperties.ParagraphMarkRunProperties = new ParagraphMarkRunProperties();
-
-                        if (prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted == null)
-                            prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted = new Deleted();
-
-                        Utils.StampTrackChange(prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted);
+                        if (p.ParagraphProperties != null)
+                            p.InsertAfter(ir, p.ParagraphProperties);
+                        else
+                            p.PrependChild(ir);
                     }
                     else
                     {
-                        p.ParagraphProperties = null;
-
-                        foreach (var child in p.ChildElements)
-                        {
-                            prev.Append(child.CloneNode(true));
-                        }
-                        
-                        p.Remove();
+                        if (p.ParagraphProperties != null)
+                            p.InsertAfter(r, p.ParagraphProperties);
+                        else
+                            p.PrependChild(r);
                     }
                 }
-            });
+                
+
+                if (ctx.GenerateRevisions)
+                {
+                    if (prev.ParagraphProperties == null)
+                        prev.ParagraphProperties = new ParagraphProperties();
+
+                    if (prev.ParagraphProperties.ParagraphMarkRunProperties == null)
+                        prev.ParagraphProperties.ParagraphMarkRunProperties = new ParagraphMarkRunProperties();
+
+                    if (prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted == null)
+                        prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted = new Deleted();
+
+                    Utils.StampTrackChange(prev.ParagraphProperties.ParagraphMarkRunProperties.Deleted);
+                }
+                else
+                {
+                    p.ParagraphProperties = null;
+
+                    foreach (var child in p.ChildElements)
+                    {
+                        prev.Append(child.CloneNode(true));
+                    }
+                    
+                    p.Remove();
+                }
+            }
         }
     }
 }

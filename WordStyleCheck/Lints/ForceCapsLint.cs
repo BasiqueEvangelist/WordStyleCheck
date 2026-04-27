@@ -23,9 +23,18 @@ public class ForceCapsLint(Predicate<ParagraphPropertiesTool> predicate, string 
             }
             
             if (pTool.Contents.ToUpperInvariant() == pTool.Contents) continue;
-            
-            ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p), AutoFix: () =>
+
+            if (!ctx.AutomaticallyFix)
             {
+                ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                    new ParagraphDiagnosticContext(p)));
+            }
+            else
+            {
+                ctx.MarkAutoFixed();
+
+                // TODO: generate revisions.
+                
                 foreach (var run in Utils.DirectRunChildren(p))
                 {
                     foreach (var text in run.ChildElements.OfType<Text>())
@@ -33,7 +42,7 @@ public class ForceCapsLint(Predicate<ParagraphPropertiesTool> predicate, string 
                         text.Text = text.Text.ToUpperInvariant();
                     }
                 }
-            }));
+            }
         }
     }
 }

@@ -17,17 +17,11 @@ public static class LintMerger
 
             if (newContext == null) continue;
             
-            var prevAutofix = messages[i - 1].AutoFix;
-            var curAutofix = messages[i].AutoFix;
-            
             messages[i - 1] = new LintDiagnostic(
                 messages[i].Id,
                 messages[i].Type,
                 newContext,
-                messages[i].Parameters,
-                prevAutofix != null || curAutofix != null 
-                    ? () => { prevAutofix?.Invoke(); curAutofix?.Invoke(); }
-                    : null
+                messages[i].Parameters
             );
             messages.RemoveAt(i);
             i -= 1;

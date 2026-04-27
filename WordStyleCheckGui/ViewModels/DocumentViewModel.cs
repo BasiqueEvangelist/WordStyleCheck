@@ -33,7 +33,7 @@ public partial class DocumentViewModel : ViewModelBase
         
         async void RunThing()
         {
-            var task = new LintTask(File.OpenRead(path), new Gost7_32Profile(), _ => true, false, null);
+            var task = new LintTask(File.OpenRead(path), new Gost7_32Profile(), _ => true, null, false);
             Pool.AddTask(task);
 
             try
@@ -59,7 +59,7 @@ public partial class DocumentViewModel : ViewModelBase
 
     public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(Translations, x)).ToList();
 
-    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок ({_linter.Diagnostics.Count(x => x.AutoFix != null)} автоисправляемых)";
+    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(InProgress))]
@@ -119,7 +119,9 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        _linter!.ApplyDiagnostics(Translations, true);
+        _linter!.ClearDiagnostics();
+        _linter.RunLints(true);
+        _linter.ApplyDiagnostics(Translations);
 
         _linter.SaveTo(file.TryGetLocalPath()!);
         CanSave = false;

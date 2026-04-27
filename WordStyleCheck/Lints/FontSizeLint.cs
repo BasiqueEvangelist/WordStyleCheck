@@ -31,21 +31,28 @@ public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int font
 
                 if (tool.FontSize != null && (force ? tool.FontSize != fontSize : tool.FontSize < fontSize))
                 {
-                    ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        Parameters = new()
+                        ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r))
                         {
-                            ["ExpectedPt"] = (fontSize / 2).ToString(CultureInfo.InvariantCulture),
-                            ["ActualPt"] = (tool.FontSize.Value / 2).ToString(CultureInfo.InvariantCulture)
-                        },
-                        AutoFix = () =>
-                        {
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            if (r.RunProperties.FontSize == null) r.RunProperties.FontSize = new FontSize();
+                            Parameters = new()
+                            {
+                                ["ExpectedPt"] = (fontSize / 2).ToString(CultureInfo.InvariantCulture),
+                                ["ActualPt"] = (tool.FontSize.Value / 2).ToString(CultureInfo.InvariantCulture)
+                            }
+                        });
+                    } 
+                    else
+                    {
+                        ctx.MarkAutoFixed();
+                        
+                        r.RunProperties ??= new RunProperties();
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
 
-                            r.RunProperties.FontSize.Val = fontSize.ToString();
-                        }
-                    });
+                        r.RunProperties.FontSize ??= new FontSize();
+                        r.RunProperties.FontSize.Val = fontSize.ToString();
+                    }
                 }
             }
         }

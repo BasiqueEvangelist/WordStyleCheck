@@ -55,6 +55,7 @@ public class InterParagraphSpacingLint(List<InterParagraphSpacingLint.SpacingEnt
             
             if (Math.Abs((tool1.ActualAfterSpacing ?? 0) + (tool2.ActualBeforeSpacing ?? 0) - totalTwips) > 5)
             {
+                // TODO: autofix!
                 ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new MergeParagraphsDiagnosticContext(paragraphs[i - 1], paragraphs[i]))
                 {
                     Parameters = new()

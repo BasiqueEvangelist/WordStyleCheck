@@ -41,22 +41,30 @@ public class TextFontLint : ILint
 
                 if (tool.AsciiFont != "Times New Roman")
                 {
-                    ctx.AddMessage(new LintDiagnostic("TextFontIncorrect", DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        Parameters = new() {
-                            ["Expected"] = "Times New Roman",
-                            ["Actual"] = tool.AsciiFont!
-                        },
-                        AutoFix = () =>
+                        ctx.AddMessage(new LintDiagnostic("TextFontIncorrect", DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r))
                         {
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            if (r.RunProperties.RunFonts == null) r.RunProperties.RunFonts = new RunFonts();
+                            Parameters = new()
+                            {
+                                ["Expected"] = "Times New Roman",
+                                ["Actual"] = tool.AsciiFont!
+                            }
+                        });
+                    }
+                    else
+                    {
+                        ctx.MarkAutoFixed();
 
-                            r.RunProperties.RunFonts.Ascii = "Times New Roman";
-                            r.RunProperties.RunFonts.HighAnsi = "Times New Roman";
-                            r.RunProperties.RunFonts.ComplexScript = "Times New Roman";
-                        }
-                    });
+                        r.RunProperties ??= new RunProperties();
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+                        
+                        r.RunProperties.RunFonts ??= new RunFonts();
+                        r.RunProperties.RunFonts.Ascii = "Times New Roman";
+                        r.RunProperties.RunFonts.HighAnsi = "Times New Roman";
+                        r.RunProperties.RunFonts.ComplexScript = "Times New Roman";
+                    }
                 }
             }
         }

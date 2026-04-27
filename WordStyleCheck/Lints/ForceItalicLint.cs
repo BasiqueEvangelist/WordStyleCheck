@@ -30,19 +30,21 @@ public class ForceItalicLint(bool italic, Predicate<ParagraphPropertiesTool> pre
 
                 if (tool.Italic != italic)
                 {
-                    ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new RunDiagnosticContext(r))
+                    if (!ctx.AutomaticallyFix)
                     {
-                        AutoFix = () =>
-                        {
-                            if (r.RunProperties == null) r.RunProperties = new RunProperties();
-                            
-                            if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+                        ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                            new RunDiagnosticContext(r)));
+                    }
+                    else
+                    {
+                        ctx.MarkAutoFixed();
 
-                            if (r.RunProperties.Italic == null) r.RunProperties.Italic = new Italic();
-                            
-                            r.RunProperties.Italic.Val = italic;
-                        }
-                    });
+                        r.RunProperties ??= new RunProperties();
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+
+                        r.RunProperties.Italic ??= new Italic();
+                        r.RunProperties.Italic.Val = italic;
+                    }
                 }
             }
         }

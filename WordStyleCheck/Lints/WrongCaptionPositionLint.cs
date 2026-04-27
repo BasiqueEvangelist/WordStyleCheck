@@ -17,22 +17,27 @@ public class WrongCaptionPositionLint(CaptionType captionType, bool shouldBeBelo
             
             if (tool.CaptionData.Value.IsBelow == shouldBeBelow) continue;
             
-            ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+            if (ctx.AutomaticallyFix && tool.CaptionData.Value.TargetedElement != null)
             {
-                AutoFix = tool.CaptionData.Value.TargetedElement != null ? () =>
-                {
-                    p.Remove();
+                ctx.MarkAutoFixed();
 
-                    if (shouldBeBelow)
-                    {
-                        tool.CaptionData.Value.TargetedElement.InsertAfterSelf(p);
-                    }
-                    else
-                    {
-                        tool.CaptionData.Value.TargetedElement.InsertBeforeSelf(p);
-                    }
-                } : null
-            });
+                // TODO: generate-revisions
+                
+                p.Remove();
+
+                if (shouldBeBelow)
+                {
+                    tool.CaptionData.Value.TargetedElement.InsertAfterSelf(p);
+                }
+                else
+                {
+                    tool.CaptionData.Value.TargetedElement.InsertBeforeSelf(p);
+                }
+            }
+            else
+            {
+                ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p)));
+            }
         }
     }
 }

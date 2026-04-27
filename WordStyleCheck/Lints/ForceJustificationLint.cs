@@ -20,20 +20,22 @@ public class ForceJustificationLint(Predicate<ParagraphPropertiesTool> predicate
 
             if (!justification.Contains(tool.Justification ?? JustificationValues.Left))
             {
-                ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                if (!ctx.AutomaticallyFix)
                 {
-                    AutoFix = () =>
-                    {
-                        if (p.ParagraphProperties == null) p.ParagraphProperties = new ParagraphProperties();
-                
-                        if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+                    ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                        new ParagraphDiagnosticContext(p)));
 
-                        if (p.ParagraphProperties.Justification == null)
-                            p.ParagraphProperties.Justification = new Justification();
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
 
-                        p.ParagraphProperties.Justification.Val = justification[0];
-;                   }
-                });
+                    p.ParagraphProperties ??= new ParagraphProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                    p.ParagraphProperties.Justification ??= new Justification();
+                    p.ParagraphProperties.Justification.Val = justification[0];
+                }
             }
         }
     }

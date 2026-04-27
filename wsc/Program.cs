@@ -150,7 +150,7 @@ root.SetAction(async res =>
     .Select(async x =>
     {
         string target = Path.GetFileNameWithoutExtension(x.Name) + $"-{suffix}.docx";
-        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), profile, lintIdFilter, false, null);
+        LintTask task = new LintTask(x.Open(FileMode.Open, FileAccess.Read), profile, lintIdFilter, null, autofix);
 
         pool.AddTask(task);
 
@@ -204,19 +204,13 @@ root.SetAction(async res =>
             if (input.Count == 1  && !res.GetValue(quietOpt))
             {
                 Console.Write(Utils.ToPlainText(translations.Translate(message.Id, message.Parameters ?? new(), null)));
-
-                if (message.AutoFix != null && autofix)
-                {
-                    Console.Write(" (autofixed)");
-                }
-
                 Console.WriteLine(":");
 
                 message.Context.WriteToConsole();
             }
         }
 
-        bool changed = linter.ApplyDiagnostics(actualDiagnostics, translations, autofix);
+        bool changed = linter.ApplyDiagnostics(actualDiagnostics, translations) || linter.AutoFixed;
 
         if (ids.Count > 0)
         {
@@ -227,18 +221,13 @@ root.SetAction(async res =>
         {
             if (linter.Diagnostics.Count > 0)
             {
-                Console.Write($"{linter.Diagnostics.Count} style errors in {x.Name}");
-
-                if (autofix)
-                {
-                    Console.Write($" ({linter.Diagnostics.Count(y => y.AutoFix != null)} autofixed)");
-                }
-
-                Console.WriteLine(" :(");
+                Console.WriteLine($"{linter.Diagnostics.Count} style errors in {x.Name} :(");
             }
             else
             {
-                Console.WriteLine($"No errors detected in {x.Name} :)");
+                Console.WriteLine(autofix
+                    ? $"No unfixable errors detected in {x.Name} :)"
+                    : $"No errors detected in {x.Name} :)");
             }
         }
 

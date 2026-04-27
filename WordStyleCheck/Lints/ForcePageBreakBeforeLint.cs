@@ -76,8 +76,22 @@ public class ForcePageBreakBeforeLint(Predicate<ParagraphPropertiesTool> predica
             }
             outer2:
             if (found || prev == null) continue;
-            
-            ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p)));
+
+            if (!ctx.AutomaticallyFix)
+            {
+                ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                    new ParagraphDiagnosticContext(p)));
+            }
+            else
+            {
+                ctx.MarkAutoFixed();
+
+                p.ParagraphProperties ??= new ParagraphProperties();
+                if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                p.ParagraphProperties.PageBreakBefore ??= new PageBreakBefore();
+                p.ParagraphProperties.PageBreakBefore.Val = true;
+            }
         }
     }
 }

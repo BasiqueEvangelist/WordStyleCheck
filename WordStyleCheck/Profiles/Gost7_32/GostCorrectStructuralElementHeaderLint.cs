@@ -23,27 +23,34 @@ public class CorrectStructuralElementHeaderLint : ILint
 
             if (text != proper)
             {
-                ctx.AddMessage(new LintDiagnostic("StructuralElementHeaderContentsIncorrect", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                if (!ctx.AutomaticallyFix)
                 {
-                    Parameters = new()
+
+                    ctx.AddMessage(new LintDiagnostic("StructuralElementHeaderContentsIncorrect",
+                        DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
                     {
-                        ["Expected"] = proper,
-                        ["Actual"] = text
-                    },
-                    AutoFix = () =>
-                    {
-                        // TODO: add proper support for generate-revisions.
-                    
-                        foreach (var child in p.ChildElements.ToList())
+                        Parameters = new()
                         {
-                            if (child is ParagraphProperties) continue;
-                            
-                            child.Remove();
+                            ["Expected"] = proper,
+                            ["Actual"] = text
                         }
-                    
-                        p.Append(new Run(new Text(proper)));
+                    });
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
+
+                    // TODO: add proper support for generate-revisions.
+
+                    foreach (var child in p.ChildElements.ToList())
+                    {
+                        if (child is ParagraphProperties) continue;
+
+                        child.Remove();
                     }
-                });
+
+                    p.Append(new Run(new Text(proper)));
+                }
             }
         }
     }

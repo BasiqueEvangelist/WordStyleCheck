@@ -20,25 +20,33 @@ public class IncorrectCaptionTextLint : ILint
 
             if (text != correct)
             {
-                ctx.AddMessage(new LintDiagnostic("IncorrectCaptionText", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                if (!ctx.AutomaticallyFix)
                 {
-                    Parameters = new()
+                    ctx.AddMessage(new LintDiagnostic("IncorrectCaptionText", DiagnosticType.FormattingError,
+                        new ParagraphDiagnosticContext(p))
                     {
-                        ["Expected"] = correct,
-                        ["Actual"] = text
-                    },
-                    AutoFix = () =>
-                    {
-                        foreach (var child in p.ChildElements.ToList())
+                        Parameters = new()
                         {
-                            if (child is ParagraphProperties) continue;
-                            
-                            child.Remove();
+                            ["Expected"] = correct,
+                            ["Actual"] = text
                         }
-                        
-                        p.Append(new Run(new Text(correct)));
+                    });
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
+
+                    // TODO: generate revisions.
+                    
+                    foreach (var child in p.ChildElements.ToList())
+                    {
+                        if (child is ParagraphProperties) continue;
+                            
+                        child.Remove();
                     }
-                });
+                        
+                    p.Append(new Run(new Text(correct)));
+                }
             }
         }
     }

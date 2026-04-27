@@ -8,8 +8,7 @@ public record LintDiagnostic(
     string Id,
     DiagnosticType Type,
     IDiagnosticContext Context,
-    Dictionary<string, string>? Parameters = null,
-    Action? AutoFix = null
+    Dictionary<string, string>? Parameters = null
 )
 {
     public void Hash(NonCryptographicHashAlgorithm hasher)
@@ -26,8 +25,6 @@ public record LintDiagnostic(
                 hasher.Append(Encoding.UTF8.GetBytes(entry.Value));
             }
         }
-        
-        hasher.Append(BitConverter.GetBytes(AutoFix != null));
     }
 
     public string GetHash()

@@ -16,7 +16,17 @@
 
 	<ScrollViewer>
 	    <StackPanel>
-	        <ItemsControl ItemsSource="{Binding Documents}">
+		    <StackPanel Orientation="Horizontal" Margin="5 5 5 5">
+			    <TextBlock Margin="0 0 20 0" VerticalAlignment="Center">
+				    <Run Text="{Binding CompletedCount}" /> / <Run Text="{Binding Documents.Count}" />
+			    </TextBlock>
+			    
+			    <Button Command="{Binding SaveAllDialogCommand}" Margin="0 0 5 0" VerticalAlignment="Center">Сохранить все документы с пометками</Button>
+			    
+			    <Button Command="{Binding ClearCommand}" VerticalAlignment="Center">Очистить список документов</Button>
+		    </StackPanel>
+		    
+		    <ItemsControl ItemsSource="{Binding Documents}">
 	            <ItemsControl.ItemTemplate>
 	                <DataTemplate DataType="vm:DocumentViewModel">
 						<Border Padding="5 5 5 5" BorderBrush="blue" BorderThickness="2" Margin="2 2 2 2">

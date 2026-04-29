@@ -20,14 +20,16 @@ public partial class DocumentViewModel : ViewModelBase
     private static readonly LinterThreadPool Pool = new(Environment.ProcessorCount);
     private static readonly XmlTranslationsFile Translations = XmlTranslationsFile.LoadEmbedded("gost-7.32");
 
+    private readonly MainWindowViewModel _mainWindow;
     private readonly string _path;
     private readonly string _fileName;
     private DocumentLinter? _linter;
 
     private Exception? _exception;
  
-    public DocumentViewModel(string path, string fileName, Stream stream)
+    public DocumentViewModel(MainWindowViewModel mainWindow, string path, string fileName, Stream stream)
     {
+        _mainWindow = mainWindow;
         _path = path;
         _fileName = fileName;
         
@@ -48,6 +50,7 @@ public partial class DocumentViewModel : ViewModelBase
             Dispatcher.UIThread.Post(() =>
             {
                 Done = true;
+                mainWindow.UpdateCompletedCount();
                 CanSave = _exception == null;
             });
         }
@@ -77,6 +80,14 @@ public partial class DocumentViewModel : ViewModelBase
 
     public Exception? Error => _exception;
 
+    public string AnnotatedTarget => Path.GetFileNameWithoutExtension(_fileName) + "-ANNOTATED.docx";
+    
+    public MemoryStream SaveAnnotatedStream()
+    {
+        _linter!.ApplyDiagnostics(Translations);
+        return _linter.Save();
+    }
+    
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAnnotated()
     {

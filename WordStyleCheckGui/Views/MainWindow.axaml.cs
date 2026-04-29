@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Remote.Protocol.Input;
+using Avalonia.Platform.Storage;
 using WordStyleCheckGui.ViewModels;
 using MouseButton = Avalonia.Input.MouseButton;
 
@@ -33,7 +33,7 @@ public partial class MainWindow : Window
             {
                 if (item.TryGetValue(DataFormat.File) is { } file)
                 {
-                    ((MainWindowViewModel)DataContext).AddDocument(file);
+                    ((MainWindowViewModel)DataContext).AddDocument(file.TryGetLocalPath()!);
                 }
             }
         });

@@ -26,14 +26,14 @@ public partial class DocumentViewModel : ViewModelBase
 
     private Exception? _exception;
  
-    public DocumentViewModel(string path)
+    public DocumentViewModel(string path, string fileName, Stream stream)
     {
         _path = path;
-        _fileName = Path.GetFileName(path);
+        _fileName = fileName;
         
         async void RunThing()
         {
-            var task = new LintTask(File.OpenRead(path), new Gost7_32Profile(), _ => true, null, false);
+            var task = new LintTask(stream, new Gost7_32Profile(), _ => true, null, false);
             Pool.AddTask(task);
 
             try

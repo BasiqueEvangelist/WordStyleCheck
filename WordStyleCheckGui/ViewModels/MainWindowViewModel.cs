@@ -37,6 +37,8 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public async void AddDocument(string path)
     {
+        await Task.Yield();
+
         if (path.EndsWith(".docx"))
         {
             Documents.Add(new DocumentViewModel(this, path, Path.GetFileName(path), File.OpenRead(path)));

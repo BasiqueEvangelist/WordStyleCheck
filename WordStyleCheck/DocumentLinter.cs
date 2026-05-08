@@ -61,6 +61,7 @@ public class DocumentLinter : IDisposable, ILintContext
     }
     
     public bool FailedToOpen => _analysisCtx == null;
+    public bool SeriousError { get; private set; }
 
     public List<LintDiagnostic> Diagnostics { get; } = [];
 
@@ -74,6 +75,11 @@ public class DocumentLinter : IDisposable, ILintContext
 
     void ILintContext.AddMessage(LintDiagnostic diagnostic)
     {
+        if (diagnostic.Type is DiagnosticType.CouldNotOpen or DiagnosticType.CouldNotParse)
+        {
+            SeriousError = true;
+        }
+        
         if (_autoFix) return;
         if (!LintIdFilter(diagnostic.Id)) return;
         
@@ -95,6 +101,8 @@ public class DocumentLinter : IDisposable, ILintContext
         
         foreach (var lint in _profile.Lints)
         {
+            if (SeriousError) break;
+            
             if (!lint.EmittedDiagnostics.Any(LintIdFilter.Invoke))
                 continue;
             
@@ -194,7 +202,10 @@ public class DocumentLinter : IDisposable, ILintContext
 
     public void ClearDiagnostics()
     {
+        if (FailedToOpen) return;
+        
         Diagnostics.Clear();
         AutoFixed = false;
+        SeriousError = false;
     }
 }

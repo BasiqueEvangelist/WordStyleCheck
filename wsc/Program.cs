@@ -158,6 +158,11 @@ root.SetAction(async res =>
 
         await Task.Yield();
 
+        if (linter.SeriousError)
+        {
+            Console.WriteLine($"Processing of {x.Name} has stopped early due to a serious error.");
+        }
+
         string reportTarget = Path.GetFileNameWithoutExtension(x.Name) + "-REPORT.txt";
 
         HashSet<string> ids = [];

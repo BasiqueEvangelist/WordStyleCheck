@@ -30,7 +30,7 @@ public class DocumentLinter : IDisposable, ILintContext
 
             using (new LoudStopwatch("Loading document parts"))
             {
-                _ = _document.MainDocumentPart!.Document;
+                _ = _document.MainDocumentPart!.Document!.Body;
                 _ = _document.MainDocumentPart!.StyleDefinitionsPart!.Styles;
                 _ = _document.MainDocumentPart!.NumberingDefinitionsPart?.Numbering;
                 _ = _document.MainDocumentPart!.WordprocessingCommentsPart?.Comments;
@@ -47,6 +47,8 @@ public class DocumentLinter : IDisposable, ILintContext
                     ["Exception"] = e.ToString()
                 }
             ));
+
+            _document = null;
         }
 
         if (_document != null)

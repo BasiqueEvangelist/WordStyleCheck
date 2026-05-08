@@ -1,9 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:WordStyleCheckGui.ViewModels"
+        xmlns:wscp="using:WordStyleCheck.Profiles"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Width="640" Height="480"
+        mc:Ignorable="d" Width="960" Height="720"
         x:Class="WordStyleCheckGui.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="WordStyleCheck">
@@ -17,6 +18,14 @@
 	<ScrollViewer>
 	    <StackPanel>
 		    <StackPanel Orientation="Horizontal" Margin="5 5 5 5">
+			    <ComboBox ItemsSource="{Binding AvailableProfiles}" SelectedItem="{Binding SelectedProfile}" Margin="0 0 20 0">
+				    <ComboBox.ItemTemplate>
+					    <DataTemplate x:DataType="wscp:IProfile">
+						    <TextBlock><Run Text="{Binding Name}" /> (<Run Text="{Binding Id}" />)</TextBlock>
+					    </DataTemplate>
+				    </ComboBox.ItemTemplate>
+			    </ComboBox>
+			    
 			    <TextBlock Margin="0 0 20 0" VerticalAlignment="Center">
 				    <Run Text="{Binding CompletedCount}" /> / <Run Text="{Binding Documents.Count}" />
 			    </TextBlock>
@@ -52,7 +61,7 @@
 	            </ItemsControl.ItemTemplate>
 	        </ItemsControl>
 		    
-		    <Panel Margin="10 15" Name="DropZone">
+		    <Panel Margin="10 15" Name="DropZone" Background="Transparent">
 			    <Rectangle StrokeDashArray="5, 1" Stroke="Gray" StrokeThickness="2"/>
 			    <TextBlock Text="Положите .docx документы сюда, или нажмите, чтобы выбрать файл" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" />
 		    </Panel>

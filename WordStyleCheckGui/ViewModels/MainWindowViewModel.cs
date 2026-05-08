@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using WordStyleCheck.Profiles;
 
 namespace WordStyleCheckGui.ViewModels;
 
@@ -29,6 +31,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public bool CanSaveAll => CompletedCount == Documents.Count && Documents.Count > 0;
 
     public ObservableCollection<DocumentViewModel> Documents { get; } = new();
+
+    [ObservableProperty] private IProfile _selectedProfile = ProfileStore.GetProfile("gost-7.32")!;
+    public List<IProfile> AvailableProfiles => ProfileStore.Profiles.ToList(); 
 
     public void UpdateCompletedCount()
     {

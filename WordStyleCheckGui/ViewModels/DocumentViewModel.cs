@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WordStyleCheck;
+using WordStyleCheck.Profiles;
 using WordStyleCheck.Profiles.Gost7_32;
 using WordStyleCheckGui.Views;
 
@@ -18,12 +19,12 @@ namespace WordStyleCheckGui.ViewModels;
 public partial class DocumentViewModel : ViewModelBase
 {
     private static readonly LinterThreadPool Pool = new(Environment.ProcessorCount);
-    private static readonly XmlTranslationsFile Translations = XmlTranslationsFile.LoadEmbedded("gost-7.32");
 
     private readonly MainWindowViewModel _mainWindow;
     private readonly string _path;
     private readonly string _fileName;
     private DocumentLinter? _linter;
+    private readonly XmlTranslationsFile _translations;
 
     private Exception? _exception;
  
@@ -32,10 +33,11 @@ public partial class DocumentViewModel : ViewModelBase
         _mainWindow = mainWindow;
         _path = path;
         _fileName = fileName;
+        _translations = XmlTranslationsFile.LoadEmbedded(mainWindow.SelectedProfile.Id);
         
         async void RunThing()
         {
-            var task = new LintTask(stream, new Gost7_32Profile(), _ => true, null, false);
+            var task = new LintTask(stream, mainWindow.SelectedProfile, _ => true, null, false);
             Pool.AddTask(task);
 
             try
@@ -60,9 +62,22 @@ public partial class DocumentViewModel : ViewModelBase
 
     public string FileName => _fileName;
 
-    public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(Translations, x)).ToList();
+    public List<DiagnosticViewModel> Diagnostics => _linter == null ? [] : _linter.Diagnostics.Select(x => new DiagnosticViewModel(_translations, x)).ToList();
 
-    public string TotalDiagnosticsText => _linter == null ? "" : $"{_linter.Diagnostics.Count} стилистических ошибок";
+    public string TotalDiagnosticsText
+    {
+        get
+        {
+            if (_linter == null) return "";
+            string s;
+
+            if (_linter.FailedToOpen) s = "Невалидный файл";
+            else if (_linter.SeriousError) s = "Найдены серьезные ошибки.";
+            else s = $"{_linter.Diagnostics.Count} стилистических ошибок";
+
+            return s;
+        }
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(InProgress))]
@@ -84,11 +99,11 @@ public partial class DocumentViewModel : ViewModelBase
     
     public MemoryStream SaveAnnotatedStream()
     {
-        _linter!.ApplyDiagnostics(Translations);
+        _linter!.ApplyDiagnostics(_translations);
         return _linter.Save();
     }
     
-    [RelayCommand(CanExecute = nameof(CanSave))]
+    [RelayCommand(CanExecute = nameof(CanSaveAnnotated))]
     private async Task SaveAnnotated()
     {
         var storageProvider = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).MainWindow!.StorageProvider;
@@ -106,14 +121,14 @@ public partial class DocumentViewModel : ViewModelBase
 
         if (file == null) return;
 
-        _linter!.ApplyDiagnostics(Translations);
+        _linter!.ApplyDiagnostics(_translations);
 
         _linter.SaveTo(file.TryGetLocalPath()!);
 
         CanSave = false;
     }
 
-    [RelayCommand(CanExecute = nameof(CanSave))]
+    [RelayCommand(CanExecute = nameof(CanSaveAutofixed))]
     private async Task SaveAutofixed()
     {
         var storageProvider = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).MainWindow!.StorageProvider;
@@ -132,7 +147,7 @@ public partial class DocumentViewModel : ViewModelBase
 
         _linter!.ClearDiagnostics();
         _linter.RunLints(true);
-        _linter.ApplyDiagnostics(Translations);
+        _linter.ApplyDiagnostics(_translations);
 
         _linter.SaveTo(file.TryGetLocalPath()!);
         CanSave = false;
@@ -153,4 +168,7 @@ public partial class DocumentViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SaveAnnotatedCommand))]
     [NotifyCanExecuteChangedFor(nameof(SaveAutofixedCommand))]
     private bool _canSave = false;
+
+    public bool CanSaveAnnotated => CanSave && !_linter!.FailedToOpen;
+    public bool CanSaveAutofixed => CanSave && !_linter!.SeriousError;
 }

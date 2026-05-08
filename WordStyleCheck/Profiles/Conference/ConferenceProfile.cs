@@ -6,6 +6,8 @@ namespace WordStyleCheck.Profiles.Conference;
 
 public class ConferenceProfile : IProfile
 {
+    public string Id => "conference";
+    public string Name => "Неуказанная конференция";
     public List<IClassifier> Classifiers { get; } =
     [
         new ConferenceParagraphData.Attacher(),
@@ -15,7 +17,7 @@ public class ConferenceProfile : IProfile
     public List<ILint> Lints { get; } =
     [
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.UniversalDecimalClassifier), "NoUdc", DiagnosticType.ContentError, false),
-        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.AuthorDetails), "NoAuthors", DiagnosticType.ContentError, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.AuthorDetails), "NoAuthors", DiagnosticType.CouldNotParse, false),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), "NoThesisTitle", DiagnosticType.CouldNotParse, false),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.BibliographyHeader), "NoBibliography", DiagnosticType.ContentError, true),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Copyright), "NoCopyright", DiagnosticType.ContentError, true),

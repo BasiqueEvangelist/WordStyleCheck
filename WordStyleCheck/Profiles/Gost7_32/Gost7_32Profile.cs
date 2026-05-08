@@ -6,6 +6,9 @@ namespace WordStyleCheck.Profiles.Gost7_32;
 
 public class Gost7_32Profile : IProfile
 {
+    public string Id => "gost-7.32";
+    public string Name => "ГОСТ 7.32-2017 (с добавками)";
+    
     public List<IClassifier> Classifiers { get; } =
     [
         new AttachGostDataClassifier(),

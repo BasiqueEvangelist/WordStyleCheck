@@ -70,16 +70,25 @@ public class WorkerService(ILogger<WorkerService> logger, Db db, IOptionsMonitor
         _pool.AddTask(task);
         var linter = await task.Result;
 
-        var file = linter.Save();
+        string objectKey;
+        if (!linter.FailedToOpen)
+        {
+            var file = linter.Save();
 
-        string objectKey = RandomNumberGenerator.GetHexString(32) + ".docx";
-        await s3.PutObjectAsync(new PutObjectArgs()
-            .WithBucket(options.CurrentValue.S3EgressBucket)
-            .WithObject(objectKey)
-            .WithStreamData(file)
-            .WithObjectSize(file.Length)
-            .WithContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-        
+            objectKey = RandomNumberGenerator.GetHexString(32) + ".docx";
+            await s3.PutObjectAsync(new PutObjectArgs()
+                .WithBucket(options.CurrentValue.S3EgressBucket)
+                .WithObject(objectKey)
+                .WithStreamData(file)
+                .WithObjectSize(file.Length)
+                .WithContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        }
+        else
+        {
+            // TODO: write this out properly.
+            objectKey = "";
+        }
+
         TaskOutputs outputs = new TaskOutputs()
         {
             OutputObject = objectKey

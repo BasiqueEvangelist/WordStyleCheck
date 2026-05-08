@@ -212,6 +212,7 @@ public class DocumentAnalysisContext
             catch (Exception e)
             {
                 Console.WriteLine($"Encountered exception while running {classifier.GetType().Name}: {e}");
+                // TODO: forward error to document linter.
             }
         }
     }

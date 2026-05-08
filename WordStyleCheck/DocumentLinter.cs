@@ -9,7 +9,7 @@ public class DocumentLinter : IDisposable, ILintContext
 {
     private MemoryStream _stream;
     private WordprocessingDocument? _document;
-    private DocumentAnalysisContext _analysisCtx;
+    private DocumentAnalysisContext? _analysisCtx;
     private IProfile _profile;
 
     private bool _autoFix;
@@ -24,23 +24,43 @@ public class DocumentLinter : IDisposable, ILintContext
             stream.CopyTo(_stream);
         }
 
-        _document = WordprocessingDocument.Open(_stream, true);
-
-        using (new LoudStopwatch("Loading document parts"))
+        try
         {
-            _ = _document.MainDocumentPart!.Document;
-            _ = _document.MainDocumentPart!.StyleDefinitionsPart!.Styles;
-            _ = _document.MainDocumentPart!.NumberingDefinitionsPart?.Numbering;
-            _ = _document.MainDocumentPart!.WordprocessingCommentsPart?.Comments;
+            _document = WordprocessingDocument.Open(_stream, true);
+
+            using (new LoudStopwatch("Loading document parts"))
+            {
+                _ = _document.MainDocumentPart!.Document;
+                _ = _document.MainDocumentPart!.StyleDefinitionsPart!.Styles;
+                _ = _document.MainDocumentPart!.NumberingDefinitionsPart?.Numbering;
+                _ = _document.MainDocumentPart!.WordprocessingCommentsPart?.Comments;
+            }
         }
-            
-        using (new LoudStopwatch("StripOldComments.Run"))
-            StripOldComments.Run(_document);
-            
-        _analysisCtx = new DocumentAnalysisContext(_document, profile.Classifiers);
-            
+        catch (Exception e)
+        {
+            ((ILintContext) this).AddMessage(new LintDiagnostic(
+                "InvalidDocx",
+                DiagnosticType.CouldNotOpen,
+                new StartOfDocumentDiagnosticContext(),
+                new()
+                {
+                    ["Exception"] = e.ToString()
+                }
+            ));
+        }
+
+        if (_document != null)
+        {
+            using (new LoudStopwatch("StripOldComments.Run"))
+                StripOldComments.Run(_document);
+
+            _analysisCtx = new DocumentAnalysisContext(_document, profile.Classifiers);
+        }
+
         _profile = profile;
     }
+    
+    public bool FailedToOpen => _analysisCtx == null;
 
     public List<LintDiagnostic> Diagnostics { get; } = [];
 
@@ -65,10 +85,12 @@ public class DocumentLinter : IDisposable, ILintContext
         AutoFixed = true;
     }
 
-    DocumentAnalysisContext ILintContext.Document => _analysisCtx;
+    DocumentAnalysisContext ILintContext.Document => _analysisCtx!;
 
     public void RunLints(bool autoFix)
     {
+        if (FailedToOpen) return;
+        
         _autoFix = autoFix;
         
         foreach (var lint in _profile.Lints)
@@ -112,6 +134,8 @@ public class DocumentLinter : IDisposable, ILintContext
 
     public void SaveTo(string path)
     {
+        if (FailedToOpen) throw new InvalidOperationException();
+        
         Save();
             
         _stream.Seek(0, SeekOrigin.Begin);
@@ -128,9 +152,11 @@ public class DocumentLinter : IDisposable, ILintContext
         
     public MemoryStream Save()
     {
+        if (FailedToOpen) throw new InvalidOperationException();
+
         _stream.Seek(0, SeekOrigin.Begin);
 
-        if (_document == null) return _stream!;
+        if (_document == null) return _stream;
 
         if (!_document.AutoSave) _document.Save();
         _document.Dispose();
@@ -138,7 +164,7 @@ public class DocumentLinter : IDisposable, ILintContext
 
         _stream.Seek(0, SeekOrigin.Begin);
             
-        return _stream!;
+        return _stream;
     }
 
     public void Dispose()
@@ -148,11 +174,13 @@ public class DocumentLinter : IDisposable, ILintContext
 
     public bool ApplyDiagnostics(List<LintDiagnostic> diagnostics, XmlTranslationsFile translations)
     {
+        if (FailedToOpen) return false;
+        
         bool changed = false;
         
         foreach (var message in diagnostics)
         {
-            _analysisCtx.WriteComment(message, translations);
+            _analysisCtx!.WriteComment(message, translations);
             changed = true;
         }
 

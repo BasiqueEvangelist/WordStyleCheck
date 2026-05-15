@@ -19,6 +19,14 @@
     <str key="NoThesisTitle">
         Не найдено название тезиса.
     </str>
+    
+    <str key="NoAbstract">
+        Не найдена аннотация.
+    </str>
+
+    <str key="NoKeywords">
+        Не найдены ключевые слова.
+    </str>
 
     <str key="NoBibliography">
         Не найден список использованных источников.
@@ -102,5 +110,25 @@
 
     <str key="BibliographySourceNotReferenced">
         Указываемый источник не был использован в тексте.
+    </str>
+    
+    <str key="IncorrectAbstractKeywordsFontSize">
+        Размер шрифта аннотации и ключевых слов должен быть ${ExpectedPt}пт.
+    </str>
+    
+    <str key="AbstractHeaderMustBeBold">
+        Текст `Аннотация.` должен быть выделен полужирным.
+    </str>
+
+    <str key="AbstractBodyMustBeItalic">
+        Содержимое аннотации должно быть выделено курсивом.
+    </str>
+
+    <str key="KeywordsHeaderMustBeBold">
+        Текст `Ключевые слова:` должен быть выделен полужирным.
+    </str>
+
+    <str key="KeywordsBodyMustBeItalic">
+        Ключевые слова должны быть выделены курсивом.
     </str>
 </dict>

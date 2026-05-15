@@ -92,6 +92,43 @@ public class ConferencePartsClassifier : IClassifier
         if (i >= paragraphs.Count) return;
 
         ctx.GetTool(paragraphs[i]).GetFeature(ConferenceParagraphData.Key)!.IsTitle = true;
+        i++;
+        
+        while (i < paragraphs.Count)
+        {
+            var tool = ctx.GetTool(paragraphs[i]);
+
+            if (tool.Contents.StartsWith("Аннотация"))
+            {
+                tool.GetFeature(ConferenceParagraphData.Key)!.IsAbstract = true;
+                i++;
+                break;
+            }
+
+            if (!tool.IsEmptyOrDrawing) break;
+            
+            i++;
+        }
+
+        if (i >= paragraphs.Count) return;
+        
+        while (i < paragraphs.Count)
+        {
+            var tool = ctx.GetTool(paragraphs[i]);
+
+            if (tool.Contents.StartsWith("Ключевые слова"))
+            {
+                tool.GetFeature(ConferenceParagraphData.Key)!.IsKeywords = true;
+                i++;
+                break;
+            }
+
+            if (!tool.IsEmptyOrDrawing) break;
+            
+            i++;
+        }
+
+        if (i >= paragraphs.Count) return;
 
         bool seenBibliography = false;
         while (i < paragraphs.Count)

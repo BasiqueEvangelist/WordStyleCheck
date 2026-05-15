@@ -5,12 +5,12 @@ namespace WordStyleCheck.Analysis;
 
 public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
 {
-    private readonly DocumentAnalysisContext _ctx;
+    public DocumentAnalysisContext Context { get; }
     public Paragraph Paragraph { get; }
 
     internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph paragraph)
     {
-        _ctx = ctx;
+        Context = ctx;
         Paragraph = paragraph;
 
         StringBuilder contents = new();
@@ -32,7 +32,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
             return ctx.DefaultParagraphStyle;
         })();
 
-        RunStyleId = _ctx.FollowStyleChain(StyleValues.Paragraph, styleId, x => x.LinkedStyle?.Val?.Value);
+        RunStyleId = Context.FollowStyleChain(StyleValues.Paragraph, styleId, x => x.LinkedStyle?.Val?.Value);
         
         OutlineLevel = FollowPropertyChain(
             x => x.OutlineLevel?.Val?.Value,
@@ -42,8 +42,8 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
 
         if (OutlineLevel == 9) OutlineLevel = null;
         
-        ProbablyHeading = OutlineLevel != null || _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
-        PossiblyPartOfList = _ctx.SniffStyleName(StyleValues.Paragraph, styleId, "List");
+        ProbablyHeading = OutlineLevel != null || Context.SniffStyleName(StyleValues.Paragraph, styleId, "Heading");
+        PossiblyPartOfList = Context.SniffStyleName(StyleValues.Paragraph, styleId, "List");
 
         if (!IsTableOfContents && ContainingTableCell == null && NumberingId == null)
         {
@@ -58,7 +58,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
     
     public string Contents { get; }
 
-    public List<RunPropertiesTool> Runs => Utils.DirectRunChildren(Paragraph).Select(x => _ctx.GetTool(x, this)).ToList();
+    public List<RunPropertiesTool> Runs => Utils.DirectRunChildren(Paragraph).Select(x => Context.GetTool(x, this)).ToList();
     
     public int? FirstLineIndent
     {
@@ -104,7 +104,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         get
         {
             if (ContextualSpacing && this.Paragraph.PreviousSibling() is Paragraph p &&
-                _ctx.GetTool(p).Style?.StyleId == Style?.StyleId)
+                Context.GetTool(p).Style?.StyleId == Style?.StyleId)
                 return 0;
             
             return Utils.ParseTwipsMeasure(FollowPropertyChain(
@@ -127,7 +127,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         get
         {
             if (ContextualSpacing && this.Paragraph.NextSibling() is Paragraph p &&
-                _ctx.GetTool(p).Style?.StyleId == Style?.StyleId)
+                Context.GetTool(p).Style?.StyleId == Style?.StyleId)
                 return 0;
             
             return Utils.ParseTwipsMeasure(FollowPropertyChain(
@@ -161,7 +161,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
     {
         get
         {
-            if (_ctx.GetContextFor(Paragraph).Any(x => x.InstrText != null && x.InstrText.Contains("TOC"))) return true;
+            if (Context.GetContextFor(Paragraph).Any(x => x.InstrText != null && x.InstrText.Contains("TOC"))) return true;
             if (ContainingSdtBlock is {SdtProperties: {} props} && props.Descendants<DocPartGallery>().Any(x => x.Val?.Value == "Table of Contents"))
                 return true;
             
@@ -226,14 +226,14 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         
         if (Style?.StyleId != null)
         {
-            var result = _ctx.FollowStyleChain(StyleValues.Paragraph, Style.StyleId, x => x.StyleParagraphProperties != null ? styleGetter(x.StyleParagraphProperties) : default);
+            var result = Context.FollowStyleChain(StyleValues.Paragraph, Style.StyleId, x => x.StyleParagraphProperties != null ? styleGetter(x.StyleParagraphProperties) : default);
             if (result != null)
                 return result;
         }
 
-        if (_ctx.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle != null)
+        if (Context.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle != null)
         {
-            var result = baseStyleGetter(_ctx.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults
+            var result = baseStyleGetter(Context.Document.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults
                 ?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle!);
             if (result != null)
                 return result;

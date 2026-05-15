@@ -14,6 +14,8 @@ public interface IDiagnosticContext
     IDiagnosticContext? TryMerge(IDiagnosticContext previous) => null;
 
     void Hash(NonCryptographicHashAlgorithm hasher);
+
+    public bool AfterAll => false;
 }
 
 public record struct DiagnosticContextLine(string Before, string Text, string After);

@@ -17,6 +17,8 @@ public class ConferenceParagraphData
     public List<string>? UniversalDecimalClassifier { get; set; }
     public AuthorData? AuthorData { get; set; }
     public bool IsTitle { get; set; }
+    public bool IsAbstract { get; set; }
+    public bool IsKeywords { get; set; }
     public bool IsBibliographyHeader { get; set; }
     public bool IsBibliographySource { get; set; }
     public bool IsCopyright { get; set; }
@@ -28,6 +30,8 @@ public class ConferenceParagraphData
             if (UniversalDecimalClassifier != null) return ConferenceParagraphClass.UniversalDecimalClassifier;
             if (AuthorData != null) return ConferenceParagraphClass.AuthorDetails;
             if (IsTitle) return ConferenceParagraphClass.ThesisTitle;
+            if (IsAbstract) return ConferenceParagraphClass.Abstract;
+            if (IsKeywords) return ConferenceParagraphClass.Keywords;
             if (IsBibliographyHeader) return ConferenceParagraphClass.BibliographyHeader;
             if (IsBibliographySource) return ConferenceParagraphClass.BibliographySource;
             if (IsCopyright) return ConferenceParagraphClass.Copyright;

@@ -19,6 +19,8 @@ public class ConferenceProfile : IProfile
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.UniversalDecimalClassifier), "NoUdc", DiagnosticType.ContentError, false),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.AuthorDetails), "NoAuthors", DiagnosticType.CouldNotParse, false),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), "NoThesisTitle", DiagnosticType.CouldNotParse, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Abstract), "NoAbstract", DiagnosticType.ContentError, false),
+        new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Keywords), "NoKeywords", DiagnosticType.ContentError, false),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.BibliographyHeader), "NoBibliography", DiagnosticType.ContentError, true),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Copyright), "NoCopyright", DiagnosticType.ContentError, true),
         
@@ -55,7 +57,11 @@ public class ConferenceProfile : IProfile
         new IncorrectCaptionedNumberingLint(_ => true, CaptionType.Listing, "IncorrectListingNumbering", null, false),
         new IncorrectCaptionedNumberingLint(_ => true, CaptionType.Table, "IncorrectTableNumbering", null, false),
         
-        new BibliographySourceNotReferencedLint(IsOfClass(ConferenceParagraphClass.BibliographySource))
+        new BibliographySourceNotReferencedLint(IsOfClass(ConferenceParagraphClass.BibliographySource)),
+        
+        new BoldThenItalicLint(IsOfClass(ConferenceParagraphClass.Abstract), "Аннотация.", "AbstractHeaderMustBeBold", "AbstractBodyMustBeItalic"),
+        new BoldThenItalicLint(IsOfClass(ConferenceParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBold", "KeywordsBodyMustBeItalic"),
+        new FontSizeLint(Or(IsOfClass(ConferenceParagraphClass.Abstract), IsOfClass(ConferenceParagraphClass.Keywords)), 26, true, "IncorrectAbstractKeywordsFontSize"),
     ];
 
     private static bool IsBodyText(ParagraphPropertiesTool tool)
@@ -63,4 +69,8 @@ public class ConferenceProfile : IProfile
 
     private static Predicate<ParagraphPropertiesTool> IsOfClass(ConferenceParagraphClass klass)
         => x => x.GetFeature(ConferenceParagraphData.Key)!.Class == klass;
+
+    private static Predicate<ParagraphPropertiesTool> Or(Predicate<ParagraphPropertiesTool> first,
+        Predicate<ParagraphPropertiesTool> second)
+        => x => first(x) || second(x);
 }

@@ -208,4 +208,72 @@ public class Utils
     {
         return s.Replace("\u200e", "").Trim();
     }
+
+    public static (Run first, Run second) SplitRunAt(Run run, int index)
+    {
+        Run second = new Run();
+
+        second.RunProperties = (RunProperties?)run.RunProperties?.CloneNode(true);
+
+        int current = 0;
+        foreach (var child in run.ChildElements.ToList())
+        {
+            if (child is RunProperties)
+            {
+                // Nothing.
+            }
+            else if (child is Text text)
+            {
+                if (current + text.Text.Length < index)
+                {
+                    // Nothing.
+                }
+                else if (current >= index)
+                {
+                    text.Remove();
+                    second.AppendChild(text);
+                }
+                else
+                {
+                    int localSplit = index - current;
+
+                    string rest = text.Text[localSplit..];
+                    text.Text = text.Text[..localSplit];
+
+                    second.AppendChild(new Text
+                    {
+                        Text = rest
+                    });
+                }
+                
+                current += text.Text.Length;
+            }
+            else if (child is TabChar tab)
+            {
+                if (current + 1 < index)
+                {
+                    // Nothing.
+                }
+                else if (current >= index)
+                {
+                    tab.Remove();
+                    second.AppendChild(tab);
+                }
+
+                current += 1;
+            }
+            else
+            {
+                if (current >= index)
+                {
+                    child.Remove();
+                    second.AppendChild(child);
+                }
+            }
+        }
+
+        run.InsertAfterSelf(second);
+
+        return (run, second);
+    }
 }

@@ -188,7 +188,7 @@ public class DocumentLinter : IDisposable, ILintContext
         
         bool changed = false;
         
-        foreach (var message in diagnostics)
+        foreach (var message in diagnostics.OrderBy(x => x.Context.AfterAll ? 1 : 0))
         {
             _analysisCtx!.WriteComment(message, translations);
             changed = true;

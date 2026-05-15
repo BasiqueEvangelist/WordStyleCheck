@@ -6,7 +6,7 @@ namespace WordStyleCheck.Profiles.Conference;
 
 public class ConferencePartsClassifier : IClassifier
 {
-    private static readonly Regex UdcRegex = new Regex("УДК ([0-9]+(?:\\.[0-9]+)*)");
+    private static readonly Regex UdcRegex = new Regex("[0-9]+(?:\\.[0-9]+)*");
     
     private static readonly Regex EmailRegex = new Regex("[\\w.!#$%&'*+/=?^`{|}~-]+@[a-z\\d](?:[a-z\\d-]{0,61}[a-z\\d])?(?:\\.[a-z\\d](?:[a-z\\d-]{0,61}[a-z\\d])?)*");
     
@@ -131,9 +131,11 @@ public class ConferencePartsClassifier : IClassifier
     {
         string text = Utils.StripJunk(tool.Contents);
 
+        if (!text.Contains("УДК")) return null;
+        
         var matches = UdcRegex.Matches(text);
         if (matches.Count == 0) return null;
 
-        return matches.Select(x => x.Groups[1].Captures[0].Value).ToList();
+        return matches.Select(x => x.Value).ToList();
     }
 }

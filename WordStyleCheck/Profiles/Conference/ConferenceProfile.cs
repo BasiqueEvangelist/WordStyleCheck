@@ -22,6 +22,9 @@ public class ConferenceProfile : IProfile
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.BibliographyHeader), "NoBibliography", DiagnosticType.ContentError, true),
         new AtLeastOneLint(IsOfClass(ConferenceParagraphClass.Copyright), "NoCopyright", DiagnosticType.ContentError, true),
         
+        // TODO: incorrect UDC.
+        // TODO: incorrect copyright.
+        
         new PageSizeLint(false),
         new TextFontLint(),
         new FontSizeLint(

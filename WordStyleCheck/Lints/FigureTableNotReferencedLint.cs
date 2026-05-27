@@ -155,18 +155,20 @@ public class FigureTableNotReferencedLint : ILint
             {
                 if (referencedNumbers.TryGetValue(tool.CaptionData!.Value.Number, out var firstMention))
                 {
-                    var fToplevel = FindTopLevel(p);
-                    var mToplevel = FindTopLevel(firstMention);
-
-                    var bodyList = fToplevel.Parent!.ChildElements.ToList();
-
-                    var fIdx = bodyList.IndexOf(fToplevel);
-                    var mIdx = bodyList.IndexOf(mToplevel);
-
-                    if (fIdx < mIdx)
-                    {
-                        ctx.AddMessage(new LintDiagnostic(beforeFirstRefId, DiagnosticType.ContentError, new ParagraphDiagnosticContext(p)));
-                    }
+                    // TODO: figure out if check for beforeFirstRef is even needed here
+                    
+                    // var fToplevel = FindTopLevel(p);
+                    // var mToplevel = FindTopLevel(firstMention);
+                    //
+                    // var bodyList = fToplevel.Parent!.ChildElements.ToList();
+                    //
+                    // var fIdx = bodyList.IndexOf(fToplevel);
+                    // var mIdx = bodyList.IndexOf(mToplevel);
+                    //
+                    // if (fIdx < mIdx)
+                    // {
+                    //     ctx.AddMessage(new LintDiagnostic(beforeFirstRefId, DiagnosticType.ContentError, new ParagraphDiagnosticContext(p)));
+                    // }
                 }
                 else
                 {

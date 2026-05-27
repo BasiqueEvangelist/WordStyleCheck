@@ -51,11 +51,24 @@ public partial class MainWindowViewModel : ViewModelBase
 
         document = null;
 
-        Archive = await ZipArchive.CreateAsync(await files[0].OpenReadAsync(), ZipArchiveMode.Read, false, null);
+        var ms = new MemoryStream();
+        await using (var fs = await files[0].OpenReadAsync())
+        {
+            await fs.CopyToAsync(ms);
+        }
+
+        ms.Seek(0, SeekOrigin.Begin);
+
+        var ms2 = new MemoryStream();
+        ms.CopyTo(ms2);
+        ms.Seek(0, SeekOrigin.Begin);
+        ms2.Seek(0, SeekOrigin.Begin);
+        
+        Archive = await ZipArchive.CreateAsync(ms, ZipArchiveMode.Read, false, null);
 
         if (files[0].Name.EndsWith(".docx"))
         {
-            document = new DocumentAnalysisContext(WordprocessingDocument.Open(files[0].TryGetLocalPath()!, false), new Gost7_32Profile().Classifiers);
+            document = new DocumentAnalysisContext(WordprocessingDocument.Open(ms2, false), new Gost7_32Profile().Classifiers);
         } 
     }
 

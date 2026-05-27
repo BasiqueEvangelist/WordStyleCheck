@@ -137,7 +137,7 @@ public class FigureTableNotReferencedLint : ILint
                 {
                     ConsumeReferences(referencedTableNumbers);
                 }
-                else if (word.ToLower() is "листинг" or "листинги" or "листенге" or "листингах")
+                else if (word.ToLower() is "листинг" or "листинги" or "листинге" or "листинга" or "листингах")
                 {
                     ConsumeReferences(referencedListingNumbers);
                 }

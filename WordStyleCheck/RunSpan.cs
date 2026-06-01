@@ -50,18 +50,16 @@ public record class RunSpan(List<RunPropertiesTool> Runs, int FirstStart, int La
             if (FirstStart != 0)
             {
                 var split = Utils.SplitRunAt(center, FirstStart);
-                yield return split.first;
 
                 center = split.second;
             }
-
-            yield return center;
-
+            
             if (LastEnd != len)
             {
-                var split = Utils.SplitRunAt(center, LastEnd);
-                yield return split.second;
+                center = Utils.SplitRunAt(center, LastEnd - FirstStart).first;
             }
+
+            yield return center;
 
             yield break;
         }
@@ -71,14 +69,12 @@ public record class RunSpan(List<RunPropertiesTool> Runs, int FirstStart, int La
             if (i == 0 && FirstStart != 0)
             {
                 var split = Utils.SplitRunAt(Runs[i].Run, FirstStart);
-                yield return split.first;
                 yield return split.second;
             }
             else if (i == Runs.Count - 1 && LastEnd != Runs[i].Contents.Length)
             {
                 var split = Utils.SplitRunAt(Runs[i].Run, LastEnd);
                 yield return split.first;
-                yield return split.second;
             }
             else
             {

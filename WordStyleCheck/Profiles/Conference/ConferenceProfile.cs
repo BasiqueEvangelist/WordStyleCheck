@@ -63,7 +63,8 @@ public class ConferenceProfile : IProfile
         new BoldThenItalicLint(IsOfClass(ConferenceParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBold", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(Or(IsOfClass(ConferenceParagraphClass.Abstract), IsOfClass(ConferenceParagraphClass.Keywords)), 26, true, "IncorrectAbstractKeywordsFontSize"),
         
-        new TextColorLint()
+        new TextColorLint(),
+        new BadOuterWhitespaceLint(IsOfClass(ConferenceParagraphClass.BodyText))
     ];
 
     private static bool IsBodyText(ParagraphPropertiesTool tool)

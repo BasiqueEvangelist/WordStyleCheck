@@ -207,4 +207,12 @@
     <str key="IncorrectHeadingOutlineLevel">
         Заголовок должен иметь структурный уровень, равный иерархическому уровню. (${Expected} ≠ ${Actual}) 
     </str>
+
+    <str key="BadWhitespaceBeforeText">
+        Не должно быть пробелов в начале абзаца.
+    </str>
+
+    <str key="BadWhitespaceAfterText">
+        Не должно быть пробелов в конце абзаца.
+    </str>
 </dict>

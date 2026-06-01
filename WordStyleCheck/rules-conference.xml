@@ -139,4 +139,12 @@
     <str key="TextHighlighted">
         Текст должен быть выделен ничем, а не ${ActualColorRussianInstrumental}.
     </str>
+    
+    <str key="BadWhitespaceBeforeText">
+        Не должно быть пробелов в начале абзаца.
+    </str>
+
+    <str key="BadWhitespaceAfterText">
+        Не должно быть пробелов в конце абзаца.
+    </str>
 </dict>

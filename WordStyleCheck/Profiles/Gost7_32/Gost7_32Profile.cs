@@ -94,7 +94,8 @@ public class Gost7_32Profile : IProfile
         new ForceBoldLint(true, x => x.GetFeature(GostParagraphData.Key) is { Class: GostParagraphClass.Heading, Inner.OutlineLevel: null or < 2 } or {Class: GostParagraphClass.StructuralElementHeader}, "HeadingNotBold"),
         new ForceBoldLint(false, x => x is { OutlineLevel: >= 2 }, "SubSubHeadingBold"),
         new ForceBoldLint(false, x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.BodyText}, "BodyTextBold"),
-        new TextColorLint()
+        new TextColorLint(),
+        new BadOuterWhitespaceLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText)
     ];
     
     private static bool ShouldBeInToc(ParagraphPropertiesTool tool)

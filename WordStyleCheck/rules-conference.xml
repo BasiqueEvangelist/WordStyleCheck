@@ -131,4 +131,12 @@
     <str key="KeywordsBodyMustBeItalic">
         Ключевые слова должны быть выделены курсивом.
     </str>
+
+    <str key="TextNotAutoColor">
+        Цвет текста должен быть незаданным, а не цветом `${ActualColor}`.
+    </str>
+
+    <str key="TextHighlighted">
+        Текст должен быть выделен ничем, а не ${ActualColorRussianInstrumental}.
+    </str>
 </dict>

@@ -185,11 +185,11 @@
     </str>
 
 	<str key="TextNotAutoColor">
-		Цвет текста не должен быть задан.
+        Цвет текста должен быть незаданным, а не цветом `${ActualColor}`.
 	</str>
 
 	<str key="TextHighlighted">
-		Текст не должен быть выделен.
+		Текст должен быть выделен ничем, а не ${ActualColorRussianInstrumental}.
 	</str>
 	
 	<str key="NonHeadingWithOutlineLevel">

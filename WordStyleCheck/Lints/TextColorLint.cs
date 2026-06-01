@@ -8,6 +8,27 @@ public class TextColorLint : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics => ["TextNotAutoColor", "TextHighlighted"];
 
+    private static readonly Dictionary<HighlightColorValues, string> ColorsRussianInstrumental = new()
+    {
+        [HighlightColorValues.Black] = "чёрным",
+        [HighlightColorValues.Blue] = "синим",
+        [HighlightColorValues.Cyan] = "голубым",
+        [HighlightColorValues.DarkBlue] = "темно-синим",
+        [HighlightColorValues.DarkCyan] = "циановым",
+        [HighlightColorValues.DarkGray] = "темно-серым",
+        [HighlightColorValues.DarkGreen] = "темно-зелёным",
+        [HighlightColorValues.DarkMagenta] = "темно-фиолетовым",
+        [HighlightColorValues.DarkRed] = "темно-красным",
+        [HighlightColorValues.DarkYellow] = "темно-жёлтым",
+        [HighlightColorValues.Green] = "зелёным",
+        [HighlightColorValues.LightGray] = "светло-серым",
+        [HighlightColorValues.Magenta] = "фиолетовым",
+        [HighlightColorValues.None] = "никаким",
+        [HighlightColorValues.Red] = "красным",
+        [HighlightColorValues.White] = "белым",
+        [HighlightColorValues.Yellow] = "жёлтым",
+    };
+
     public void Run(ILintContext ctx)
     {
         foreach (var p in ctx.Document.AllParagraphs)
@@ -33,7 +54,13 @@ public class TextColorLint : ILint
                     if (!ctx.AutomaticallyFix)
                     {
                         ctx.AddMessage(new LintDiagnostic("TextNotAutoColor", DiagnosticType.FormattingError,
-                            new RunDiagnosticContext(r)));
+                            new RunDiagnosticContext(r))
+                        {
+                            Parameters = new()
+                            {
+                                ["ActualColor"] = tool.Color!
+                            }
+                        });
                     }
                     else
                     {
@@ -54,7 +81,13 @@ public class TextColorLint : ILint
                     if (!ctx.AutomaticallyFix)
                     {
                         ctx.AddMessage(new LintDiagnostic("TextHighlighted", DiagnosticType.FormattingError,
-                            new RunDiagnosticContext(r)));
+                            new RunDiagnosticContext(r))
+                        {
+                            Parameters = new()
+                            {
+                                ["ActualColorRussianInstrumental"] = ColorsRussianInstrumental[tool.Highlight]
+                            }
+                        });
                     }
                     else
                     {

@@ -1,6 +1,6 @@
 using WordStyleCheck.Analysis;
 
-namespace WordStyleCheck.Profiles.Conference;
+namespace WordStyleCheck.Profiles.IkbConference;
 
 public class AuthorData
 {

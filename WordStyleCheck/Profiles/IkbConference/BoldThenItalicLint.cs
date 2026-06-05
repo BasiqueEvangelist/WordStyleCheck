@@ -3,7 +3,7 @@ using WordStyleCheck.Analysis;
 using WordStyleCheck.Context;
 using WordStyleCheck.Lints;
 
-namespace WordStyleCheck.Profiles.Conference;
+namespace WordStyleCheck.Profiles.IkbConference;
 
 public class BoldThenItalicLint(Predicate<ParagraphPropertiesTool> predicate, string header, string headerMessageId, string bodyMessageId) : ILint
 {

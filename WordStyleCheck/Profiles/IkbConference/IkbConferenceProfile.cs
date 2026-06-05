@@ -2,16 +2,16 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 using WordStyleCheck.Lints;
 
-namespace WordStyleCheck.Profiles.Conference;
+namespace WordStyleCheck.Profiles.IkbConference;
 
-public class ConferenceProfile : IProfile
+public class IkbConferenceProfile : IProfile
 {
-    public string Id => "conference";
-    public string Name => "Неуказанная конференция";
+    public string Id => "ikb-conference";
+    public string Name => "Конференция ИКБ";
     public List<IClassifier> Classifiers { get; } =
     [
-        new ConferenceParagraphData.Attacher(),
-        new ConferencePartsClassifier()
+        new IkbConferenceParagraphData.Attacher(),
+        new IkbConferencePartsClassifier()
     ];
 
     public List<ILint> Lints { get; } =
@@ -68,10 +68,10 @@ public class ConferenceProfile : IProfile
     ];
 
     private static bool IsBodyText(ParagraphPropertiesTool tool)
-        => tool.GetFeature(ConferenceParagraphData.Key)!.Class == ConferenceParagraphClass.BodyText;
+        => tool.GetFeature(IkbConferenceParagraphData.Key)!.Class == ConferenceParagraphClass.BodyText;
 
     private static Predicate<ParagraphPropertiesTool> IsOfClass(ConferenceParagraphClass klass)
-        => x => x.GetFeature(ConferenceParagraphData.Key)!.Class == klass;
+        => x => x.GetFeature(IkbConferenceParagraphData.Key)!.Class == klass;
 
     private static Predicate<ParagraphPropertiesTool> Or(Predicate<ParagraphPropertiesTool> first,
         Predicate<ParagraphPropertiesTool> second)

@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 
-namespace WordStyleCheck.Profiles.Conference;
+namespace WordStyleCheck.Profiles.IkbConference;
 
-public class ConferencePartsClassifier : IClassifier
+public class IkbConferencePartsClassifier : IClassifier
 {
     private static readonly Regex UdcRegex = new Regex("[0-9]+(?:\\.[0-9]+)*");
     
@@ -22,7 +22,7 @@ public class ConferencePartsClassifier : IClassifier
 
             if (ParseUdc(tool) is { } udc)
             {
-                tool.GetFeature(ConferenceParagraphData.Key)!.UniversalDecimalClassifier = udc;
+                tool.GetFeature(IkbConferenceParagraphData.Key)!.UniversalDecimalClassifier = udc;
                 i++;
                 break;
             }
@@ -66,7 +66,7 @@ public class ConferencePartsClassifier : IClassifier
             while (true)
             {
                 author.Paragraphs.Add(tool);
-                tool.GetFeature(ConferenceParagraphData.Key)!.AuthorData = author;
+                tool.GetFeature(IkbConferenceParagraphData.Key)!.AuthorData = author;
 
                 i += 1;
 
@@ -91,7 +91,7 @@ public class ConferencePartsClassifier : IClassifier
         
         if (i >= paragraphs.Count) return;
 
-        ctx.GetTool(paragraphs[i]).GetFeature(ConferenceParagraphData.Key)!.IsTitle = true;
+        ctx.GetTool(paragraphs[i]).GetFeature(IkbConferenceParagraphData.Key)!.IsTitle = true;
         i++;
         
         while (i < paragraphs.Count)
@@ -100,7 +100,7 @@ public class ConferencePartsClassifier : IClassifier
 
             if (tool.Contents.StartsWith("Аннотация"))
             {
-                tool.GetFeature(ConferenceParagraphData.Key)!.IsAbstract = true;
+                tool.GetFeature(IkbConferenceParagraphData.Key)!.IsAbstract = true;
                 i++;
                 break;
             }
@@ -118,7 +118,7 @@ public class ConferencePartsClassifier : IClassifier
 
             if (tool.Contents.StartsWith("Ключевые слова"))
             {
-                tool.GetFeature(ConferenceParagraphData.Key)!.IsKeywords = true;
+                tool.GetFeature(IkbConferenceParagraphData.Key)!.IsKeywords = true;
                 i++;
                 break;
             }
@@ -143,7 +143,7 @@ public class ConferencePartsClassifier : IClassifier
                 {
                     if (content.Equals(option, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tool.GetFeature(ConferenceParagraphData.Key)!.IsBibliographyHeader = true;
+                        tool.GetFeature(IkbConferenceParagraphData.Key)!.IsBibliographyHeader = true;
                         seenBibliography = true;
                         break;
                     }
@@ -152,10 +152,10 @@ public class ConferencePartsClassifier : IClassifier
             else
             {
                 if (!tool.Contents.StartsWith("©"))
-                    tool.GetFeature(ConferenceParagraphData.Key)!.IsBibliographySource = true;
+                    tool.GetFeature(IkbConferenceParagraphData.Key)!.IsBibliographySource = true;
                 else
                 {
-                    tool.GetFeature(ConferenceParagraphData.Key)!.IsCopyright = true;
+                    tool.GetFeature(IkbConferenceParagraphData.Key)!.IsCopyright = true;
                     break;
                 }
             }

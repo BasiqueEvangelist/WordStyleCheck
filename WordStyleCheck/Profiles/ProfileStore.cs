@@ -1,5 +1,5 @@
-using WordStyleCheck.Profiles.Conference;
 using WordStyleCheck.Profiles.Gost7_32;
+using WordStyleCheck.Profiles.IkbConference;
 
 namespace WordStyleCheck.Profiles;
 
@@ -10,7 +10,7 @@ public static class ProfileStore
     static ProfileStore()
     {
         AddProfile(new Gost7_32Profile());
-        AddProfile(new ConferenceProfile());
+        AddProfile(new IkbConferenceProfile());
     }
     
     public static readonly IEnumerable<IProfile> Profiles = _profiles.Values;

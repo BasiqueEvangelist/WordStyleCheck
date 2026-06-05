@@ -1,15 +1,15 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 
-namespace WordStyleCheck.Profiles.Conference;
+namespace WordStyleCheck.Profiles.IkbConference;
 
-public class ConferenceParagraphData
+public class IkbConferenceParagraphData
 {
-    public static readonly FeatureKey<ConferenceParagraphData, ParagraphPropertiesTool> Key = new();
+    public static readonly FeatureKey<IkbConferenceParagraphData, ParagraphPropertiesTool> Key = new();
 
     public ParagraphPropertiesTool Inner { get; }
 
-    public ConferenceParagraphData(ParagraphPropertiesTool tool)
+    public IkbConferenceParagraphData(ParagraphPropertiesTool tool)
     {
         Inner = tool;
     }
@@ -53,7 +53,7 @@ public class ConferenceParagraphData
             foreach (var p in ctx.AllParagraphs)
             {
                 var tool = ctx.GetTool(p);
-                tool.SetFeature(ConferenceParagraphData.Key, new ConferenceParagraphData(tool));
+                tool.SetFeature(IkbConferenceParagraphData.Key, new IkbConferenceParagraphData(tool));
             }
         }
     }

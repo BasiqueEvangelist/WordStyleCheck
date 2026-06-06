@@ -19,7 +19,7 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
             if (tool.IsIgnored) continue;
             if (!predicate(tool)) continue; 
             
-            if (Math.Abs((tool.FirstLineIndent ?? 0) - firstLine) >= 5)
+            if (Math.Abs((tool.FirstLineIndent ?? 0) - firstLine) >= 5 && !(tool.MaybeParagraphContinuation && (tool.FirstLineIndent ?? 0) == 0))
             {
                 if (!ctx.AutomaticallyFix)
                 {

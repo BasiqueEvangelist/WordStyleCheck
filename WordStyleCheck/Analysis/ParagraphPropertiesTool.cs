@@ -221,7 +221,22 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
     public bool IsEmptyOrDrawing { get; }
 
     public bool IsIgnored { get; set; }
-    
+
+    public bool MaybeParagraphContinuation
+    {
+        get
+        {
+            switch (Paragraph.PreviousSibling())
+            {
+                case Paragraph p when Context.GetTool(p).EquationData != null:
+                case Table t when Context.GetTool(t).EquationData != null:
+                    return Contents.Length > 0 && char.IsLower(Contents[0]);
+                default:
+                    return false;
+            }
+        }
+    }
+
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)
     {
         if (Paragraph.ParagraphProperties != null)

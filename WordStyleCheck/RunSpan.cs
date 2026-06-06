@@ -1,5 +1,6 @@
 using System.IO.Hashing;
 using System.Text;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using WordStyleCheck.Analysis;
 
@@ -80,6 +81,26 @@ public record class RunSpan(List<RunPropertiesTool> Runs, int FirstStart, int La
             {
                 yield return Runs[i].Run;
             }
+        }
+    }
+
+    public void Replace(string contents)
+    {
+        var properties = (RunProperties?) Runs.MaxBy(x => x.Contents.Length)!.Run.RunProperties?.CloneNode(true);
+        var runs = Isolate().ToList();
+
+        var run = new Run();
+        run.RunProperties = properties;
+        run.AppendChild(new Text(contents)
+        {
+            Space = SpaceProcessingModeValues.Preserve
+        });
+
+        runs[0].InsertBeforeSelf(run);
+
+        foreach (var old in runs)
+        {
+            old.Remove();
         }
     }
 

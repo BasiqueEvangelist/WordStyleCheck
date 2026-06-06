@@ -15,5 +15,6 @@
     <ItemGroup>
         <EmbeddedResource Include="rules-ikb-conference.xml" />
         <EmbeddedResource Include="rules-gost-7.32.xml" />
+        <EmbeddedResource Include="rules-ntk.xml" />
     </ItemGroup>
 </Project>

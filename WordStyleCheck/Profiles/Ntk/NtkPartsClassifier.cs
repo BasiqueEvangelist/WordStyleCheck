@@ -7,7 +7,7 @@ namespace WordStyleCheck.Profiles.Ntk;
 public class NtkPartsClassifier : IClassifier
 {
     [StringSyntax("Regex")]
-    private const string NameRegexText = @"[А-Я][А-Я]+\s+[А-Я]\.\s*[А-Я]\.";
+    private const string NameRegexText = @"[А-Я][а-я]+\s+[А-Я]\.\s*[А-Я]\.";
     
     private static readonly Regex NamesRegex = new Regex(@$"({NameRegexText},\s*)*{NameRegexText}");
 
@@ -59,6 +59,10 @@ public class NtkPartsClassifier : IClassifier
                 tool.GetFeature(NtkParagraphData.Key)!.IsKeywords = true;
                 i++;
                 break;
+            }
+            else if (tool.Contents.StartsWith("РТУ МИРЭА, Институт"))
+            {
+                tool.GetFeature(NtkParagraphData.Key)!.IsSourceInstitute = true;
             }
             else if (!tool.IsEmptyOrDrawing)
             {

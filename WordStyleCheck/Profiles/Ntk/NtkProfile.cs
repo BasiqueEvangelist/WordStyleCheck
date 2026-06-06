@@ -21,6 +21,8 @@ public class NtkProfile : IProfile
             "IncorrectBibliographyHeaderContents"
         ),
         
+        new ForbidLint(IsOfClass(NtkParagraphClass.Junk), "JunkParagraph"),
+        
         new TextFontLint(),
         new FontSizeLint(
             IsOfClass(

@@ -15,7 +15,7 @@ public struct CaptionClassifierData
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
 
-    private static bool HasFigure(Paragraph p)
+    internal static bool HasFigure(OpenXmlElement p)
     {
         return p.Descendants().Any(x => x is Picture or Drawing or EmbeddedObject);
     }
@@ -97,6 +97,11 @@ public struct CaptionClassifierData
             }
         }
 
+        return TryParse(p, type, isBelow, targeted);
+    }
+
+    internal static CaptionClassifierData? TryParse(ParagraphPropertiesTool p, CaptionType type, bool isBelow, OpenXmlElement? targeted)
+    {
         string text = p.Contents;
         
         int firstPartEnd;
@@ -114,10 +119,10 @@ public struct CaptionClassifierData
 
         switch (type)
         {
-            case CaptionType.Table when firstPart.Equals("продолжение таблицы", StringComparison.InvariantCultureIgnoreCase):
+            case CaptionType.Table when (firstPart.Equals("продолжение таблицы", StringComparison.InvariantCultureIgnoreCase) || firstPart.Equals("продолжение табл.", StringComparison.InvariantCultureIgnoreCase) || firstPart.Equals("окончание табл.", StringComparison.InvariantCultureIgnoreCase)):
                 isContinuation = true;        
                 break;
-            case CaptionType.Figure when !firstPart.Equals("рисунок", StringComparison.InvariantCultureIgnoreCase):
+            case CaptionType.Figure when !(firstPart.Equals("рисунок", StringComparison.InvariantCultureIgnoreCase) || firstPart.Equals("рис.", StringComparison.InvariantCultureIgnoreCase)):
             case CaptionType.Listing when !firstPart.Equals("листинг", StringComparison.InvariantCultureIgnoreCase):
             case CaptionType.Table  when !firstPart.Equals("таблица", StringComparison.InvariantCultureIgnoreCase):
                 return null;

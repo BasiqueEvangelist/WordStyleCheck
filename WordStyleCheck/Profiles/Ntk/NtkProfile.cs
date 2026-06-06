@@ -9,6 +9,8 @@ public class NtkProfile : IProfile
     public string Id => "ntk";
     public string Name => "Научно-техническая конференция";
     public List<IClassifier> Classifiers { get; } = [
+        new TableFigureClassifier(),
+        new EquationTableClassifier(),
         new NtkParagraphData.Attacher(),
         new NtkPartsClassifier()
     ];

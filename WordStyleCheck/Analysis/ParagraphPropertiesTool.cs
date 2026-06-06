@@ -54,6 +54,11 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         
         IsEmptyOrDrawing = !Utils.DirectRunChildren(paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
         IsEmptyOrWhitespace = IsEmptyOrDrawing && !paragraph.Descendants().Any(x => x is Drawing);
+
+        if (Utils.AscendToAnscestor<Table>(Paragraph) is { } table)
+        {
+            ContainingTable = ctx.GetTool(table);
+        }
     }
     
     public string Contents { get; }
@@ -148,6 +153,8 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
     public Style? Style { get; }
 
     public string? RunStyleId { get; }
+
+    public TablePropertiesTool? ContainingTable { get; }
 
     public TableRow? ContainingTableRow => Utils.AscendToAnscestor<TableRow>(Paragraph);
 

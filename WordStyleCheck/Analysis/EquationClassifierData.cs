@@ -1,15 +1,16 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Analysis;
 
 public class EquationClassifierData
 {
-    public required DocumentFormat.OpenXml.Math.OfficeMath MathElement { get; init; }
+    public required OpenXmlElement MathElement { get; init; }
     public required string? Number { get; init; }
     
     public static EquationClassifierData? Classify(ParagraphPropertiesTool p)
     {
-        DocumentFormat.OpenXml.Math.OfficeMath? oMath = null;
+        OpenXmlElement? oMath = null;
         
         foreach (var c1 in p.Paragraph.ChildElements)
         {
@@ -22,9 +23,9 @@ public class EquationClassifierData
                 }
             }
 
-            if (c1 is DocumentFormat.OpenXml.Math.OfficeMath o)
+            if (c1 is DocumentFormat.OpenXml.Math.OfficeMath or DocumentFormat.OpenXml.Math.Paragraph)
             {
-                oMath = o;
+                oMath = c1;
                 break;
             }
 

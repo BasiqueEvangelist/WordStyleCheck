@@ -10,6 +10,7 @@ public class DocumentAnalysisContext
 
     private readonly Dictionary<Paragraph, ParagraphPropertiesTool> _paragraphTools = new();
     private readonly Dictionary<Run, RunPropertiesTool> _runTools = new();
+    private readonly Dictionary<Table, TablePropertiesTool> _tableTools = new();
 
     private readonly Dictionary<(StyleValues, string), Style> _styles = new();
 
@@ -43,14 +44,17 @@ public class DocumentAnalysisContext
             }
         }
 
-        AllParagraphs = Document.MainDocumentPart!.Document!.Body!.Descendants<Paragraph>().ToList();
+        AllBlockLevel = Document.MainDocumentPart!.Document!.Body!.Descendants().Where(x => x is Paragraph or Table).ToList();
+        AllParagraphs = AllBlockLevel.OfType<Paragraph>().ToList();
+        AllTables = AllBlockLevel.OfType<Table>().ToList();
         
         _fieldStacks = FieldStackTracker.RunTracker(document.MainDocumentPart!.Document!);
 
-        using (new LoudStopwatch("Generating ParagraphPropertiesTool objects"))
-            foreach (var p in AllParagraphs)
+        using (new LoudStopwatch("Generating ParagraphPropertiesTool and TablePropertiesTool objects"))
+            foreach (var e in AllBlockLevel)
             {
-                GetTool(p);
+                if (e is Paragraph p) GetTool(p);
+                else if (e is Table t) GetTool(t);
             }
 
         using (new LoudStopwatch("Assigning numberings"))
@@ -140,6 +144,16 @@ public class DocumentAnalysisContext
                 tool.CaptionData = caption;
             }
 
+        using (new LoudStopwatch("Assigning captions to tables"))
+            foreach (var p in AllParagraphs)
+            {
+                var tool = GetTool(p);
+
+                if (tool.CaptionData?.TargetedElement is not Table t) continue;
+
+                GetTool(t).Caption = tool;
+            }
+
         using (new LoudStopwatch("HeadingClassifierData.Classify and classifying code listings"))
             foreach (var p in AllParagraphs)
             {
@@ -168,35 +182,6 @@ public class DocumentAnalysisContext
         
         using (new LoudStopwatch("HandmadeListClassifier.Classify"))
             HandmadeLists = HandmadeListClassifier.Classify(this);
-        
-        HashSet<OpenXmlElement> continuationTables = [];
-        using (new LoudStopwatch("Finding Continuation Tables"))
-            foreach (var p in AllParagraphs)
-            {
-                if (GetTool(p) is { CaptionData: { IsContinuation: true, Type: CaptionType.Table, TargetedElement: { } targeted } })
-                {
-                    continuationTables.Add(targeted);
-                }
-            }
-
-        using (new LoudStopwatch("Assigning ProbableTableColumnHeader"))
-            foreach (var p in AllParagraphs)
-            {
-                var tool = GetTool(p);
-
-                if (tool.ContainingTableRow is not { } tr) continue;
-
-                var table = (Table?)tr.Parent;
-
-                if (table == null || continuationTables.Contains(table)) continue;
-
-                int rowIndex = table.ChildElements.ToList().IndexOf(tr);
-
-                if (rowIndex == 0)
-                {
-                    tool.ProbablyTableColumnHeader = true;
-                }
-            }
 
         using (new LoudStopwatch("Locating Bookmark Starts"))
             BookmarkStarts = Document.MainDocumentPart.Document.Body.Descendants<BookmarkStart>()
@@ -238,6 +223,16 @@ public class DocumentAnalysisContext
         
         tool = new RunPropertiesTool(this, parent, r);
         _runTools[r] = tool;
+
+        return tool;
+    }
+    
+    public TablePropertiesTool GetTool(Table t)
+    {
+        if (_tableTools.TryGetValue(t, out var tool)) return tool;
+        
+        tool = new TablePropertiesTool(this, t);
+        _tableTools[t] = tool;
 
         return tool;
     }
@@ -327,5 +322,7 @@ public class DocumentAnalysisContext
     }
 
     public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;
+    public IEnumerable<OpenXmlElement> AllBlockLevel { get; }
     public IEnumerable<Paragraph> AllParagraphs { get; }
+    public IEnumerable<Table> AllTables { get; }
 }

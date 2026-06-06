@@ -10,6 +10,7 @@ public class IkbConferenceProfile : IProfile
     public string Name => "Конференция ИКБ";
     public List<IClassifier> Classifiers { get; } =
     [
+        new EquationTableClassifier(),
         new IkbConferenceParagraphData.Attacher(),
         new IkbConferencePartsClassifier()
     ];

@@ -215,4 +215,8 @@
     <str key="BadWhitespaceAfterText">
         Не должно быть пробелов в конце абзаца.
     </str>
+    
+    <str key="UnknownTable">
+        Нераспознанная таблица.
+    </str>
 </dict>

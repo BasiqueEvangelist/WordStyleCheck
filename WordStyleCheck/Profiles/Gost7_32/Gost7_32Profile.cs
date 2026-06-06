@@ -11,6 +11,8 @@ public class Gost7_32Profile : IProfile
     
     public List<IClassifier> Classifiers { get; } =
     [
+        new TableColumnHeaderClassifier(),
+        new EquationTableClassifier(),
         new AttachGostDataClassifier(),
         new GostStructuralElementClassifier(),
         new TextAssociationClassifier()
@@ -95,7 +97,9 @@ public class Gost7_32Profile : IProfile
         new ForceBoldLint(false, x => x is { OutlineLevel: >= 2 }, "SubSubHeadingBold"),
         new ForceBoldLint(false, x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.BodyText}, "BodyTextBold"),
         new TextColorLint(),
-        new BadOuterWhitespaceLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText)
+        new BadOuterWhitespaceLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText),
+        
+        new UnknownTableLint()
     ];
     
     private static bool ShouldBeInToc(ParagraphPropertiesTool tool)

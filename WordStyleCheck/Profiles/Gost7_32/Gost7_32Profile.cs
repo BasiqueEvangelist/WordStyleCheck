@@ -99,7 +99,8 @@ public class Gost7_32Profile : IProfile
         new TextColorLint(),
         new BadOuterWhitespaceLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText),
         
-        new UnknownTableLint()
+        new UnknownTableLint(),
+        new ListingFormattingLint()
     ];
     
     private static bool ShouldBeInToc(ParagraphPropertiesTool tool)

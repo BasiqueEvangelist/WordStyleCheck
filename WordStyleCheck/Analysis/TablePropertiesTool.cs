@@ -11,6 +11,7 @@ public class TablePropertiesTool
 
     public ParagraphPropertiesTool? Caption { get; internal set; }
     public EquationClassifierData? EquationData { get; set; }
+    public Style? Style { get; }
     public bool IsOutsideOfDocument { get; set; }
     
     public TableRowTool this[int index] => Rows[index];
@@ -22,7 +23,24 @@ public class TablePropertiesTool
 
         Rows = Table.ChildElements.OfType<TableRow>().Select(x => new TableRowTool(x)).ToList();
         ColumnCount = Rows.Count > 0 ? Rows[0].Cells.Count : 0;
+        
+        string? styleId = table.TableProperties?.TableStyle?.Val?.Value;
+        
+        Style = new Func<Style?>(() =>
+        {
+            if (styleId != null)
+            {
+                return ctx.GetStyle(StyleValues.Table, styleId);
+            }
+
+            return null;
+        })();
     }
+
+    public TableWidthUnitValues? WidthType => FollowPropertyChain(
+        x => x.TableWidth?.Type?.Value,
+        x => null
+    ) ?? TableWidthUnitValues.Auto;
 
     public TableClass Class
     {
@@ -46,6 +64,25 @@ public class TablePropertiesTool
             
             return TableClass.Unknown;
         }
+    }
+    
+    private T? FollowPropertyChain<T>(Func<TableProperties, T?> getter, Func<StyleTableProperties, T?> styleGetter)
+    {
+        if (Table.TableProperties != null)
+        {
+            var result = getter(Table.TableProperties);
+            if (result != null)
+                return result;
+        }
+        
+        if (Style?.StyleId != null)
+        {
+            var result = _ctx.FollowStyleChain(StyleValues.Table, Style.StyleId, x => x.StyleTableProperties != null ? styleGetter(x.StyleTableProperties) : default);
+            if (result != null)
+                return result;
+        }
+
+        return default;
     }
 }
 

@@ -64,16 +64,14 @@ public class NtkProfile : IProfile
         // TODO: track numbering of formulae.
         // TODO: MathType support.
         // TODO: built-in Word math support.
-        // TODO: tables should be auto-sized.
+        new ForceTableAutoWidthLint(),
         new IncorrectCaptionedNumberingLint(_ => true, CaptionType.Table, "IncorrectTableNumbering", "TableNumberingMix"),
         // TODO: (maybe) force tables to be at the bottom/top of the doc (if possible) 
         new WrongCaptionPositionLint(CaptionType.Table, false, "IncorrectTableCaptionPosition"),
         // TODO: force references to tables and figures to be abbreviated
-        // TODO: make table continuations properly get tracked with other syntax
         // TODO: (maybe) check bibliography?
         
         new ForceBoldLint(true, IsOfClass(NtkParagraphClass.UniversalDecimalClassifier), "UdcNotBold"),
-        // TODO: source institute name must be lowercase
         // TODO: force newlines between stuff.
         
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),

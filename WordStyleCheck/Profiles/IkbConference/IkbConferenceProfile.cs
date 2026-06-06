@@ -67,7 +67,8 @@ public class IkbConferenceProfile : IProfile
         new TextColorLint(),
         new BadOuterWhitespaceLint(IsOfClass(ConferenceParagraphClass.BodyText)),
         
-        new QuoteTrackerLint(IsBodyText)
+        new QuoteTrackerLint(IsBodyText),
+        new ForceTableAutoWidthLint()
     ];
 
     private static bool IsBodyText(ParagraphPropertiesTool tool)

@@ -101,7 +101,8 @@ public class Gost7_32Profile : IProfile
         
         new UnknownTableLint(),
         new ListingFormattingLint(),
-        new QuoteTrackerLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText)
+        new QuoteTrackerLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText),
+        new ForceTableAutoWidthLint()
     ];
     
     private static bool ShouldBeInToc(ParagraphPropertiesTool tool)

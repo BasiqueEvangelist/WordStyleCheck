@@ -31,6 +31,19 @@ public class RunAssociatedText
         return new RunAssociatedText(contents.ToString(), runs);
     }
 
+    public RunPropertiesTool GetRunAt(int index)
+    {
+        foreach (var run in Runs)
+        {
+            if (run.StartIndex <= index && run.StartIndex + run.Run.Contents.Length > index)
+            {
+                return run.Run;
+            }
+        }
+
+        throw new IndexOutOfRangeException();
+    }
+
     public RunSpan GetSpan(int start, int length)
     {
         List<RunPropertiesTool> runs = [];

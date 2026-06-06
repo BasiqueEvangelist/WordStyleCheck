@@ -100,7 +100,8 @@ public class Gost7_32Profile : IProfile
         new BadOuterWhitespaceLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText),
         
         new UnknownTableLint(),
-        new ListingFormattingLint()
+        new ListingFormattingLint(),
+        new QuoteTrackerLint(x => x.GetFeature(GostParagraphData.Key)!.Class == GostParagraphClass.BodyText)
     ];
     
     private static bool ShouldBeInToc(ParagraphPropertiesTool tool)

@@ -65,7 +65,9 @@ public class IkbConferenceProfile : IProfile
         new FontSizeLint(Or(IsOfClass(ConferenceParagraphClass.Abstract), IsOfClass(ConferenceParagraphClass.Keywords)), 26, true, "IncorrectAbstractKeywordsFontSize"),
         
         new TextColorLint(),
-        new BadOuterWhitespaceLint(IsOfClass(ConferenceParagraphClass.BodyText))
+        new BadOuterWhitespaceLint(IsOfClass(ConferenceParagraphClass.BodyText)),
+        
+        new QuoteTrackerLint(IsBodyText)
     ];
 
     private static bool IsBodyText(ParagraphPropertiesTool tool)

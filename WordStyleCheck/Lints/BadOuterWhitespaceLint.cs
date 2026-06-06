@@ -14,6 +14,8 @@ public class BadOuterWhitespaceLint(Predicate<ParagraphPropertiesTool> predicate
             var tool = ctx.Document.GetTool(p);
             
             if (!predicate(tool)) continue;
+            if (tool.IsIgnored) continue;
+            if (tool.IsEmptyOrDrawing) continue;
 
             var text = RunAssociatedText.FromParagraph(tool);
 
@@ -43,6 +45,8 @@ public class BadOuterWhitespaceLint(Predicate<ParagraphPropertiesTool> predicate
                         {
                             run.Remove();
                         }
+                        
+                        text = RunAssociatedText.FromParagraph(tool);
                     }
                 }
             }

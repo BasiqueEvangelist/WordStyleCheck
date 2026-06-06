@@ -83,6 +83,8 @@ public class NtkProfile : IProfile
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBoldItalic", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(IsOfClass(NtkParagraphClass.Abstract, NtkParagraphClass.Keywords), 24, true, "IncorrectAbstractKeywordsFontSize"),
         
+        new InstituteCapitalizationLint(),
+        
         new TextColorLint(),
         new BadOuterWhitespaceLint(_ => true)
     ];

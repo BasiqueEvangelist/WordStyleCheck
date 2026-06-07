@@ -86,7 +86,9 @@ public class NtkProfile : IProfile
         new TextColorLint(),
         new BadOuterWhitespaceLint(_ => true),
         
-        new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText))
+        new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText)),
+        
+        new ForbidPageBreaksLint()
     ];
     
     private static Predicate<ParagraphPropertiesTool> IsOfClass(params NtkParagraphClass[] klass)

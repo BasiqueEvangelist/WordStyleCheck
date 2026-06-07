@@ -76,7 +76,7 @@ public class NtkProfile : IProfile
         
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
         
-        new IncorrectHeaderLint(IsOfClass(NtkParagraphClass.Abstract), ["Аннотация."], "Аннотация:", "IncorrectAbstractHeader"),
+        new IncorrectHeaderLint(IsOfClass(NtkParagraphClass.Abstract), ["Аннотация. ", "Аннотация.", "Аннотация:"], "Аннотация: ", "IncorrectAbstractHeader"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Abstract), "Аннотация:", "AbstractHeaderMustBeBoldItalic", "AbstractBodyMustBeItalic"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBoldItalic", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(IsOfClass(NtkParagraphClass.Abstract, NtkParagraphClass.Keywords), 24, true, "IncorrectAbstractKeywordsFontSize"),

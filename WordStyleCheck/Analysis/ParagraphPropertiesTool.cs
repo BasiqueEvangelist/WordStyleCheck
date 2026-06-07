@@ -61,7 +61,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         }
     }
     
-    public string Contents { get; }
+    public string Contents { get; private set; }
 
     public List<RunPropertiesTool> Runs => Utils.DirectRunChildren(Paragraph).Select(x => Context.GetTool(x, this)).ToList();
     
@@ -235,6 +235,19 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
                     return false;
             }
         }
+    }
+
+    public void ReloadContents()
+    {
+        StringBuilder contents = new();
+        foreach (var r in Utils.DirectRunChildren(Paragraph))
+        {
+            var rTool = Context.GetTool(r, this);
+            rTool.ReloadContents();
+            
+            contents.Append(rTool.Contents);
+        }
+        Contents = Utils.StripJunk(contents.ToString());        
     }
 
     private T? FollowPropertyChain<T>(Func<ParagraphProperties, T?> getter, Func<StyleParagraphProperties, T?> styleGetter, Func<ParagraphPropertiesBaseStyle, T?> baseStyleGetter)

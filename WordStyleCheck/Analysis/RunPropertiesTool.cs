@@ -66,7 +66,7 @@ public record RunPropertiesTool
     public bool IsHyperlink => Utils.AscendToAnscestor<Hyperlink>(Run) != null ||
                                _ctx.GetContextFor(Run).Any(x => x.InstrText?.Contains("\\h") ?? false);
     
-    public string Contents { get; }
+    public string Contents { get; private set; }
 
     private T? FollowPropertyChain<T>(Func<RunProperties, T?> getter, Func<StyleRunProperties, T?> styleGetter, Func<RunPropertiesBaseStyle, T?> baseStyleGetter)
     {
@@ -135,5 +135,15 @@ public record RunPropertiesTool
         }
 
         return default;
+    }
+
+    public void ReloadContents()
+    {
+        Contents = Utils.CollectText(Run);
+
+        if (Caps)
+        {
+            Contents = Contents.ToUpper();
+        }
     }
 }

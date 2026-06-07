@@ -35,6 +35,8 @@ public class IncorrectHeaderLint(Predicate<ParagraphPropertiesTool> predicate, L
                     {
                         ctx.MarkAutoFixed();
                         span.Replace(correct);
+                        
+                        tool.ReloadContents();
                     }
                     
                     break;

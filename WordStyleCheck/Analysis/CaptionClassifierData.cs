@@ -29,11 +29,11 @@ public struct CaptionClassifierData
         if (!secondPass)
         {
             if (p.Contents.Trim().StartsWith("листинг", StringComparison.InvariantCultureIgnoreCase)
-                && ((p.Paragraph.PreviousSibling() is Paragraph prev1 && HasFigure(prev1)) ||
-                    p.Paragraph.PreviousSibling() is Table))
+                && ((PreviousSkippingEmpty(p.Paragraph) is Paragraph prev1 && HasFigure(prev1))) ||
+                    PreviousSkippingEmpty(p.Paragraph) is Table)
             {
                 type = CaptionType.Listing;
-                targeted = p.Paragraph.PreviousSibling();
+                targeted = PreviousSkippingEmpty(p.Paragraph);
                 isBelow = true;
             }
             else if (HasFigure(p.Paragraph))
@@ -60,16 +60,16 @@ public struct CaptionClassifierData
                 if (!isBelow != secondPass)
                     return null;
             }
-            else if (p.Paragraph.PreviousSibling() is Paragraph prev && HasFigure(prev))
+            else if (PreviousSkippingEmpty(p.Paragraph) is Paragraph prev && HasFigure(prev))
             {
                 type = CaptionType.Figure;
-                targeted = p.Paragraph.PreviousSibling()!;
+                targeted = PreviousSkippingEmpty(p.Paragraph);
                 isBelow = true;
             }
-            else if (p.Paragraph.NextSibling() is Table)
+            else if (NextSkippingEmpty(p.Paragraph) is Table)
             {
                 type = CaptionType.Table;
-                targeted = p.Paragraph.NextSibling()!;
+                targeted = NextSkippingEmpty(p.Paragraph);
                 isBelow = false;
             }
             else
@@ -79,16 +79,16 @@ public struct CaptionClassifierData
         }
         else
         {
-            if (p.Paragraph.NextSibling() is Paragraph next && HasFigure(next))
+            if (NextSkippingEmpty(p.Paragraph) is Paragraph next && HasFigure(next))
             {
                 type = CaptionType.Figure;
-                targeted = p.Paragraph.NextSibling()!;
+                targeted = NextSkippingEmpty(p.Paragraph);
                 isBelow = false;
             }
-            else if (p.Paragraph.PreviousSibling() is Table)
+            else if (PreviousSkippingEmpty(p.Paragraph) is Table)
             {
                 type = CaptionType.Table;
-                targeted = p.Paragraph.PreviousSibling()!;
+                targeted = PreviousSkippingEmpty(p.Paragraph);
                 isBelow = true;
             }
             else
@@ -100,6 +100,26 @@ public struct CaptionClassifierData
         return TryParse(p, type, isBelow, targeted);
     }
 
+    private static OpenXmlElement? PreviousSkippingEmpty(OpenXmlElement element)
+    {
+        var previous = element.PreviousSibling();
+
+        while (previous is Paragraph p && string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p)) && !HasFigure(p))
+            previous = previous.PreviousSibling();
+
+        return previous;
+    }
+    
+    private static OpenXmlElement? NextSkippingEmpty(OpenXmlElement element)
+    {
+        var next = element.NextSibling();
+
+        while (next is Paragraph p && string.IsNullOrWhiteSpace(Utils.CollectParagraphText(p)) && !HasFigure(p))
+            next = next.NextSibling();
+
+        return next;
+    }
+    
     internal static CaptionClassifierData? TryParse(ParagraphPropertiesTool p, CaptionType type, bool isBelow, OpenXmlElement? targeted)
     {
         string text = p.Contents;

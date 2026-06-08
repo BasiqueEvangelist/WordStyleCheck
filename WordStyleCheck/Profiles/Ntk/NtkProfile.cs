@@ -54,10 +54,10 @@ public class NtkProfile : IProfile
                 NtkParagraphClass.BibliographySource
             ),
             709,
-            0,
+            0, 0,
             "IncorrectFirstLineIndent",
-            "IncorrectLeftIndent"
-        ),
+            "IncorrectLeftIndent",
+            "IncorrectRightIndent"),
         // TODO: disallow listings.
         new IncorrectCaptionedNumberingLint(_ => true, CaptionType.Figure, "IncorrectFigureNumbering", "FigureNumberingMix"),
         // TODO: force formulae to be tables.

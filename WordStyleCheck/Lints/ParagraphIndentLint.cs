@@ -5,7 +5,14 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, int firstLine, int left, string firstLineId, string leftId) : ILint
+public class ParagraphIndentLint(
+    Predicate<ParagraphPropertiesTool> predicate,
+    int firstLine,
+    int left,
+    int right,
+    string firstLineId,
+    string leftId,
+    string rightId) : ILint
 {
     public IReadOnlyList<string> EmittedDiagnostics { get; } = [firstLineId, leftId];
 
@@ -102,6 +109,45 @@ public class ParagraphIndentLint(Predicate<ParagraphPropertiesTool> predicate, i
 
                     p.ParagraphProperties.Indentation ??= new Indentation();
                     p.ParagraphProperties.Indentation.Left = left.ToString();
+                }
+            }
+        }
+        
+        foreach (var p in ctx.Document.AllParagraphs)
+        {
+            ParagraphPropertiesTool tool = ctx.Document.GetTool(p);
+
+            if (tool.IsEmptyOrDrawing) continue;
+            if (tool.IsIgnored) continue;
+            if (!predicate(tool)) continue;
+            
+            if (Math.Abs((tool.RightIndent ?? 0) - right) >= 5)
+            {
+                if (!ctx.AutomaticallyFix)
+                {
+                    ctx.AddMessage(new LintDiagnostic(
+                            rightId,
+                            DiagnosticType.FormattingError,
+                            new ParagraphDiagnosticContext(p))
+                        {
+                            Parameters = new()
+                            {
+                                ["ExpectedCm"] = Utils.TwipsToCm(right).ToString(CultureInfo.InvariantCulture),
+                                ["ActualCm"] = Utils.TwipsToCm(tool.RightIndent ?? 0)
+                                    .ToString(CultureInfo.InvariantCulture),
+                            }
+                        }
+                    );
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
+
+                    p.ParagraphProperties ??= new ParagraphProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotParagraphProperties(p.ParagraphProperties);
+
+                    p.ParagraphProperties.Indentation ??= new Indentation();
+                    p.ParagraphProperties.Indentation.Right = right.ToString();
                 }
             }
         }

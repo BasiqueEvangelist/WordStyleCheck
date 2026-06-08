@@ -89,6 +89,19 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
             x => x.Indentation?.Start,
             x => x.Indentation?.Start
         )?.Value);
+    
+    public int? RightIndent =>
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.Indentation?.Right,
+            x => x.Indentation?.Right,
+            x => x.Indentation?.Right
+        )?.Value)
+        ??
+        Utils.ParseTwipsMeasure(FollowPropertyChain(
+            x => x.Indentation?.End,
+            x => x.Indentation?.End,
+            x => x.Indentation?.End
+        )?.Value);
 
     public int? OutlineLevel { get; }
     

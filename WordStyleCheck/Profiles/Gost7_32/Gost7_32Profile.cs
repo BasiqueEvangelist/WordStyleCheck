@@ -28,10 +28,10 @@ public class Gost7_32Profile : IProfile
         new ForcePageBreakBeforeLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.HeadingData.Level: 1} or {Class: GostParagraphClass.StructuralElementHeader}, "NeedsPageBreakBeforeHeader"),
         new ForceJustificationLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.StructuralElementHeader}, [JustificationValues.Center], "StructuralElementHeaderNotCentered"),
         new ForceJustificationLint(x => x is {CaptionData.Type: CaptionType.Table}, [JustificationValues.Left, JustificationValues.Both], "TableCaptionNotLeftAligned"),
-        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.BodyText, Inner.OfNumbering: null, Inner.PossiblyPartOfList: false}, 709, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
-        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 0}, 709, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
-        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 1}, -709, 1418, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
-        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 2}, -851, 1560, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent"),
+        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.BodyText, Inner.OfNumbering: null, Inner.PossiblyPartOfList: false}, 709, 0, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent", "IncorrectBodyTextRightIndent"),
+        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 0}, 709, 0, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent", "IncorrectHeadingRightIndent"),
+        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 1}, -709, 1418, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent", "IncorrectHeadingRightIndent"),
+        new ParagraphIndentLint(x => x.GetFeature(GostParagraphData.Key) is {Class: GostParagraphClass.Heading, Inner.OutlineLevel: 2}, -851, 1560, 0, "IncorrectHeadingFirstLineIndent", "IncorrectHeadingLeftIndent", "IncorrectHeadingRightIndent"),
         new ParagraphLineSpacingLint(
             // TODO: enforce this for numberings.
             // TODO: enforce this for table cell content, headers, captions.

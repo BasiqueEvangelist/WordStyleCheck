@@ -40,7 +40,7 @@ public class IkbConferenceProfile : IProfile
         new PageMarginsLint(new PageMargins(1134, 1134, 1134, 1134, 709, 709, 0)),
         new ForceJustificationLint(IsBodyText, [JustificationValues.Both], "BodyTextNotJustified"),
         new ParagraphLineSpacingLint(IsBodyText, 288, "IncorrectBodyTextLineSpacing"),
-        new ParagraphIndentLint(IsBodyText, 566, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent"),
+        new ParagraphIndentLint(IsBodyText, 566, 0, 0, "IncorrectBodyTextFirstLineIndent", "IncorrectBodyTextLeftIndent", "IncorrectBodyTextRightIndent"),
         new ForceCapsLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), "ThesisTitleMustBeCaps"),
         new FontSizeLint(IsOfClass(ConferenceParagraphClass.ThesisTitle), 30, true, "IncorrectThesisTitleFontSize"),
         // TODO: force quote style.

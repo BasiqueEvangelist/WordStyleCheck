@@ -22,7 +22,7 @@ public class NtkProfile : IProfile
         ),
         
         new ForceContentsLint(
-            IsOfClass(NtkParagraphClass.Caption),
+            IsOfClass(NtkParagraphClass.TableCaption, NtkParagraphClass.FigureCaption),
             x =>
             {
                 var data = x.CaptionData!.Value;
@@ -115,8 +115,10 @@ public class NtkProfile : IProfile
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBoldItalic", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(IsOfClass(NtkParagraphClass.Abstract, NtkParagraphClass.Keywords), 24, true, "IncorrectAbstractKeywordsFontSize"),
         
-        new ForceJustificationLint(IsOfClass(NtkParagraphClass.Caption), [JustificationValues.Center], "CaptionMustBeCentered"),
-        new FontSizeLint(IsOfClass(NtkParagraphClass.Caption), 26, true, "IncorrectCaptionFontSize"),
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.FigureCaption), [JustificationValues.Center], "FigureCaptionMustBeCentered"),
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.TableCaption), [JustificationValues.Right], "TableCaptionMustBeRightAligned"),
+        new FontSizeLint(IsOfClass(NtkParagraphClass.FigureCaption, NtkParagraphClass.TableCaption), 26, true, "IncorrectCaptionFontSize"),
+        new ParagraphIndentLint(IsOfClass(NtkParagraphClass.FigureCaption), 0, 0, 0, "IncorrectFigureCaptionIndent", "IncorrectFigureCaptionIndent", "IncorrectFigureCaptionIndent"),
         
         new InstituteCapitalizationLint(),
         

@@ -38,7 +38,8 @@ public class NtkParagraphData
             if (IsKeywords) return NtkParagraphClass.Keywords;
             if (IsBibliographyHeader) return NtkParagraphClass.BibliographyHeader;
             if (IsBibliographySource) return NtkParagraphClass.BibliographySource;
-            if (Inner.CaptionData != null) return NtkParagraphClass.Caption;
+            if (Inner.CaptionData is {Type: CaptionType.Table}) return NtkParagraphClass.TableCaption;
+            if (Inner.CaptionData != null) return NtkParagraphClass.FigureCaption;
             if (Inner.ProbablyCodeListing) return NtkParagraphClass.CodeListing;
             if (Inner.ContainingTableCell != null) return NtkParagraphClass.TableContent;
 
@@ -68,7 +69,8 @@ public enum NtkParagraphClass
     Abstract,
     Keywords,
     BodyText,
-    Caption,
+    FigureCaption,
+    TableCaption,
     BibliographyHeader,
     BibliographySource,
     CodeListing,

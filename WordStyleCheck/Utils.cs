@@ -240,10 +240,12 @@ public class Utils
 
                     string rest = text.Text[localSplit..];
                     text.Text = text.Text[..localSplit];
+                    text.Space = SpaceProcessingModeValues.Preserve;
 
                     second.AppendChild(new Text
                     {
-                        Text = rest
+                        Text = rest,
+                        Space = SpaceProcessingModeValues.Preserve
                     });
                 }
                 

@@ -39,11 +39,13 @@ public class IncorrectHeaderLint(Predicate<ParagraphPropertiesTool> predicate, L
                         tool.ReloadContents();
                     }
                     
-                    break;
+                    goto outer;
                 }
             }
             
             ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p)));
+            
+            outer: ;
         }
     }
 }

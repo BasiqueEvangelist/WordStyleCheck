@@ -72,14 +72,21 @@ public class NtkProfile : IProfile
         // TODO: (maybe) check bibliography?
         
         new ForceBoldLint(true, IsOfClass(NtkParagraphClass.UniversalDecimalClassifier), "UdcNotBold"),
+        new ParagraphIndentLint(IsOfClass(NtkParagraphClass.UniversalDecimalClassifier), 0, 0, 0, "IncorrectUdcFirstLineIndent", "IncorrectUdcLeftIndent", "IncorrectUdcRightIndent"),
         // TODO: force newlines between stuff.
         
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), [JustificationValues.Center], "HeaderNotCentered"),
+        new ParagraphIndentLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), 0, 0, 0, "IncorrectHeaderFirstLineIndent", "IncorrectHeaderLeftIndent", "IncorrectHeaderRightIndent"),
+
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
         
         new IncorrectHeaderLint(IsOfClass(NtkParagraphClass.Abstract), ["Аннотация. ", "Аннотация.", "Аннотация:"], "Аннотация: ", "IncorrectAbstractHeader"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Abstract), "Аннотация:", "AbstractHeaderMustBeBoldItalic", "AbstractBodyMustBeItalic"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBoldItalic", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(IsOfClass(NtkParagraphClass.Abstract, NtkParagraphClass.Keywords), 24, true, "IncorrectAbstractKeywordsFontSize"),
+        
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.Caption), [JustificationValues.Center], "CaptionMustBeCentered"),
+        new FontSizeLint(IsOfClass(NtkParagraphClass.Caption), 26, true, "IncorrectCaptionFontSize"),
         
         new InstituteCapitalizationLint(),
         

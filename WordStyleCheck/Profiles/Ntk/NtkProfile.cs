@@ -21,6 +21,36 @@ public class NtkProfile : IProfile
             "IncorrectBibliographyHeaderContents"
         ),
         
+        new ForceContentsLint(
+            IsOfClass(NtkParagraphClass.Caption),
+            x =>
+            {
+                var data = x.CaptionData!.Value;
+                
+                string desc = data.GetDesc(x.Contents);
+
+                string correct = (data.Type, data.IsContinuation) switch
+                {
+                    (CaptionType.Figure, _) => "Рисунок ",
+                    (CaptionType.Listing, _) => "Листинг ",
+                    (CaptionType.Table, false) => "Таблица ",
+                    (CaptionType.Table, true) => "Продолжение табл. ",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                correct += data.Number;
+                correct += ".";
+
+                if (desc != "")
+                {
+                    correct += " " + desc;
+                }
+
+                return correct;
+            },
+            "IncorrectCaptionText"
+        ),
+        
         new ForbidLint(IsOfClass(NtkParagraphClass.Junk), "JunkParagraph"),
         
         new TextFontLint(),

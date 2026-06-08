@@ -15,6 +15,32 @@ public struct CaptionClassifierData
     public required StringSpan TypeSpan { get; init; }
     public required StringSpan NumberSpan { get; init; }
 
+    public string GetDesc(string originalText)
+    {
+        originalText = originalText.Trim();
+        
+        int beginDesc = NumberSpan.EndExclusive;
+
+        for (; beginDesc < originalText.Length; beginDesc++)
+        {
+            if (char.IsLetter(originalText[beginDesc]) || char.IsDigit(originalText[beginDesc]))
+                break;
+        }
+
+        string desc = "";
+
+        if (beginDesc < originalText.Length)
+        {
+            desc = originalText.Substring(beginDesc);
+            desc = desc.Trim().TrimEnd('.');
+        }
+
+        if (IsContinuation)
+            desc = "";
+
+        return desc;
+    }
+
     internal static bool HasFigure(OpenXmlElement p)
     {
         return p.Descendants().Any(x => x is Picture or Drawing or EmbeddedObject);
@@ -177,26 +203,7 @@ public struct CaptionClassifierData
 
     public string GetCorrectText(string originalText)
     {
-        originalText = originalText.Trim();
-        
-        int beginDesc = NumberSpan.EndExclusive;
-
-        for (; beginDesc < originalText.Length; beginDesc++)
-        {
-            if (char.IsLetter(originalText[beginDesc]) || char.IsDigit(originalText[beginDesc]))
-                break;
-        }
-
-        string desc = "";
-
-        if (beginDesc < originalText.Length)
-        {
-            desc = originalText.Substring(beginDesc);
-            desc = desc.Trim().TrimEnd('.');
-        }
-
-        if (IsContinuation)
-            desc = "";
+        string desc = GetDesc(originalText);
 
         string correct = (Type, IsContinuation) switch
         {

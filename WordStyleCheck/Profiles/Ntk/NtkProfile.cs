@@ -53,6 +53,8 @@ public class NtkProfile : IProfile
         
         new ForbidLint(IsOfClass(NtkParagraphClass.Junk), "JunkParagraph"),
         
+        new ZapFootnotesEndnotesLint(IsOfClass(NtkParagraphClass.BibliographySource)),
+        
         new TextFontLint(),
         new FontSizeLint(
             IsOfClass(
@@ -60,6 +62,7 @@ public class NtkProfile : IProfile
                 NtkParagraphClass.ThesisTitle,
                 NtkParagraphClass.AuthorDetails,
                 NtkParagraphClass.SourceInstitute,
+                NtkParagraphClass.Heading,
                 NtkParagraphClass.BodyText,
                 NtkParagraphClass.BibliographyHeader,
                 NtkParagraphClass.BibliographySource
@@ -72,13 +75,14 @@ public class NtkProfile : IProfile
         new PageMarginsLint(new PageMargins(1134, 1134, 1134, 1134, 0, 0 ,0)),
         new PageSizeLint(),
         // TODO: footnotes.
-        new ForceJustificationLint(IsOfClass(NtkParagraphClass.BodyText, NtkParagraphClass.BibliographyHeader, NtkParagraphClass.BibliographySource), [JustificationValues.Both], "MainTextNotJustified"),
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.BodyText, NtkParagraphClass.Heading, NtkParagraphClass.BibliographyHeader, NtkParagraphClass.BibliographySource), [JustificationValues.Both], "MainTextNotJustified"),
         // automatic hyphenation
         // no orphan control?
         new ParagraphIndentLint(
             IsOfClass(
                 NtkParagraphClass.Abstract,
                 NtkParagraphClass.Keywords,
+                NtkParagraphClass.Heading,
                 NtkParagraphClass.BodyText,
                 NtkParagraphClass.BibliographyHeader,
                 NtkParagraphClass.BibliographySource
@@ -109,6 +113,9 @@ public class NtkProfile : IProfile
         new ParagraphIndentLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), 0, 0, 0, "IncorrectHeaderFirstLineIndent", "IncorrectHeaderLeftIndent", "IncorrectHeaderRightIndent"),
 
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
+
+        new ForceBoldLint(false, IsOfClass(NtkParagraphClass.Heading), "HeadingBold"),
+        new ForceItalicLint(true, IsOfClass(NtkParagraphClass.Heading), "HeadingNotItalic"),
         
         new IncorrectHeaderLint(IsOfClass(NtkParagraphClass.Abstract), ["Аннотация. ", "Аннотация.", "Аннотация:"], "Аннотация: ", "IncorrectAbstractHeader"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Abstract), "Аннотация:", "AbstractHeaderMustBeBoldItalic", "AbstractBodyMustBeItalic"),
@@ -127,7 +134,7 @@ public class NtkProfile : IProfile
         
         new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText)),
         
-        new ForbidPageBreaksLint()
+        new ForbidPageBreaksLint(),
     ];
     
     private static Predicate<ParagraphPropertiesTool> IsOfClass(params NtkParagraphClass[] klass)

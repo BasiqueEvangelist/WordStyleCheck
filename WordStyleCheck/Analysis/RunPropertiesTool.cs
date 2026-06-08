@@ -60,6 +60,12 @@ public record RunPropertiesTool
     );
 
     public HighlightColorValues Highlight => Run.RunProperties?.Highlight?.Val?.Value ?? HighlightColorValues.None;
+    
+    public VerticalPositionValues? VerticalAlignment => FollowPropertyChain(
+        x => x.VerticalTextAlignment?.Val?.Value,
+        x => x.VerticalTextAlignment?.Val?.Value,
+        x => x.VerticalTextAlignment?.Val?.Value
+    ) ?? VerticalPositionValues.Baseline;
 
     public Paragraph ContainingParagraph => _parent.Paragraph;
 

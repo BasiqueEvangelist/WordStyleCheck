@@ -43,6 +43,12 @@ public class NtkParagraphData
             if (Inner.ProbablyCodeListing) return NtkParagraphClass.CodeListing;
             if (Inner.ContainingTableCell != null) return NtkParagraphClass.TableContent;
 
+            if (Inner.Justification == JustificationValues.Center && Inner.Runs.All(x => x.Bold || string.IsNullOrWhiteSpace(x.Contents)))
+                return NtkParagraphClass.Heading;
+
+            if (Inner.Runs.All(x => x.Italic))
+                return NtkParagraphClass.Heading;
+
             return NtkParagraphClass.BodyText;
         }
     }
@@ -68,6 +74,7 @@ public enum NtkParagraphClass
     SourceInstitute,
     Abstract,
     Keywords,
+    Heading,
     BodyText,
     FigureCaption,
     TableCaption,

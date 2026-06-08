@@ -26,6 +26,10 @@ public class DocumentAnalysisContext
     public List<HandmadeListClassifier.SniffedListData> HandmadeLists { get; }
     
     public Dictionary<string, BookmarkStart> BookmarkStarts { get; }
+    
+    public Dictionary<long, Footnote> Footnotes { get; }
+    
+    public Dictionary<long, Endnote> Endnotes { get; }
 
     public DocumentAnalysisContext(WordprocessingDocument document, List<IClassifier> classifiers)
     {
@@ -47,6 +51,12 @@ public class DocumentAnalysisContext
         AllBlockLevel = Document.MainDocumentPart!.Document!.Body!.Descendants().Where(x => x is Paragraph or Table).ToList();
         AllParagraphs = AllBlockLevel.OfType<Paragraph>().ToList();
         AllTables = AllBlockLevel.OfType<Table>().ToList();
+
+        Footnotes = Document.MainDocumentPart!.FootnotesPart?.Footnotes?.ChildElements.OfType<Footnote>()
+            .ToDictionary(x => x.Id!.Value, x => x) ?? [];
+        
+        Endnotes = Document.MainDocumentPart!.EndnotesPart?.Endnotes?.ChildElements.OfType<Endnote>()
+            .ToDictionary(x => x.Id!.Value, x => x) ?? [];
         
         _fieldStacks = FieldStackTracker.RunTracker(document.MainDocumentPart!.Document!);
 

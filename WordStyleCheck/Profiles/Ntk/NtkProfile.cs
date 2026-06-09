@@ -134,6 +134,8 @@ public class NtkProfile : IProfile
         
         new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText)),
         
+        new TableifyFiguresLint(),
+        
         new EmptyLineControlLint(
             [
                 new EmptyLineControlLint.Rule(
@@ -154,7 +156,7 @@ public class NtkProfile : IProfile
                     [new FontSizeLint(All, 24, true, "EmptyAfterKeywordsFontSize")]
                 ),
                 new EmptyLineControlLint.Rule(
-                    x => x is TablePropertiesTool {Class: TableClass.Table or TableClass.TableContinuation},
+                    x => x is TablePropertiesTool {Class: TableClass.Table or TableClass.TableContinuation or TableClass.Figure},
                     "NoEmptyAfterTable",
                     [new FontSizeLint(All, 28, true, "EmptyAfterTableFontSize")]
                 )

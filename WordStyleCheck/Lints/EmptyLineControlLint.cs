@@ -60,7 +60,7 @@ public class EmptyLineControlLint(List<EmptyLineControlLint.Rule> beforeRules, L
                         {
                             ctx.MarkAutoFixed();
                             
-                            Paragraph newEmpty = new Paragraph();
+                            Paragraph newEmpty = new Paragraph(new Run());
 
                             if (before)
                                 e.InsertBeforeSelf(newEmpty);

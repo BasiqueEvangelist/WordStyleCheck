@@ -20,6 +20,7 @@ public class NtkParagraphData
     public bool IsSourceInstitute { get; set; }
     public bool IsAbstract { get; set; }
     public bool IsKeywords { get; set; }
+    public bool IsProbablyHeading { get; set; }
     public bool IsBibliographyHeader { get; set; }
     public bool IsBibliographySource { get; set; }
     
@@ -42,12 +43,7 @@ public class NtkParagraphData
             if (Inner.CaptionData != null) return NtkParagraphClass.FigureCaption;
             if (Inner.ProbablyCodeListing) return NtkParagraphClass.CodeListing;
             if (Inner.ContainingTableCell != null) return NtkParagraphClass.TableContent;
-
-            if (Inner.Justification == JustificationValues.Center && Inner.Runs.All(x => x.Bold || string.IsNullOrWhiteSpace(x.Contents)))
-                return NtkParagraphClass.Heading;
-
-            if (Inner.Runs.All(x => x.Italic))
-                return NtkParagraphClass.Heading;
+            if (IsProbablyHeading) return NtkParagraphClass.Heading;
 
             return NtkParagraphClass.BodyText;
         }

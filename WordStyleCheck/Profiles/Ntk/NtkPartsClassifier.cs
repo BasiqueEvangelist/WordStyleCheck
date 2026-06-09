@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using WordStyleCheck.Analysis;
@@ -10,6 +11,9 @@ public class NtkPartsClassifier : IClassifier
     private const string NameRegexText = @"[А-Я][а-я]+\s+[А-Я]\.\s*[А-Я]\.";
     
     private static readonly Regex NamesRegex = new Regex(@$"({NameRegexText},\s*)*{NameRegexText}");
+
+    private static readonly SearchValues<char> RussianLetters = SearchValues.Create("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя");
+    private static readonly SearchValues<char> LatinLetters = SearchValues.Create("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
     public void Classify(DocumentAnalysisContext ctx)
     {
@@ -75,6 +79,7 @@ public class NtkPartsClassifier : IClassifier
         if (i >= paragraphs.Count) return;
 
         bool seenBibliography = false;
+        bool seenNormalText = false;
         while (i < paragraphs.Count)
         {
             var tool = ctx.GetTool(paragraphs[i]);
@@ -82,6 +87,24 @@ public class NtkPartsClassifier : IClassifier
             if (!seenBibliography)
             {
                 string content = Utils.StripJunk(tool.Contents).TrimEnd('.', ':');
+                
+                if (!seenNormalText)
+                {
+                    if (MemoryExtensions.ContainsAny(content, RussianLetters))
+                    {
+                        seenNormalText = true;
+                    }
+                    else if (MemoryExtensions.ContainsAny(content, LatinLetters))
+                    {
+                        tool.GetFeature(NtkParagraphData.Key)!.IsProbablyJunk = true;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    if (tool.Runs.All(x => x.Bold || string.IsNullOrWhiteSpace(x.Contents)) || tool.Runs.All(x => x.Italic || string.IsNullOrWhiteSpace(x.Contents)))
+                        tool.GetFeature(NtkParagraphData.Key)!.IsProbablyHeading = true;
+                }
 
                 foreach (var option in Utils.BibliographyHeaderNames)
                 {

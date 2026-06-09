@@ -111,7 +111,8 @@ public class NtkProfile : IProfile
         
         new ForceJustificationLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), [JustificationValues.Center], "HeaderNotCentered"),
         new ParagraphIndentLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), 0, 0, 0, "IncorrectHeaderFirstLineIndent", "IncorrectHeaderLeftIndent", "IncorrectHeaderRightIndent"),
-
+        new ForceCapsLint(IsOfClass(NtkParagraphClass.ThesisTitle), "TitleMustBeCaps"),
+        
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
 
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.Heading), "HeadingBold"),

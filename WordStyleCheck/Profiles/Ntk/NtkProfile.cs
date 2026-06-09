@@ -142,24 +142,24 @@ public class NtkProfile : IProfile
                 new EmptyLineControlLint.Rule(
                     IsOfClass(NtkParagraphClass.Abstract),
                     "NoEmptyBeforeAbstract",
-                    [new FontSizeLint(All, 28, true, "EmptyBeforeAbstractFontSize")]
+                    28
                 ),
                 new EmptyLineControlLint.Rule(
                     IsOfClass(NtkParagraphClass.BibliographyHeader),
                     "NoEmptyBeforeBibliography",
-                    [new FontSizeLint(All, 28, true, "EmptyBeforeBibliographyFontSize")]
+                    28
                 )
             ],
             [
                 new EmptyLineControlLint.Rule(
                     IsOfClass(NtkParagraphClass.Keywords),
                     "NoEmptyAfterKeywords",
-                    [new FontSizeLint(All, 24, true, "EmptyAfterKeywordsFontSize")]
+                    24
                 ),
                 new EmptyLineControlLint.Rule(
                     x => x is TablePropertiesTool {Class: TableClass.Table or TableClass.TableContinuation or TableClass.Figure},
                     "NoEmptyAfterTable",
-                    [new FontSizeLint(All, 28, true, "EmptyAfterTableFontSize")]
+                    28
                 )
             ],
             "ForbiddenEmpty"
@@ -167,8 +167,6 @@ public class NtkProfile : IProfile
         
         new ForbidPageBreaksLint(),
     ];
-
-    private static bool All(ParagraphPropertiesTool tool) => true;
     
     private static Predicate<IBlockLevelPropertiesTool> IsOfClass(params NtkParagraphClass[] klass)
         => x => x is ParagraphPropertiesTool p && klass.Contains(p.GetFeature(NtkParagraphData.Key)!.Class);

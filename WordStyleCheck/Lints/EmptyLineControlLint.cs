@@ -44,11 +44,8 @@ public class EmptyLineControlLint(List<EmptyLineControlLint.Rule> beforeRules, L
                     if (sibling is Paragraph emptyP && ctx.Document.GetTool(emptyP) is {IsEmptyOrWhitespace: true} emptyTool)
                     {
                         allowedLines.Add(emptyTool);
-                        
-                        foreach (var lint in rule.Lints)
-                        {
-                            lint.Run(ctx, emptyTool);
-                        }
+
+                        // TODO: check font size.
                     }
                     else
                     {
@@ -60,19 +57,15 @@ public class EmptyLineControlLint(List<EmptyLineControlLint.Rule> beforeRules, L
                         {
                             ctx.MarkAutoFixed();
                             
-                            Paragraph newEmpty = new Paragraph(new Run());
+                            Paragraph newEmpty = new Paragraph(
+                                new ParagraphProperties(new ParagraphMarkRunProperties(new FontSize {Val = rule.FontSize.ToString()})),
+                                new Run(new RunProperties(new FontSize {Val = rule.FontSize.ToString()}))
+                            );
 
                             if (before)
                                 e.InsertBeforeSelf(newEmpty);
                             else
                                 e.InsertAfterSelf(newEmpty);
-                        
-                            ParagraphPropertiesTool newEmptyTool = ctx.Document.GetTool(newEmpty);
-
-                            foreach (var lint in rule.Lints)
-                            {
-                                lint.Run(ctx, newEmptyTool);
-                            }
                         }
                     }
                 }
@@ -101,5 +94,5 @@ public class EmptyLineControlLint(List<EmptyLineControlLint.Rule> beforeRules, L
         }
     }
     
-    public record struct Rule(Predicate<IBlockLevelPropertiesTool> LinePredicate, string MissingId, List<ParagraphLint> Lints);
+    public record struct Rule(Predicate<IBlockLevelPropertiesTool> LinePredicate, string MissingId, int FontSize);
 }

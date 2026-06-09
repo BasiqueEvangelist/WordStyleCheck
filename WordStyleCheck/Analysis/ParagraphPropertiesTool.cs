@@ -1,12 +1,14 @@
 using System.Text;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Analysis;
 
-public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
+public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>, IBlockLevelPropertiesTool
 {
     public DocumentAnalysisContext Context { get; }
     public Paragraph Paragraph { get; }
+    OpenXmlElement IBlockLevelPropertiesTool.Element => Paragraph;
 
     internal ParagraphPropertiesTool(DocumentAnalysisContext ctx, Paragraph paragraph)
     {

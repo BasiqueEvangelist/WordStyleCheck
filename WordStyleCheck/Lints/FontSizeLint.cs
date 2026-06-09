@@ -5,54 +5,47 @@ using WordStyleCheck.Context;
 
 namespace WordStyleCheck.Lints;
 
-public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, bool force, string messageId) : ILint
+public class FontSizeLint(Predicate<ParagraphPropertiesTool> predicate, int fontSize, bool force, string messageId)
+    : ParagraphLint
 {
-    public IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
+    public override IReadOnlyList<string> EmittedDiagnostics { get; } = [messageId];
 
-    public void Run(ILintContext ctx)
+    public override void Run(ILintContext ctx, ParagraphPropertiesTool p)
     {
-        foreach (var p in ctx.Document.AllParagraphs)
+        if (!predicate(p))
         {
-            ParagraphPropertiesTool pTool = ctx.Document.GetTool(p);
-         
-            if (pTool.IsEmptyOrDrawing) continue;
-            if (pTool.IsIgnored) continue;
-            
-            if (!predicate(pTool))
-            {
-                continue;
-            }
+            return;
+        }
+        
+        foreach (var r in Utils.DirectRunChildren(p.Paragraph))
+        {
+            if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
 
-            foreach (var r in Utils.DirectRunChildren(p))
-            {
-                if (string.IsNullOrWhiteSpace(Utils.CollectText(r))) continue;
-                
-                RunPropertiesTool tool = ctx.Document.GetTool(r);
+            RunPropertiesTool tool = ctx.Document.GetTool(r);
 
-                if (tool.FontSize != null && (force ? tool.FontSize != fontSize : tool.FontSize < fontSize))
+            if (tool.FontSize != null && (force ? tool.FontSize != fontSize : tool.FontSize < fontSize))
+            {
+                if (!ctx.AutomaticallyFix)
                 {
-                    if (!ctx.AutomaticallyFix)
+                    ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
+                        new RunDiagnosticContext(r))
                     {
-                        ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.FormattingError,
-                            new RunDiagnosticContext(r))
+                        Parameters = new()
                         {
-                            Parameters = new()
-                            {
-                                ["ExpectedPt"] = (fontSize / 2).ToString(CultureInfo.InvariantCulture),
-                                ["ActualPt"] = (tool.FontSize.Value / 2).ToString(CultureInfo.InvariantCulture)
-                            }
-                        });
-                    } 
-                    else
-                    {
-                        ctx.MarkAutoFixed();
-                        
-                        r.RunProperties ??= new RunProperties();
-                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+                            ["ExpectedPt"] = (fontSize / 2).ToString(CultureInfo.InvariantCulture),
+                            ["ActualPt"] = (tool.FontSize.Value / 2).ToString(CultureInfo.InvariantCulture)
+                        }
+                    });
+                }
+                else
+                {
+                    ctx.MarkAutoFixed();
 
-                        r.RunProperties.FontSize ??= new FontSize();
-                        r.RunProperties.FontSize.Val = fontSize.ToString();
-                    }
+                    r.RunProperties ??= new RunProperties();
+                    if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
+
+                    r.RunProperties.FontSize ??= new FontSize();
+                    r.RunProperties.FontSize.Val = fontSize.ToString();
                 }
             }
         }

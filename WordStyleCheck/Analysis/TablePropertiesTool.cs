@@ -1,11 +1,13 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WordStyleCheck.Analysis;
 
-public class TablePropertiesTool
+public class TablePropertiesTool : IBlockLevelPropertiesTool
 {
     private DocumentAnalysisContext _ctx;
     public Table Table { get; }
+    OpenXmlElement IBlockLevelPropertiesTool.Element => Table;
     public List<TableRowTool> Rows { get; }
     public int ColumnCount { get; }
 

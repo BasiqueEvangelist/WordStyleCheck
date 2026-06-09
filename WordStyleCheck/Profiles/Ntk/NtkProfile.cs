@@ -134,9 +134,39 @@ public class NtkProfile : IProfile
         
         new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText)),
         
+        new EmptyLineControlLint(
+            [
+                new EmptyLineControlLint.Rule(
+                    IsOfClass(NtkParagraphClass.Abstract),
+                    "NoEmptyBeforeAbstract",
+                    [new FontSizeLint(All, 28, true, "EmptyBeforeAbstractFontSize")]
+                ),
+                new EmptyLineControlLint.Rule(
+                    IsOfClass(NtkParagraphClass.BibliographyHeader),
+                    "NoEmptyBeforeBibliography",
+                    [new FontSizeLint(All, 28, true, "EmptyBeforeBibliographyFontSize")]
+                )
+            ],
+            [
+                new EmptyLineControlLint.Rule(
+                    IsOfClass(NtkParagraphClass.Keywords),
+                    "NoEmptyAfterKeywords",
+                    [new FontSizeLint(All, 24, true, "EmptyAfterKeywordsFontSize")]
+                ),
+                new EmptyLineControlLint.Rule(
+                    x => x is TablePropertiesTool {Class: TableClass.Table or TableClass.TableContinuation},
+                    "NoEmptyAfterTable",
+                    [new FontSizeLint(All, 28, true, "EmptyAfterTableFontSize")]
+                )
+            ],
+            "ForbiddenEmpty"
+        ),
+        
         new ForbidPageBreaksLint(),
     ];
+
+    private static bool All(ParagraphPropertiesTool tool) => true;
     
-    private static Predicate<ParagraphPropertiesTool> IsOfClass(params NtkParagraphClass[] klass)
-        => x => klass.Contains(x.GetFeature(NtkParagraphData.Key)!.Class);
+    private static Predicate<IBlockLevelPropertiesTool> IsOfClass(params NtkParagraphClass[] klass)
+        => x => x is ParagraphPropertiesTool p && klass.Contains(p.GetFeature(NtkParagraphData.Key)!.Class);
 }

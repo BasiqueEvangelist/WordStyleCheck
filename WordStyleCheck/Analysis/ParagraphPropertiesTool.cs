@@ -141,6 +141,13 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
             x => x.SpacingBetweenLines?.Line,
             x => x.SpacingBetweenLines?.Line
         )?.Value);
+
+    public LineSpacingRuleValues LineSpacingRule =>
+        FollowPropertyChain(
+            x => x.SpacingBetweenLines?.LineRule?.Value,
+            x => x.SpacingBetweenLines?.LineRule?.Value,
+            x => x.SpacingBetweenLines?.LineRule?.Value
+        ) ?? LineSpacingRuleValues.Auto;
     
     public int? ActualAfterSpacing
     {

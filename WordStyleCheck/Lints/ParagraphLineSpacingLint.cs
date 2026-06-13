@@ -22,7 +22,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
             
             if (tool.LineSpacing == null) continue;
             
-            if (tool.LineSpacing != lineSpacing)
+            if (tool.LineSpacing != lineSpacing || tool.LineSpacingRule != LineSpacingRuleValues.Auto)
             {
                 if (!ctx.AutomaticallyFix)
                 {
@@ -34,6 +34,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
                             Parameters = new()
                             {
                                 ["Expected"] = (lineSpacing / 240.0).ToString(CultureInfo.InvariantCulture),
+                                // TODO: deal with non-auto rules.
                                 ["Actual"] = (tool.LineSpacing.Value / 240.0).ToString(CultureInfo.InvariantCulture)
                             }
                         }
@@ -48,6 +49,7 @@ public class ParagraphLineSpacingLint(Predicate<ParagraphPropertiesTool> predica
 
                     p.ParagraphProperties.SpacingBetweenLines ??= new SpacingBetweenLines();
                     p.ParagraphProperties.SpacingBetweenLines.Line = lineSpacing.ToString();
+                    p.ParagraphProperties.SpacingBetweenLines.LineRule = LineSpacingRuleValues.Auto;
                 }
             }
         }

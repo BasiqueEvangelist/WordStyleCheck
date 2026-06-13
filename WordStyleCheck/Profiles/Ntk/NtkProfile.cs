@@ -190,6 +190,8 @@ public class NtkProfile : IProfile
             "ForbiddenEmpty"
         ),
         
+        new NoInterParagraphSpacingLint(),
+        
         new ForbidPageBreaksLint(),
     ];
     

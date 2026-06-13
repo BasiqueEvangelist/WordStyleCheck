@@ -17,6 +17,8 @@ public class NtkParagraphData
     public bool IsUniversalDecimalClassifier { get; set; }
     public bool IsTitle { get; set; }
     public bool IsAuthorData { get; set; }
+    public bool IsSupervisorData { get; set; }
+    public bool IsConsultantData { get; set; }
     public bool IsSourceInstitute { get; set; }
     public bool IsAbstract { get; set; }
     public bool IsKeywords { get; set; }
@@ -33,6 +35,8 @@ public class NtkParagraphData
             if (IsProbablyJunk) return NtkParagraphClass.Junk;
             if (IsUniversalDecimalClassifier) return NtkParagraphClass.UniversalDecimalClassifier;
             if (IsAuthorData) return NtkParagraphClass.AuthorDetails;
+            if (IsSupervisorData) return NtkParagraphClass.SupervisorDetails;
+            if (IsConsultantData) return NtkParagraphClass.ConsultantDetails;
             if (IsSourceInstitute) return NtkParagraphClass.SourceInstitute;
             if (IsTitle) return NtkParagraphClass.ThesisTitle;
             if (IsAbstract) return NtkParagraphClass.Abstract;
@@ -67,6 +71,8 @@ public enum NtkParagraphClass
     UniversalDecimalClassifier,
     ThesisTitle,
     AuthorDetails,
+    SupervisorDetails,
+    ConsultantDetails,
     SourceInstitute,
     Abstract,
     Keywords,

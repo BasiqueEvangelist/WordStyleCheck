@@ -61,6 +61,8 @@ public class NtkProfile : IProfile
                 NtkParagraphClass.UniversalDecimalClassifier,
                 NtkParagraphClass.ThesisTitle,
                 NtkParagraphClass.AuthorDetails,
+                NtkParagraphClass.SupervisorDetails,
+                NtkParagraphClass.ConsultantDetails,
                 NtkParagraphClass.SourceInstitute,
                 NtkParagraphClass.Heading,
                 NtkParagraphClass.BodyText,
@@ -91,6 +93,8 @@ public class NtkProfile : IProfile
             IsOfClass(
                 NtkParagraphClass.ThesisTitle,
                 NtkParagraphClass.AuthorDetails,
+                NtkParagraphClass.SupervisorDetails,
+                NtkParagraphClass.ConsultantDetails,
                 NtkParagraphClass.Abstract,
                 NtkParagraphClass.Keywords
             ),
@@ -134,9 +138,11 @@ public class NtkProfile : IProfile
         new ParagraphIndentLint(IsOfClass(NtkParagraphClass.UniversalDecimalClassifier), 0, 0, 0, "IncorrectUdcFirstLineIndent", "IncorrectUdcLeftIndent", "IncorrectUdcRightIndent"),
         // TODO: force newlines between stuff.
         
-        new ForceJustificationLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), [JustificationValues.Center], "HeaderNotCentered"),
-        new ParagraphIndentLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SourceInstitute), 0, 0, 0, "IncorrectHeaderFirstLineIndent", "IncorrectHeaderLeftIndent", "IncorrectHeaderRightIndent"),
+        new ForceJustificationLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SupervisorDetails, NtkParagraphClass.ConsultantDetails, NtkParagraphClass.SourceInstitute), [JustificationValues.Center], "HeaderNotCentered"),
+        new ParagraphIndentLint(IsOfClass(NtkParagraphClass.ThesisTitle, NtkParagraphClass.AuthorDetails, NtkParagraphClass.SupervisorDetails, NtkParagraphClass.ConsultantDetails, NtkParagraphClass.SourceInstitute), 0, 0, 0, "IncorrectHeaderFirstLineIndent", "IncorrectHeaderLeftIndent", "IncorrectHeaderRightIndent"),
         new ForceCapsLint(IsOfClass(NtkParagraphClass.ThesisTitle), "TitleMustBeCaps"),
+        
+        new SupervisorFixerLint(),
         
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
 

@@ -48,9 +48,15 @@ public class NtkPartsClassifier : IClassifier
         {
             var tool = ctx.GetTool(paragraphs[i]);
 
-            if (NamesRegex.IsMatch(tool.Contents)
-                || tool.Contents.StartsWith("Научный руководитель")
-                || tool.Contents.StartsWith("Научный консультант"))
+            if (tool.Contents.StartsWith("Научный руководитель"))
+            {
+                tool.GetFeature(NtkParagraphData.Key)!.IsSupervisorData = true;
+            }
+            else if (tool.Contents.StartsWith("Научный консультант"))
+            {
+                tool.GetFeature(NtkParagraphData.Key)!.IsConsultantData = true;
+            }
+            else if (NamesRegex.IsMatch(tool.Contents))
             {
                 tool.GetFeature(NtkParagraphData.Key)!.IsAuthorData = true;
             }

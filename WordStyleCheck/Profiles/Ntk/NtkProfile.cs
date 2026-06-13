@@ -71,7 +71,32 @@ public class NtkProfile : IProfile
             true,
             "IncorrectMainFontSize"
         ),
-        new ParagraphLineSpacingLint(_ => true, 288, "IncorrectLineSpacing"),
+        new ParagraphLineSpacingLint(
+            IsOfClass(
+                NtkParagraphClass.UniversalDecimalClassifier,
+                NtkParagraphClass.SourceInstitute,
+                NtkParagraphClass.Heading,
+                NtkParagraphClass.BodyText,
+                NtkParagraphClass.FigureCaption,
+                NtkParagraphClass.TableCaption,
+                NtkParagraphClass.BibliographyHeader,
+                NtkParagraphClass.BibliographySource,
+                NtkParagraphClass.CodeListing,
+                NtkParagraphClass.TableContent
+            ),
+            288,
+            "IncorrectLineSpacing"
+        ),
+        new ParagraphLineSpacingLint(
+            IsOfClass(
+                NtkParagraphClass.ThesisTitle,
+                NtkParagraphClass.AuthorDetails,
+                NtkParagraphClass.Abstract,
+                NtkParagraphClass.Keywords
+            ),
+            276,
+            "IncorrectLineSpacing"
+        ),
         new PageMarginsLint(new PageMargins(1134, 1134, 1134, 1134, 0, 0 ,0)),
         new PageSizeLint(),
         // TODO: footnotes.

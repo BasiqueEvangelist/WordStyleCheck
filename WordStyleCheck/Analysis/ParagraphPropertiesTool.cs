@@ -126,6 +126,21 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
             if (ContextualSpacing && this.Paragraph.PreviousSibling() is Paragraph p &&
                 Context.GetTool(p).Style?.StyleId == Style?.StyleId)
                 return 0;
+
+            if (FollowPropertyChain(
+                    x => x.SpacingBetweenLines?.BeforeAutoSpacing?.Value,
+                    x => x.SpacingBetweenLines?.BeforeAutoSpacing?.Value,
+                    x => x.SpacingBetweenLines?.BeforeAutoSpacing?.Value
+                ) ?? false)
+                return 1337;
+            
+            int? beforeLines = FollowPropertyChain(
+                x => x.SpacingBetweenLines?.BeforeLines?.Value,
+                x => x.SpacingBetweenLines?.BeforeLines?.Value,
+                x => x.SpacingBetweenLines?.BeforeLines?.Value
+            );
+
+            if (beforeLines != null) return beforeLines.Value; // TODO: make this good.
             
             return Utils.ParseTwipsMeasure(FollowPropertyChain(
                 x => x.SpacingBetweenLines?.Before,
@@ -156,6 +171,21 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
             if (ContextualSpacing && this.Paragraph.NextSibling() is Paragraph p &&
                 Context.GetTool(p).Style?.StyleId == Style?.StyleId)
                 return 0;
+
+            if (FollowPropertyChain(
+                    x => x.SpacingBetweenLines?.AfterAutoSpacing?.Value,
+                    x => x.SpacingBetweenLines?.AfterAutoSpacing?.Value,
+                    x => x.SpacingBetweenLines?.AfterAutoSpacing?.Value
+                ) ?? false)
+                return 1337;
+            
+            int? afterLines = FollowPropertyChain(
+                x => x.SpacingBetweenLines?.AfterLines?.Value,
+                x => x.SpacingBetweenLines?.AfterLines?.Value,
+                x => x.SpacingBetweenLines?.AfterLines?.Value
+            );
+
+            if (afterLines != null) return afterLines.Value; // TODO: make this good.
             
             return Utils.ParseTwipsMeasure(FollowPropertyChain(
                 x => x.SpacingBetweenLines?.After,

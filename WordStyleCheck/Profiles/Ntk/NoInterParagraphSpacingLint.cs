@@ -34,7 +34,11 @@ public class NoInterParagraphSpacingLint : ILint
 
                     p.ParagraphProperties.SpacingBetweenLines ??= new SpacingBetweenLines();
                     p.ParagraphProperties.SpacingBetweenLines.After = "0";
+                    p.ParagraphProperties.SpacingBetweenLines.AfterLines = null;
+                    p.ParagraphProperties.SpacingBetweenLines.AfterAutoSpacing = null;
                     p.ParagraphProperties.SpacingBetweenLines.Before = "0";
+                    p.ParagraphProperties.SpacingBetweenLines.BeforeLines = null;
+                    p.ParagraphProperties.SpacingBetweenLines.BeforeAutoSpacing = null;
                 }
             }
         }

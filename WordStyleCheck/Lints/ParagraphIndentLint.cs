@@ -59,16 +59,19 @@ public class ParagraphIndentLint(
                     {
                         p.ParagraphProperties.Indentation.FirstLine = firstLine.ToString();
                         p.ParagraphProperties.Indentation.Hanging = null;
+                        p.ParagraphProperties.Indentation.FirstLineChars = null;
                     } 
                     else if (firstLine < 0)
                     {
                         p.ParagraphProperties.Indentation.Hanging = (-firstLine).ToString();
                         p.ParagraphProperties.Indentation.FirstLine = null;
+                        p.ParagraphProperties.Indentation.FirstLineChars = null;
                     }
                     else
                     {
                         p.ParagraphProperties.Indentation.FirstLine = "0";
                         p.ParagraphProperties.Indentation.Hanging = null;
+                        p.ParagraphProperties.Indentation.FirstLineChars = null;
                     }
                 }
             }

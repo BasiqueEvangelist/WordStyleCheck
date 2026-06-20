@@ -149,10 +149,14 @@ public class NtkProfile : IProfile
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.Heading), "HeadingBold"),
         new ForceItalicLint(true, IsOfClass(NtkParagraphClass.Heading), "HeadingNotItalic"),
         
+        new ForceBoldLint(true, IsOfClass(NtkParagraphClass.SourceInstitute), "SourceInstituteNotBold"),
+        new ForceItalicLint(true, IsOfClass(NtkParagraphClass.SourceInstitute), "SourceInstituteNotItalic"),
+        
         new IncorrectHeaderLint(IsOfClass(NtkParagraphClass.Abstract), ["Аннотация. ", "Аннотация.", "Аннотация:"], "Аннотация: ", "IncorrectAbstractHeader"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Abstract), "Аннотация:", "AbstractHeaderMustBeBoldItalic", "AbstractBodyMustBeItalic"),
         new BoldItalicThenItalicLint(IsOfClass(NtkParagraphClass.Keywords), "Ключевые слова:", "KeywordsHeaderMustBeBoldItalic", "KeywordsBodyMustBeItalic"),
         new FontSizeLint(IsOfClass(NtkParagraphClass.Abstract, NtkParagraphClass.Keywords), 24, true, "IncorrectAbstractKeywordsFontSize"),
+        new AbstractStartsWithLowercaseLint(),
         
         new ForceJustificationLint(IsOfClass(NtkParagraphClass.FigureCaption), [JustificationValues.Center], "FigureCaptionMustBeCentered"),
         new ForceJustificationLint(IsOfClass(NtkParagraphClass.TableCaption), [JustificationValues.Right], "TableCaptionMustBeRightAligned"),

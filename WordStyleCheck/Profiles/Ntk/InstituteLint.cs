@@ -37,8 +37,6 @@ public class InstituteLint : ILint
             
             string text = span.ToString();
             
-            if (InstituteNames.Select(x => x[0]).Any(x => x == text)) continue;
-            
             var candidates = InstituteNames
                 .Select(x => new { Correct = x[0], Distance = x.Select(y => StringEx.LevenshteinDistance(text, y)).Min() })
                 .Where(x => x.Distance <= text.Length / 5)
@@ -57,26 +55,30 @@ public class InstituteLint : ILint
                         ["Actual"] = text
                     }
                 });
+                
+                continue;
+            }
+
+            string correct = "РТУ МИРЭА, " + best;
+            
+            if (rat.Text == correct) continue;
+            
+            if (!ctx.AutomaticallyFix)
+            {
+                ctx.AddMessage(new LintDiagnostic("IncorrectInstituteFixed", DiagnosticType.FormattingError, new ParagraphDiagnosticContext(p))
+                {
+                    Parameters = new()
+                    {
+                        ["Expected"] = correct,
+                        ["Actual"] = rat.Text
+                    }
+                });
             }
             else
             {
-                if (!ctx.AutomaticallyFix)
-                {
-                    ctx.AddMessage(new LintDiagnostic("IncorrectInstituteFixed", DiagnosticType.FormattingError, new RunSpanDiagnosticContext(span))
-                    {
-                        Parameters = new()
-                        {
-                            ["Expected"] = best,
-                            ["Actual"] = text
-                        }
-                    });
-                }
-                else
-                {
-                    ctx.MarkAutoFixed();
+                ctx.MarkAutoFixed();
                     
-                    rat.GetSpan(0, rat.Text.Length).Replace("РТУ МИРЭА, " + best);
-                }
+                rat.GetSpan(0, rat.Text.Length).Replace("РТУ МИРЭА, " + best);
             }
         }
     }

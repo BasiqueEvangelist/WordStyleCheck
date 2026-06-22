@@ -236,6 +236,8 @@ public class SupervisorFixerLint : ILint
                 ctx.MarkAutoFixed();
                     
                 span.Replace(correct.ToString());
+                
+                tool.ReloadContents();
             }
         }
     }

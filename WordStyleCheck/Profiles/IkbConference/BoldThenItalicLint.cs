@@ -40,6 +40,8 @@ public class BoldThenItalicLint(Predicate<ParagraphPropertiesTool> predicate, st
                         run.RunProperties.Italic = new Italic { Val = false };
                         run.RunProperties.Bold = new Bold { Val = true };
                     }
+                    
+                    tool.ReloadContents();
                 }
             }
             
@@ -61,6 +63,8 @@ public class BoldThenItalicLint(Predicate<ParagraphPropertiesTool> predicate, st
                         run.RunProperties.Italic = new Italic { Val = true };
                         run.RunProperties.Bold = new Bold { Val = false };
                     }
+                    
+                    tool.ReloadContents();
                 }
             }
         }

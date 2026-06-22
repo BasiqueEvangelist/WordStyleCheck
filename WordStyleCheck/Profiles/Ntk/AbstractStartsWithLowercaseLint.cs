@@ -38,6 +38,8 @@ public class AbstractStartsWithLowercaseLint : ILint
                 ctx.MarkAutoFixed();
                 
                 span.Replace(char.ToLower(rat.Text[start]).ToString());
+                
+                tool.ReloadContents();
             }
         }
     }

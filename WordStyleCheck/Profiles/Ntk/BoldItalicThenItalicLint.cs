@@ -21,7 +21,6 @@ public class BoldItalicThenItalicLint(Predicate<ParagraphPropertiesTool> predica
             if (!assoc.Text.StartsWith(header)) continue; // ???
 
             var headerSpan = assoc.GetSpan(0, header.Length);
-            var bodySpan = assoc.GetSpan(header.Length, assoc.Text.Length - header.Length);
             
             if (!headerSpan.Matches(x => x.Bold && x.Italic))
             {
@@ -40,8 +39,14 @@ public class BoldItalicThenItalicLint(Predicate<ParagraphPropertiesTool> predica
                         run.RunProperties.Italic = new Italic { Val = true };
                         run.RunProperties.Bold = new Bold { Val = true };
                     }
+                    
+                    tool.ReloadContents();
+
+                    assoc = RunAssociatedText.FromParagraph(tool);
                 }
             }
+            
+            var bodySpan = assoc.GetSpan(header.Length, assoc.Text.Length - header.Length);
             
             if (!bodySpan.Matches(x => x.Italic && !x.Bold))
             {
@@ -60,6 +65,8 @@ public class BoldItalicThenItalicLint(Predicate<ParagraphPropertiesTool> predica
                         run.RunProperties.Italic = new Italic { Val = true };
                         run.RunProperties.Bold = new Bold { Val = false };
                     }
+                    
+                    tool.ReloadContents();
                 }
             }
         }

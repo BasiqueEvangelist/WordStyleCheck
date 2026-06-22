@@ -44,6 +44,8 @@ public class StripAuthorJunkLint : ILint
                 ctx.MarkAutoFixed();
                     
                 RunAssociatedText.FromParagraph(tool).GetSpan(0, tool.Contents.Length).Replace(correct);
+                
+                tool.ReloadContents();
             }
         }
     }

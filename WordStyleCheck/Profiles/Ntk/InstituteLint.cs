@@ -79,6 +79,8 @@ public class InstituteLint : ILint
                 ctx.MarkAutoFixed();
                     
                 rat.GetSpan(0, rat.Text.Length).Replace("РТУ МИРЭА, " + best);
+                
+                tool.ReloadContents();
             }
         }
     }

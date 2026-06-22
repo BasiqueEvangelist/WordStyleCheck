@@ -46,6 +46,7 @@ public class BadOuterWhitespaceLint(Predicate<ParagraphPropertiesTool> predicate
                             run.Remove();
                         }
                         
+                        tool.ReloadContents();
                         text = RunAssociatedText.FromParagraph(tool);
                     }
                 }
@@ -77,6 +78,8 @@ public class BadOuterWhitespaceLint(Predicate<ParagraphPropertiesTool> predicate
                         {
                             run.Remove();
                         }
+                        
+                        tool.ReloadContents();
                     }
                 }
             }

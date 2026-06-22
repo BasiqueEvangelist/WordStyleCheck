@@ -24,7 +24,11 @@ public record class RunSpan(List<RunPropertiesTool> Runs, int FirstStart, int La
 
         for (int i = 0; i < Runs.Count; i++)
         {
-            if (i == 0)
+            if (Runs.Count == 1)
+            {
+                sb.Append(Runs[i].Contents.Substring(FirstStart, LastEnd - FirstStart));
+            }
+            else if (i == 0)
             {
                 sb.Append(Runs[i].Contents[FirstStart..]);
             }

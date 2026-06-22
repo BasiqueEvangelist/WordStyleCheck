@@ -163,7 +163,7 @@ public class NtkProfile : IProfile
         new FontSizeLint(IsOfClass(NtkParagraphClass.FigureCaption, NtkParagraphClass.TableCaption), 26, true, "IncorrectCaptionFontSize"),
         new ParagraphIndentLint(IsOfClass(NtkParagraphClass.FigureCaption), 0, 0, 0, "IncorrectFigureCaptionIndent", "IncorrectFigureCaptionIndent", "IncorrectFigureCaptionIndent"),
         
-        new InstituteCapitalizationLint(),
+        new InstituteLint(),
         
         new TextColorLint(),
         new BadOuterWhitespaceLint(_ => true),

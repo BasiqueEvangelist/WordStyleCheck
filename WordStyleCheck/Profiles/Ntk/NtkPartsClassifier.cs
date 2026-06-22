@@ -70,7 +70,7 @@ public class NtkPartsClassifier : IClassifier
                 i++;
                 break;
             }
-            else if (tool.Contents.StartsWith("РТУ МИРЭА, Институт"))
+            else if (tool.Contents.StartsWith("РТУ МИРЭА,"))
             {
                 tool.GetFeature(NtkParagraphData.Key)!.IsSourceInstitute = true;
             }

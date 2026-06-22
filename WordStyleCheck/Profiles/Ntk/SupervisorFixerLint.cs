@@ -93,6 +93,10 @@ public class SupervisorFixerLint : ILint
                 {
                     addTo.Add("фарм.");
                 }
+                else if (ConsumeIfNext("п.", "политических", "полит."))
+                {
+                    addTo.Add("п.");
+                }
             }
             
             while (i < name.Length)

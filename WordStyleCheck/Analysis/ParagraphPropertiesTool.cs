@@ -1,6 +1,7 @@
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using OfficeMath = DocumentFormat.OpenXml.Math.OfficeMath;
 
 namespace WordStyleCheck.Analysis;
 
@@ -55,7 +56,7 @@ public class ParagraphPropertiesTool : SupportsFeatures<ParagraphPropertiesTool>
         EquationData = EquationClassifierData.Classify(this);
         
         IsEmptyOrDrawing = !Utils.DirectRunChildren(paragraph).SelectMany(x => x.ChildElements).Any(x => x is Text text && !string.IsNullOrWhiteSpace(text.Text));
-        IsEmptyOrWhitespace = IsEmptyOrDrawing && !paragraph.Descendants().Any(x => x is Drawing);
+        IsEmptyOrWhitespace = IsEmptyOrDrawing && !paragraph.Descendants().Any(x => x is Drawing or OfficeMath or DocumentFormat.OpenXml.Math.Paragraph);
 
         if (Utils.AscendToAnscestor<Table>(Paragraph) is { } table)
         {

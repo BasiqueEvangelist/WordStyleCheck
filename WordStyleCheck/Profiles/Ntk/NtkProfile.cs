@@ -165,6 +165,8 @@ public class NtkProfile : IProfile
         
         new InstituteLint(),
         
+        new StripAuthorJunkLint(),
+        
         new TextColorLint(),
         new BadOuterWhitespaceLint(_ => true),
         

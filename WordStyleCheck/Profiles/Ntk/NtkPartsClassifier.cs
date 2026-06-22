@@ -8,9 +8,12 @@ namespace WordStyleCheck.Profiles.Ntk;
 public class NtkPartsClassifier : IClassifier
 {
     [StringSyntax("Regex")]
-    private const string NameRegexText = @"[А-Я][а-я]+\s+[А-Я]\.\s*[А-Я]\.";
+    public const string NameRegexText = @"[А-Я][а-я]+\s+[А-Я]\.\s*[А-Я]\.";
+
+    [StringSyntax("Regex")]
+    private const string LenientNameRegexText = @"[А-Я][а-я]+\s+[А-Я](\.|([а-я]+))\s*[А-Я](\.|([а-я]+))";
     
-    private static readonly Regex NamesRegex = new Regex(@$"({NameRegexText},\s*)*{NameRegexText}");
+    private static readonly Regex NamesRegex = new Regex(@$"({LenientNameRegexText},\s*)*{LenientNameRegexText}");
 
     private static readonly SearchValues<char> RussianLetters = SearchValues.Create("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя");
     private static readonly SearchValues<char> LatinLetters = SearchValues.Create("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
@@ -43,22 +46,25 @@ public class NtkPartsClassifier : IClassifier
 
         ctx.GetTool(paragraphs[i]).GetFeature(NtkParagraphData.Key)!.IsTitle = true;
         i++;
+
+        bool attachedAuthor = false;
         
         while (i < paragraphs.Count)
         {
             var tool = ctx.GetTool(paragraphs[i]);
 
-            if (tool.Contents.StartsWith("Научный руководитель"))
+            if (tool.Contents.Contains("руководитель", StringComparison.InvariantCultureIgnoreCase))
             {
                 tool.GetFeature(NtkParagraphData.Key)!.IsSupervisorData = true;
             }
-            else if (tool.Contents.StartsWith("Научный консультант"))
+            else if (tool.Contents.StartsWith("консультант", StringComparison.InvariantCultureIgnoreCase))
             {
                 tool.GetFeature(NtkParagraphData.Key)!.IsConsultantData = true;
             }
-            else if (NamesRegex.IsMatch(tool.Contents))
+            else if (NamesRegex.IsMatch(tool.Contents) && !attachedAuthor)
             {
                 tool.GetFeature(NtkParagraphData.Key)!.IsAuthorData = true;
+                attachedAuthor = true;
             }
             else if (tool.Contents.StartsWith("Аннотация"))
             {

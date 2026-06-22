@@ -29,7 +29,10 @@ public class InstituteLint : ILint
 
             RunAssociatedText rat = RunAssociatedText.FromParagraph(tool);
 
-            int startIndex = rat.Text.IndexOf("РТУ МИРЭА, ", StringComparison.InvariantCultureIgnoreCase) + "РТУ МИРЭА, ".Length;
+            int startIndex = rat.Text.IndexOf("РТУ МИРЭА", StringComparison.InvariantCultureIgnoreCase) + "РТУ МИРЭА".Length;
+            
+            while (!char.IsLetter(rat.Text[startIndex])) startIndex += 1;
+            
             var span = rat.GetSpan(startIndex, rat.Text.Length - startIndex);
             
             string text = span.ToString();
@@ -72,7 +75,7 @@ public class InstituteLint : ILint
                 {
                     ctx.MarkAutoFixed();
                     
-                    span.Replace(best);
+                    rat.GetSpan(0, rat.Text.Length).Replace("РТУ МИРЭА, " + best);
                 }
             }
         }

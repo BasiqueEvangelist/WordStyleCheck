@@ -20,22 +20,9 @@ public class StripAuthorJunkLint : ILint
 
             if (!tool.GetFeature(NtkParagraphData.Key)!.IsAuthorData) continue;
 
-            List<string> names = [];
-
             string trimmed = tool.Contents.Trim();
-            
-            foreach (var match in NameRegex.EnumerateMatches(trimmed))
-            {
-                names.Add(trimmed.Substring(match.Index, match.Length));
-            }
 
-            foreach (var match in NameFullRegex.Matches(trimmed).Cast<Match>())
-            {
-                string correctName = match.Groups[1].Value + " " + match.Groups[2].Value[0] + "." + " " +
-                                 match.Groups[3].Value[0] + ".";
-                
-                names.Add(correctName);
-            }
+            List<string> names = FindNames(trimmed);
 
             string correct = string.Join(", ", names);
             
@@ -59,5 +46,25 @@ public class StripAuthorJunkLint : ILint
                 RunAssociatedText.FromParagraph(tool).GetSpan(0, tool.Contents.Length).Replace(correct);
             }
         }
+    }
+
+    public static List<string> FindNames(string text)
+    {
+        List<string> names = [];
+
+        foreach (var match in NameRegex.EnumerateMatches(text))
+        {
+            names.Add(text.Substring(match.Index, match.Length));
+        }
+
+        foreach (var match in NameFullRegex.Matches(text).Cast<Match>())
+        {
+            string correctName = match.Groups[1].Value + " " + match.Groups[2].Value[0] + "." + " " +
+                                 match.Groups[3].Value[0] + ".";
+                
+            names.Add(correctName);
+        }
+
+        return names;
     }
 }

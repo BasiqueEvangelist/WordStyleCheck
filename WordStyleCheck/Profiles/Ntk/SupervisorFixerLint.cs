@@ -1,3 +1,4 @@
+using System.Text;
 using WordStyleCheck.Context;
 using WordStyleCheck.Lints;
 
@@ -22,56 +23,215 @@ public class SupervisorFixerLint : ILint
             while (char.IsWhiteSpace(rat.Text[start])) start++;
 
             string name = rat.Text.Substring(start);
-            string original = name;
 
-            name = name
-                .Replace("ассистент", "асс.")
-                .Replace("старший преподаватель", "ст.преп.")
-                .Replace("доцент", "доц.")
-                .Replace("профессор", "проф.")
-                
-                .Replace("старший научный сотрудник", "с.н.с.")
-                .Replace("научный сотрудник", "н.с.")
-                
-                .Replace("научный сотрудник", "н.с.");
+            List<string> doctors = [];
+            List<string> candidates = [];
+            bool docent = false;
+            bool professor = false;
+            bool assistant = false;
+            bool lecturer = false;
+            bool seniorLecturer = false;
 
-            void OfSciences(string science, string s)
+            int i = 0;
+
+            bool ConsumeIfNext(params string[] args)
             {
-                name = name.Replace($"доктор {science} наук", $"д.{s}.н.")
-                    .Replace($"кандидат {science} наук", $"к.{s}.н.");
+                foreach (var option in args)
+                {
+                    if (name.Length - i < option.Length) continue;
+
+                    if (name.Substring(i, option.Length).Equals(option, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        i += option.Length;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            void ConsumeWhitespace()
+            {
+                while (i < name.Length && char.IsWhiteSpace(name[i])) i += 1;
+            }
+
+            void HandleOfSciences(List<string> addTo)
+            {
+                if (ConsumeIfNext("в.", "военных", "воен."))
+                {
+                    addTo.Add("в.");
+                }
+                else if (ConsumeIfNext("т.", "технических", "техн."))
+                {
+                    addTo.Add("т.");
+                }
+                else if (ConsumeIfNext("ф.-м.", "физико-математических", "физ.-мат."))
+                {
+                    addTo.Add("ф.-м.");
+                }
+                else if (ConsumeIfNext("э.", "экономических", "экон."))
+                {
+                    addTo.Add("э.");
+                }
+                else if (ConsumeIfNext("х.", "химических", "хим."))
+                {
+                    addTo.Add("х.");
+                }
+                else if (ConsumeIfNext("и.", "исторических", "ист."))
+                {
+                    addTo.Add("и.");
+                }
+                else if (ConsumeIfNext("ю.", "юридических", "юрид."))
+                {
+                    addTo.Add("ю.");
+                }
+                else if (ConsumeIfNext("с.", "социологических", "социол."))
+                {
+                    addTo.Add("с.");
+                }
+                else if (ConsumeIfNext("фарм.", "фармацевтических", "фармацевт."))
+                {
+                    addTo.Add("фарм.");
+                }
             }
             
-            OfSciences("военных", "в");
-            OfSciences("технический", "т");
-            OfSciences("физико-математических", "ф.-м");
-            OfSciences("экономических", "э");
-            OfSciences("химических", "х");
-            OfSciences("исторических", "и");
-            OfSciences("юридических", "ю");
-            OfSciences("социологических", "с");
-            OfSciences("фармацевтических", "фарм");
-
-            if (original != name)
+            while (i < name.Length)
             {
-                var span = rat.GetSpan(start, rat.Text.Length - start);
-
-                if (!ctx.AutomaticallyFix)
+                if (char.IsWhiteSpace(name[i]))
                 {
-                    ctx.AddMessage(new LintDiagnostic("IncorrectSupervisorFormatting", DiagnosticType.FormattingError, new RunSpanDiagnosticContext(span))
-                    {
-                        Parameters = new()
-                        {
-                            ["Expected"] = name,
-                            ["Actual"] = original
-                        }
-                    });
+                    i += 1;
+                }
+                else if (ConsumeIfNext("д.", "д-р", "доктор"))
+                {
+                    ConsumeWhitespace();
+                    HandleOfSciences(doctors);
+                }
+                else if (ConsumeIfNext("к.", "канд.", "кандидат"))
+                {
+                    ConsumeWhitespace();
+                    HandleOfSciences(candidates);
+                }
+                else if (ConsumeIfNext("асс.", "ассистент"))
+                {
+                    assistant = true;
+                }
+                else if (ConsumeIfNext("препо.", "преп.", "преподаватель"))
+                {
+                    lecturer = true;
+                }
+                else if (ConsumeIfNext("ст.преп.", "ст. преп.", "старший преподаватель"))
+                {
+                    seniorLecturer = true;
+                }
+                else if (ConsumeIfNext("доц.", "доцент"))
+                {
+                    docent = true;
+                }
+                else if (ConsumeIfNext("проф.", "профессор"))
+                {
+                    professor = true;
                 }
                 else
                 {
-                    ctx.MarkAutoFixed();
-                    
-                    span.Replace(name);
+                    i += 1;
                 }
+            }
+
+            List<string> names = StripAuthorJunkLint.FindNames(name);
+            
+            if (names.Count < 1) continue;
+
+            StringBuilder correct = new();
+
+            bool first = true;
+
+            foreach (var doctor in doctors)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("д." + doctor + "н.");
+            }
+            
+            foreach (var candidate in candidates)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("к." + candidate + "н.");
+            }
+
+            if (docent)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("доц.");
+            }
+            
+            if (professor)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("проф.");
+            }
+            
+            if (assistant)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("асс.");
+            }
+            
+            if (lecturer)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("препо.");
+            }
+            
+            if (seniorLecturer)
+            {
+                if (!first) correct.Append(", ");
+
+                first = false;
+
+                correct.Append("ст.преп.");
+            }
+
+            if (!first) correct.Append(" ");
+
+            correct.Append(names[0]);
+            
+            if (name == correct.ToString()) continue;
+            
+            var span = rat.GetSpan(start, rat.Text.Length - start);
+            
+            if (!ctx.AutomaticallyFix)
+            {
+                ctx.AddMessage(new LintDiagnostic("IncorrectSupervisorFormatting", DiagnosticType.FormattingError, new RunSpanDiagnosticContext(span))
+                {
+                    Parameters = new()
+                    {
+                        ["Expected"] = correct.ToString(),
+                        ["Actual"] = name
+                    }
+                });
+            }
+            else
+            {
+                ctx.MarkAutoFixed();
+                    
+                span.Replace(correct.ToString());
             }
         }
     }

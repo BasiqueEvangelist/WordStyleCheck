@@ -14,14 +14,12 @@ public class NoUdcLint : ILint
 
         if (any) return;
 
-        if (!ctx.AutomaticallyFix)
-        {
-            ctx.AddMessage(new LintDiagnostic(
-                "NoUdc",
-                DiagnosticType.ContentError,
-                new StartOfDocumentDiagnosticContext()));
-        }
-        else
+        ctx.AddMessage(new LintDiagnostic(
+            "NoUdc",
+            DiagnosticType.ContentError,
+            new StartOfDocumentDiagnosticContext()));
+            
+        if (ctx.AutomaticallyFix)
         {
             Paragraph p = new Paragraph();
             Run r = new Run(new Text("УДК 000.000"));

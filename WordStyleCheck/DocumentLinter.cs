@@ -82,7 +82,6 @@ public class DocumentLinter : IDisposable, ILintContext
             SeriousError = true;
         }
         
-        if (_autoFix) return;
         if (!LintIdFilter(diagnostic.Id)) return;
         
         Diagnostics.Add(diagnostic);
@@ -190,7 +189,15 @@ public class DocumentLinter : IDisposable, ILintContext
         
         foreach (var message in diagnostics.OrderBy(x => x.Context.AfterAll ? 1 : 0))
         {
-            _analysisCtx!.WriteComment(message, translations);
+            try
+            {
+                _analysisCtx!.WriteComment(message, translations);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Encountered exception while writing comment: {e}");
+            }
+
             changed = true;
         }
 

@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dict>
     <!-- TODO: put stuff in. -->
+    <str key="InvalidDocx">
+        Невалидный файл.<br /><br />${Exception}
+    </str>
+
+    <str key="LintError">
+        Ошибка при применении правила ${LintName}.<br /><br />${Exception}
+    </str>
+    
+    <str key="JunkParagraph">
+        Нераспознанный абзац.
+    </str>
+
+    <str key="IncorrectAbstractHeader">
+        Аннотация должна начинаться с 'Аннотация: '.
+    </str>
+
+    <str key="NoUdc">
+        Не найден УДК.
+    </str>
 </dict>

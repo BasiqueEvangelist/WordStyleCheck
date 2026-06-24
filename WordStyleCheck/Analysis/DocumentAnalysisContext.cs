@@ -331,8 +331,15 @@ public class DocumentAnalysisContext
         return Document.MainDocumentPart.AddHyperlinkRelationship(url, true).Id;
     }
 
+    public void ReloadParagraphs()
+    {
+        AllBlockLevel = Document.MainDocumentPart!.Document!.Body!.Descendants().Where(x => x is Paragraph or Table).ToList();
+        AllParagraphs = AllBlockLevel.OfType<Paragraph>().ToList();
+        AllTables = AllBlockLevel.OfType<Table>().ToList();        
+    }
+
     public IReadOnlyList<SectionPropertiesTool> AllSections => _sections;
-    public IEnumerable<OpenXmlElement> AllBlockLevel { get; }
-    public IEnumerable<Paragraph> AllParagraphs { get; }
-    public IEnumerable<Table> AllTables { get; }
+    public IEnumerable<OpenXmlElement> AllBlockLevel { get; private set; }
+    public IEnumerable<Paragraph> AllParagraphs { get; private set; }
+    public IEnumerable<Table> AllTables { get; private set; }
 }

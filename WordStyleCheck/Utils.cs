@@ -280,4 +280,16 @@ public class Utils
 
         return (run, second);
     }
+
+    public static void HighlightRed(Paragraph p, bool generateRevisions)
+    {
+        foreach (var r in DirectRunChildren(p))
+        {
+            r.RunProperties ??= new RunProperties();
+            if (generateRevisions) SnapshotRunProperties(r.RunProperties);
+
+            r.RunProperties.Highlight ??= new Highlight();
+            r.RunProperties.Highlight.Val = HighlightColorValues.Red;
+        }
+    }
 }

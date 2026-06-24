@@ -87,6 +87,7 @@ public class QuoteTrackerLint(Predicate<ParagraphPropertiesTool> predicate) : IL
                                 rSpan.Replace(Ends[quoteStack.Count].ToString());
                                 
                                 tool.ReloadContents();
+                                rat = RunAssociatedText.FromParagraph(tool);
                             }
                         }
                         else if (properLast != rat.Text[i])
@@ -112,6 +113,7 @@ public class QuoteTrackerLint(Predicate<ParagraphPropertiesTool> predicate) : IL
                                 oSpan.Replace(properLast.ToString());
                                 
                                 tool.ReloadContents();
+                                rat = RunAssociatedText.FromParagraph(tool);
                             }
                         }
                     }

@@ -94,7 +94,7 @@ public class TextColorLint : ILint
                         ctx.MarkAutoFixed();
 
                         r.RunProperties ??= new RunProperties();
-                        Utils.SnapshotRunProperties(r.RunProperties);
+                        if (ctx.GenerateRevisions) Utils.SnapshotRunProperties(r.RunProperties);
                         
                         r.RunProperties.Highlight = null;
                     }

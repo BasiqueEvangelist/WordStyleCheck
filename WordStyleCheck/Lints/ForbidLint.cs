@@ -16,6 +16,11 @@ public class ForbidLint(Predicate<ParagraphPropertiesTool> predicate, string mes
             if (!predicate(tool)) continue;
             
             ctx.AddMessage(new LintDiagnostic(messageId, DiagnosticType.ContentError, new ParagraphDiagnosticContext(p)));
+
+            if (ctx.AutomaticallyFix)
+            {
+                Utils.HighlightRed(p, ctx.GenerateRevisions);
+            }
         }
     }
 }

@@ -15,6 +15,8 @@ public class NtkProfile : IProfile
         new NtkPartsClassifier()
     ];
     public List<ILint> Lints { get; } = [
+        new TextColorLint(),
+        
         new ForceContentsLint(
             IsOfClass(NtkParagraphClass.BibliographyHeader),
             _ => "Список источников и литературы",
@@ -50,6 +52,8 @@ public class NtkProfile : IProfile
             },
             "IncorrectCaptionText"
         ),
+        
+        new NoUdcLint(),
         
         new ForbidLint(IsOfClass(NtkParagraphClass.Junk), "JunkParagraph"),
         
@@ -143,6 +147,7 @@ public class NtkProfile : IProfile
         new ForceCapsLint(IsOfClass(NtkParagraphClass.ThesisTitle), "TitleMustBeCaps"),
         
         new SupervisorFixerLint(),
+        new ForceBoldLint(true, IsOfClass(NtkParagraphClass.SupervisorDetails), "SupervisorNotBold"),
         
         new ForceBoldLint(false, IsOfClass(NtkParagraphClass.BibliographyHeader), "BibliographyHeaderBold"),
 
@@ -166,8 +171,8 @@ public class NtkProfile : IProfile
         new InstituteLint(),
         
         new StripAuthorJunkLint(),
+        new ForceBoldLint(true, IsOfClass(NtkParagraphClass.AuthorDetails), "AuthorNotBold"),
         
-        new TextColorLint(),
         new BadOuterWhitespaceLint(_ => true),
         
         new QuoteTrackerLint(IsOfClass(NtkParagraphClass.BodyText)),
